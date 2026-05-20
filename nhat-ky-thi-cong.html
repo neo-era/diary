@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nhật ký thi công hàng ngày</title>
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --ink: #111;
+    --line: #000;
+    --muted: #666;
+    --bg: #f3f4f6;
+    --accent: #1e40af;
+  }
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+  }
+  /* ==== TOOLBAR (chỉ trên màn hình) ==== */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .toolbar h1 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    margin: 0;
+    flex: 1 1 100%;
+    color: #1e293b;
+    font-weight: 600;
+  }
+  .toolbar button, .toolbar label.file-label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #0f172a;
+    font-weight: 500;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .toolbar button:active, .toolbar label.file-label:active { background: #e2e8f0; }
+  .toolbar button.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .toolbar button.danger {
+    background: #fff;
+    color: #b91c1c;
+    border-color: #fecaca;
+  }
+  .toolbar input[type="file"] { display: none; }
+
+  /* ==== TRANG A4 ==== */
+  .page {
+    background: #fff;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 14px auto;
+    padding: 18mm 18mm 16mm 22mm;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.12);
+    font-size: 13pt;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 16pt;
+    text-transform: uppercase;
+    margin: 0 0 14px 0;
+    letter-spacing: 0.3px;
+  }
+  .date-line {
+    margin: 8px 0 10px 0;
+    font-style: italic;
+  }
+  .date-line input { font-style: italic; }
+  .section-num {
+    font-weight: bold;
+    margin: 10px 0 6px 0;
+  }
+  .subsection {
+    font-style: italic;
+    margin: 8px 0 4px 0;
+    padding-left: 6mm;
+  }
+  /* Inputs: trông như viết tay khi in, ô gạch chân khi nhập */
+  input[type="text"], input[type="number"], input[type="date"], textarea {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 13pt;
+    border: none;
+    border-bottom: 1px dotted #999;
+    background: transparent;
+    padding: 2px 4px;
+    color: var(--ink);
+    width: 100%;
+    outline: none;
+  }
+  input:focus, textarea:focus {
+    background: #fff8d6;
+    border-bottom-color: var(--accent);
+  }
+  textarea { resize: vertical; min-height: 22px; line-height: 1.4; }
+  .inline-input { display: inline-block; width: auto; min-width: 40px; }
+
+  /* ==== BẢNG THỜI TIẾT ==== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4px 0 10px 0;
+  }
+  table th, table td {
+    border: 1px solid var(--line);
+    padding: 5px 7px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  table th { font-weight: bold; font-size: 13pt; }
+  table.weather td:first-child { text-align: left; font-style: italic; width: 26%; }
+  table.weather input { text-align: center; }
+
+  /* ==== BẢNG CÔNG VIỆC ==== */
+  table.work th {
+    font-weight: bold;
+    background: #fff;
+  }
+  table.work td { text-align: left; padding: 5px 8px; font-size: 12pt; }
+  table.work td.stt, table.work td.qty, table.work td.unit { text-align: center; }
+  table.work td.stt { width: 11mm; }
+  table.work td.qty { width: 24mm; }
+  table.work td.unit { width: 22mm; }
+  table.work tr.group td {
+    font-weight: bold;
+    background: #fafafa;
+  }
+  table.work input[type="number"] {
+    text-align: center;
+    border-bottom: none;
+  }
+  /* nút xóa hàng */
+  .row-del {
+    position: absolute;
+    right: -22px;
+    top: 6px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1px solid #fecaca;
+    background: #fff;
+    color: #b91c1c;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: none;
+  }
+  table.work tr { position: relative; }
+  body.edit-mode .row-del { display: inline-block; }
+  .add-row-btn {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    margin: 4px 0 10px 0;
+    padding: 6px 10px;
+    background: #fff;
+    border: 1px dashed #94a3b8;
+    border-radius: 6px;
+    color: #334155;
+    cursor: pointer;
+    display: none;
+  }
+  body.edit-mode .add-row-btn { display: inline-block; }
+
+  /* ==== CHECKBOX MỤC 4-5 ==== */
+  .checks { margin: 4px 0 4px 0; padding-left: 6mm; display: flex; gap: 28px; flex-wrap: wrap; }
+  .checks label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .checks input[type="radio"] { width: 14px; height: 14px; margin: 0; }
+
+  /* ==== KÝ TÊN ==== */
+  .signatures {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 24px;
+    gap: 10mm;
+    page-break-inside: avoid;
+  }
+  .signatures .col { flex: 1; text-align: center; }
+  .signatures .label { font-weight: bold; text-transform: uppercase; margin-bottom: 56px; }
+  .signatures .name { border-top: 1px dotted transparent; padding-top: 4px; }
+  .signatures input { text-align: center; }
+
+  .page-num { text-align: center; margin-top: 18px; font-size: 11pt; color: #444; }
+
+  /* ==== MOBILE ==== */
+  @media (max-width: 820px) {
+    .page {
+      width: 100%;
+      min-height: auto;
+      margin: 0;
+      padding: 14px 14px;
+      font-size: 14px;
+      box-shadow: none;
+    }
+    input[type="text"], input[type="number"], textarea { font-size: 14px; }
+    .title { font-size: 16px; }
+    table th, table td { padding: 6px 4px; font-size: 12px; }
+    table.work td.stt { width: 28px; }
+    table.work td.qty { width: 54px; }
+    table.work td.unit { width: 54px; }
+    .row-del { right: 2px; top: 50%; transform: translateY(-50%); }
+    .signatures { flex-direction: column; gap: 30px; }
+  }
+
+  /* ==== IN ==== */
+  @media print {
+    body { background: #fff; }
+    .toolbar, .add-row-btn, .row-del { display: none !important; }
+    .page {
+      box-shadow: none;
+      margin: 0;
+      padding: 14mm 18mm 12mm 22mm;
+      width: 210mm;
+      min-height: auto;
+    }
+    input, textarea {
+      border-bottom-color: transparent !important;
+      background: transparent !important;
+      color: #000 !important;
+    }
+    input[type="number"], input[type="text"], textarea { -webkit-print-color-adjust: exact; }
+    @page { size: A4; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <h1>📋 Nhật ký thi công hàng ngày</h1>
+  <button class="primary" onclick="window.print()">🖨️ In / Lưu PDF</button>
+  <button onclick="toggleEdit()" id="editBtn">✏️ Sửa hạng mục</button>
+  <button onclick="saveData()">💾 Lưu</button>
+  <label class="file-label" for="importFile">📂 Tải file</label>
+  <input type="file" id="importFile" accept=".json" onchange="importData(event)">
+  <button onclick="exportData()">📤 Xuất file</button>
+  <button class="danger" onclick="resetQty()">🔄 Reset số liệu</button>
+</div>
+
+<div class="page" id="page">
+
+  <h1 class="title">Nhật ký thi công hàng ngày</h1>
+
+  <div class="date-line">
+    Ngày <input type="text" class="inline-input" id="day" style="width:30px;text-align:center"> 
+    tháng <input type="text" class="inline-input" id="month" style="width:30px;text-align:center"> 
+    năm <input type="text" class="inline-input" id="year" style="width:50px;text-align:center">
+  </div>
+
+  <div class="section-num">1. Tình hình thời tiết:</div>
+  <table class="weather">
+    <tr>
+      <th></th>
+      <th>Sáng</th>
+      <th>Chiều</th>
+    </tr>
+    <tr>
+      <td>Thời tiết</td>
+      <td><input type="text" id="w_morning" value="Bình thường"></td>
+      <td><input type="text" id="w_afternoon" value="Bình thường"></td>
+    </tr>
+    <tr>
+      <td>Nhiệt độ</td>
+      <td><input type="text" id="t_morning" value="24°C-33°C"></td>
+      <td><input type="text" id="t_afternoon" value="24°C-33°C"></td>
+    </tr>
+  </table>
+
+  <div class="section-num">2. Nhân lực và thiết bị thi công:</div>
+  <div class="subsection">2.1. Nhân lực:</div>
+  <div style="padding-left:10mm">
+    - Công nhân: <input type="text" class="inline-input" id="workers" value="07" style="width:50px;text-align:center"> người
+  </div>
+  <div style="padding-left:10mm">
+    - Nhân lực khác: <input type="text" id="workers_other" style="width:70%">
+  </div>
+  <div class="subsection">2.2. Thiết bị thi công:</div>
+  <div style="padding-left:10mm">
+    <input type="text" id="equipment" style="width:96%">
+  </div>
+
+  <div class="section-num">3. Tình hình diễn biến thi công, nghiệm thu công việc:</div>
+  <div class="subsection">3.1. Diễn biến thi công, nghiệm thu công việc:</div>
+
+  <table class="work">
+    <thead>
+      <tr>
+        <th class="stt">STT</th>
+        <th>Công tác quản lý, vận hành</th>
+        <th class="unit">đơn vị tính</th>
+        <th class="qty">Khối lượng thực hiện</th>
+      </tr>
+    </thead>
+    <tbody id="workBody">
+      <!-- JS render -->
+    </tbody>
+  </table>
+  <button class="add-row-btn" onclick="addRow()">+ Thêm hạng mục</button>
+
+  <div class="section-num">4. Công tác vệ sinh môi trường:</div>
+  <div class="checks">
+    <label><input type="radio" name="env" value="Tốt"> Tốt</label>
+    <label><input type="radio" name="env" value="Bình thường" checked> Bình thường</label>
+    <label><input type="radio" name="env" value="Kém"> Kém</label>
+  </div>
+
+  <div class="section-num">5. Công tác an toàn lao động, an toàn giao thông:</div>
+  <div class="checks">
+    <label><input type="radio" name="safe" value="Tốt"> Tốt</label>
+    <label><input type="radio" name="safe" value="Bình thường" checked> Bình thường</label>
+    <label><input type="radio" name="safe" value="Kém"> Kém</label>
+  </div>
+
+  <div class="section-num">6. Nhận xét và yêu cầu của giám sát bên A:</div>
+  <textarea id="note_a" rows="2"></textarea>
+
+  <div class="section-num">7. Những kiến nghị đề xuất của bên B:</div>
+  <textarea id="note_b" rows="2"></textarea>
+
+  <div class="signatures">
+    <div class="col">
+      <div class="label">Đại diện bên A</div>
+      <input type="text" id="rep_a" placeholder="Họ và tên">
+    </div>
+    <div class="col">
+      <div class="label">Đại diện bên B</div>
+      <input type="text" id="rep_b" placeholder="Họ và tên">
+    </div>
+  </div>
+
+  <div class="page-num">trang <input type="text" class="inline-input" id="pagenum" value="7" style="width:30px;text-align:center"></div>
+</div>
+
+<script>
+// ====== DỮ LIỆU MẶC ĐỊNH ======
+const DEFAULT_ITEMS = [
+  { group: "I - Tủ thường" },
+  { name: "Duy trì trạm đèn < 500m (khu dân cư)", unit: "trạm", qty: 1 },
+  { name: "Duy trì trạm đèn 500m - 1000m", unit: "trạm", qty: 2 },
+  { group: "II - Tủ kết nối về trung tâm" },
+  { name: "Duy trì trạm đèn < 500m - kết nối về trung tâm", unit: "trạm", qty: 133 },
+  { name: "Duy trì trạm đèn < 500m (trong hẻm) - kết nối về trung tâm", unit: "trạm", qty: 1 },
+  { name: "Duy trì trạm đèn < 500m (khu dân cư) - kết nối về trung tâm", unit: "trạm", qty: 14 },
+  { name: "Duy trì trạm đèn 500m - 1000m - kết nối về trung tâm", unit: "trạm", qty: 76 },
+  { name: "Duy trì trạm đèn 500m - 1000m (khu dân cư) - kết nối về trung tâm", unit: "trạm", qty: 1 },
+  { name: "Duy trì trạm đèn 1000m - 1500m - kết nối về trung tâm", unit: "trạm", qty: 19 },
+  { name: "Duy trì trạm đèn 1500m - 3000m - kết nối về trung tâm", unit: "trạm", qty: 3 },
+  { name: "Duy trì trạm đèn > 3000m - kết nối về trung tâm", unit: "trạm", qty: 1 },
+];
+
+const DEFAULT_SIGN_A = "Ông Võ Thanh Quang";
+const DEFAULT_SIGN_B = "Ông Trần Hữu Lưu";
+
+const STORAGE_KEY = "nktc_lavipco_v1";
+
+// ====== STATE ======
+let items = [];
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      items = data.items || JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+      applyData(data);
+      return true;
+    }
+  } catch(e) { console.warn(e); }
+  items = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+  return false;
+}
+
+function applyData(d) {
+  if (d.day !== undefined) document.getElementById('day').value = d.day;
+  if (d.month !== undefined) document.getElementById('month').value = d.month;
+  if (d.year !== undefined) document.getElementById('year').value = d.year;
+  if (d.w_morning !== undefined) document.getElementById('w_morning').value = d.w_morning;
+  if (d.w_afternoon !== undefined) document.getElementById('w_afternoon').value = d.w_afternoon;
+  if (d.t_morning !== undefined) document.getElementById('t_morning').value = d.t_morning;
+  if (d.t_afternoon !== undefined) document.getElementById('t_afternoon').value = d.t_afternoon;
+  if (d.workers !== undefined) document.getElementById('workers').value = d.workers;
+  if (d.workers_other !== undefined) document.getElementById('workers_other').value = d.workers_other;
+  if (d.equipment !== undefined) document.getElementById('equipment').value = d.equipment;
+  if (d.env) {
+    const r = document.querySelector(`input[name="env"][value="${d.env}"]`);
+    if (r) r.checked = true;
+  }
+  if (d.safe) {
+    const r = document.querySelector(`input[name="safe"][value="${d.safe}"]`);
+    if (r) r.checked = true;
+  }
+  if (d.note_a !== undefined) document.getElementById('note_a').value = d.note_a;
+  if (d.note_b !== undefined) document.getElementById('note_b').value = d.note_b;
+  document.getElementById('rep_a').value = d.rep_a || DEFAULT_SIGN_A;
+  document.getElementById('rep_b').value = d.rep_b || DEFAULT_SIGN_B;
+  if (d.pagenum !== undefined) document.getElementById('pagenum').value = d.pagenum;
+}
+
+function setTodayDate() {
+  const day = document.getElementById('day');
+  const month = document.getElementById('month');
+  const year = document.getElementById('year');
+  // chỉ điền nếu chưa có
+  if (!day.value || !month.value || !year.value) {
+    const t = new Date();
+    day.value = t.getDate();
+    month.value = t.getMonth() + 1;
+    year.value = t.getFullYear();
+  }
+}
+
+// ====== RENDER BẢNG ======
+function renderTable() {
+  const body = document.getElementById('workBody');
+  body.innerHTML = '';
+  let stt = 0;
+  items.forEach((it, idx) => {
+    const tr = document.createElement('tr');
+    if (it.group) {
+      tr.className = 'group';
+      stt = 0;
+      tr.innerHTML = `
+        <td class="stt"></td>
+        <td colspan="3"><input type="text" value="${escapeHtml(it.group)}" data-idx="${idx}" data-field="group"></td>
+        <td><button class="row-del" onclick="delRow(${idx})">×</button></td>
+      `;
+      // chỉnh lại vì colspan 3 + nút xóa ngoài td
+      tr.innerHTML = `
+        <td class="stt"></td>
+        <td colspan="3" style="position:relative">
+          <input type="text" value="${escapeHtml(it.group)}" data-idx="${idx}" data-field="group" style="font-weight:bold">
+          <button class="row-del" onclick="delRow(${idx})">×</button>
+        </td>
+      `;
+    } else {
+      stt++;
+      tr.innerHTML = `
+        <td class="stt">${stt}</td>
+        <td style="position:relative">
+          <input type="text" value="${escapeHtml(it.name)}" data-idx="${idx}" data-field="name">
+          <button class="row-del" onclick="delRow(${idx})">×</button>
+        </td>
+        <td class="unit"><input type="text" value="${escapeHtml(it.unit)}" data-idx="${idx}" data-field="unit" style="text-align:center"></td>
+        <td class="qty"><input type="number" value="${it.qty ?? ''}" data-idx="${idx}" data-field="qty" min="0" step="1"></td>
+      `;
+    }
+    body.appendChild(tr);
+  });
+  // bind change
+  body.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const i = parseInt(e.target.dataset.idx);
+      const f = e.target.dataset.field;
+      if (isNaN(i) || !f) return;
+      if (f === 'qty') items[i].qty = e.target.value === '' ? '' : Number(e.target.value);
+      else items[i][f] = e.target.value;
+    });
+  });
+}
+
+function escapeHtml(s) {
+  if (s === undefined || s === null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function addRow() {
+  const isGroup = confirm("OK = Thêm nhóm (I, II...)\nCancel = Thêm hạng mục thường");
+  if (isGroup) items.push({ group: "III - Nhóm mới" });
+  else items.push({ name: "Hạng mục mới", unit: "trạm", qty: 0 });
+  renderTable();
+}
+
+function delRow(idx) {
+  if (!confirm("Xóa dòng này?")) return;
+  items.splice(idx, 1);
+  renderTable();
+}
+
+function toggleEdit() {
+  document.body.classList.toggle('edit-mode');
+  const btn = document.getElementById('editBtn');
+  btn.textContent = document.body.classList.contains('edit-mode') ? '✓ Xong' : '✏️ Sửa hạng mục';
+}
+
+// ====== LƯU / TẢI ======
+function collectData() {
+  return {
+    day: document.getElementById('day').value,
+    month: document.getElementById('month').value,
+    year: document.getElementById('year').value,
+    w_morning: document.getElementById('w_morning').value,
+    w_afternoon: document.getElementById('w_afternoon').value,
+    t_morning: document.getElementById('t_morning').value,
+    t_afternoon: document.getElementById('t_afternoon').value,
+    workers: document.getElementById('workers').value,
+    workers_other: document.getElementById('workers_other').value,
+    equipment: document.getElementById('equipment').value,
+    env: document.querySelector('input[name="env"]:checked')?.value,
+    safe: document.querySelector('input[name="safe"]:checked')?.value,
+    note_a: document.getElementById('note_a').value,
+    note_b: document.getElementById('note_b').value,
+    rep_a: document.getElementById('rep_a').value,
+    rep_b: document.getElementById('rep_b').value,
+    pagenum: document.getElementById('pagenum').value,
+    items: items,
+  };
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(collectData()));
+    flash("Đã lưu vào điện thoại ✓");
+  } catch(e) {
+    alert("Lỗi lưu: " + e.message);
+  }
+}
+
+function exportData() {
+  const data = collectData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const d = `${data.day || 'X'}-${data.month || 'X'}-${data.year || ''}`;
+  a.href = url;
+  a.download = `nhat-ky-thi-cong-${d}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      items = data.items || items;
+      renderTable();
+      applyData(data);
+      flash("Đã tải file ✓");
+    } catch(err) {
+      alert("File không hợp lệ: " + err.message);
+    }
+  };
+  reader.readAsText(f);
+  e.target.value = '';
+}
+
+function resetQty() {
+  if (!confirm("Đặt lại toàn bộ khối lượng về 0?")) return;
+  items.forEach(it => { if (!it.group) it.qty = 0; });
+  renderTable();
+}
+
+function flash(msg) {
+  const d = document.createElement('div');
+  d.textContent = msg;
+  d.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;z-index:1000;font-family:sans-serif;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,0.3)";
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 1500);
+}
+
+// ====== KHỞI ĐỘNG ======
+loadFromStorage();
+setTodayDate();
+renderTable();
+
+// auto-save khi đổi
+document.addEventListener('input', () => {
+  clearTimeout(window._sv);
+  window._sv = setTimeout(saveData, 800);
+});
+</script>
+</body>
+</html>
