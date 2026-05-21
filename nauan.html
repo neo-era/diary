@@ -196,6 +196,203 @@
     border-color: var(--ink);
   }
 
+  /* ====== HAMBURGER + SIDEBAR ====== */
+  .hamburger {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    border-radius: 2px;
+    cursor: pointer;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hamburger:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .hamburger:active { transform: scale(0.94); }
+  .hamburger svg { width: 18px; height: 18px; }
+
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 24, 19, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 90;
+    transition: opacity 0.3s;
+  }
+  .sidebar-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 340px;
+    max-width: 86vw;
+    background: var(--paper);
+    z-index: 95;
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 30px rgba(31, 24, 19, 0.18);
+    padding-top: env(safe-area-inset-top, 0);
+    padding-left: env(safe-area-inset-left, 0);
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  .sidebar-header {
+    padding: 22px 24px 14px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .sidebar-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .sidebar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .sidebar-close {
+    width: 36px; height: 36px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--ink);
+    font-size: 16px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s;
+  }
+  .sidebar-close:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .sidebar-menu {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 8px 24px;
+  }
+  .sidebar-item {
+    width: 100%;
+    padding: 11px 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    color: var(--ink);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    border-radius: 2px;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sidebar-item:hover { background: rgba(177, 74, 42, 0.06); }
+  .sidebar-item.active {
+    background: var(--paper-deep);
+    color: var(--terracotta-deep);
+    font-weight: 600;
+  }
+  .sidebar-item-roman {
+    font-style: italic;
+    color: var(--ochre);
+    min-width: 32px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .sidebar-item-name { flex: 1; }
+  .sidebar-item-count {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: var(--ink-faded);
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+  .sidebar-divider {
+    height: 1px;
+    background: var(--rule);
+    margin: 10px 16px;
+  }
+  .sidebar-section-label {
+    padding: 12px 16px 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    font-weight: 600;
+  }
+
+  /* ====== SECTION HEADERS IN MAIN GRID ====== */
+  .recipe-section {
+    margin-bottom: 56px;
+    scroll-margin-top: 90px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .section-roman {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 30px;
+    color: var(--terracotta);
+    font-weight: 500;
+    line-height: 1;
+    min-width: 48px;
+  }
+  .section-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 600;
+    flex: 1;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .section-count {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    font-weight: 500;
+  }
+  .section-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+  }
+
   /* ====== MAIN CONTAINER ====== */
   .container {
     max-width: 1320px;
@@ -205,9 +402,6 @@
 
   /* ====== RECIPE GRID ====== */
   .recipe-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 28px;
     margin-bottom: 60px;
   }
 
@@ -822,43 +1016,35 @@
     .masthead-meta { font-size: 11px; gap: 12px; }
 
     .container { padding: 28px 16px 60px; }
-    .recipe-grid {
+    .recipe-section { margin-bottom: 40px; scroll-margin-top: 80px; }
+    .section-header { gap: 12px; margin-bottom: 18px; padding-bottom: 10px; }
+    .section-roman { font-size: 24px; min-width: 36px; }
+    .section-name { font-size: 22px; }
+    .section-count { font-size: 10px; }
+    .section-cards {
       grid-template-columns: 1fr;
       gap: 14px;
     }
     .recipe-card { padding: 22px 20px 20px; }
+    .hamburger { width: 40px; height: 40px; }
+    .sidebar { width: 300px; }
+    .sidebar-header { padding: 18px 20px 12px; padding-top: max(18px, env(safe-area-inset-top, 18px)); }
+    .sidebar-title { font-size: 22px; }
+    .sidebar-item { padding: 10px 14px; font-size: 16px; }
     .recipe-card-title { font-size: 23px; }
 
-    /* Controls: search alone top row, chips scroll-snap below */
+    /* Controls: hamburger + search một hàng */
     .controls {
-      padding: 10px 0 0;
-      gap: 8px;
-      flex-direction: column;
-      align-items: stretch;
+      padding: 10px 14px;
       padding-top: max(10px, env(safe-area-inset-top, 10px));
+      gap: 8px;
+      flex-wrap: nowrap;
     }
     .search-box {
-      padding: 0 16px;
+      flex: 1;
       min-width: 0;
     }
-    .search-box input { padding: 12px 14px 12px 40px; font-size: 15px; }
-    .filter-chips {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      padding: 4px 16px 12px;
-      gap: 8px;
-      scroll-snap-type: x proximity;
-      scrollbar-width: none;
-    }
-    .filter-chips::-webkit-scrollbar { display: none; }
-    .chip {
-      padding: 9px 16px;
-      font-size: 12px;
-      flex-shrink: 0;
-      scroll-snap-align: start;
-      min-height: 36px;
-    }
+    .search-box input { padding: 11px 14px 11px 40px; font-size: 15px; }
 
     /* Modal: bottom-sheet style */
     .modal-backdrop {
@@ -1018,11 +1204,30 @@
 
 <!-- ============ CONTROLS ============ -->
 <div class="controls">
+  <button class="hamburger" onclick="toggleSidebar()" aria-label="Mở mục lục" title="Mục lục">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line x1="4" y1="7" x2="20" y2="7"/>
+      <line x1="4" y1="12" x2="20" y2="12"/>
+      <line x1="4" y1="17" x2="20" y2="17"/>
+    </svg>
+  </button>
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="Tìm món...">
   </div>
-  <div class="filter-chips" id="filterChips"></div>
 </div>
+
+<!-- ============ SIDEBAR ============ -->
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar" aria-hidden="true">
+  <header class="sidebar-header">
+    <div>
+      <div class="sidebar-eyebrow">Mục lục</div>
+      <div class="sidebar-title">Sổ Công Thức</div>
+    </div>
+    <button class="sidebar-close" onclick="closeSidebar()" aria-label="Đóng" title="Đóng">×</button>
+  </header>
+  <nav class="sidebar-menu" id="sidebarMenu"></nav>
+</aside>
 
 <!-- ============ MAIN ============ -->
 <main class="container">
@@ -1799,10 +2004,11 @@ const RECIPES = [
 
 </script>
 <script>
-  console.log('%c[Sổ Công Thức] v2026.05.22-mobile-redesign ✓', 'background:#b14a2a;color:#f4ede1;padding:4px 10px;border-radius:4px;font-weight:bold');
+  console.log('%c[Sổ Công Thức] v2026.05.22-sidebar ✓', 'background:#b14a2a;color:#f4ede1;padding:4px 10px;border-radius:4px;font-weight:bold');
 
   // ========== STATE ==========
-  let activeCategory = 'Tất cả';
+  // activeCategory: 'all' | 'favorites'
+  let activeCategory = 'all';
   let searchQuery = '';
   let currentRecipe = null;
   let currentServings = 4;
@@ -1827,7 +2033,8 @@ const RECIPES = [
     else favorites.add(id);
     saveFavorites();
     renderGrid();
-    renderChips();
+    // re-render sidebar nếu đang mở để cập nhật count "Đã lưu"
+    if (document.getElementById('sidebar').classList.contains('open')) renderSidebar();
     if (currentRecipe && currentRecipe.id === id) {
       // cập nhật nút trong modal mà không re-render hết (giữ scroll position)
       document.querySelectorAll(`[data-fav-id="${id}"]`).forEach(el => {
@@ -1890,59 +2097,115 @@ const RECIPES = [
     return (Math.round(n * 100) / 100).toString();
   }
 
-  // ========== RENDER GRID ==========
-  const FAV_CATEGORY = '❤️ Đã lưu';
+  // ========== HELPERS ==========
+  const FAV_KEY_FILTER = 'favorites';
+  const ALL_KEY_FILTER = 'all';
+  const ROMAN_NUMERALS = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX'];
 
-  function getCategories() {
-    const cats = ['Tất cả'];
-    if (favorites.size > 0) cats.push(FAV_CATEGORY);
-    const others = new Set();
-    RECIPES.forEach(r => others.add(r.category));
-    return cats.concat([...others]);
+  function slugify(s) {
+    return String(s).toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
   }
 
-  function renderChips() {
-    const wrap = document.getElementById('filterChips');
-    // nếu user đang ở filter favorites nhưng không còn fav nào → quay về Tất cả
-    if (activeCategory === FAV_CATEGORY && favorites.size === 0) activeCategory = 'Tất cả';
-    wrap.innerHTML = getCategories().map(cat => {
-      const count = cat === FAV_CATEGORY ? ` (${favorites.size})` : '';
-      return `<button class="chip ${cat === activeCategory ? 'active' : ''}" data-cat="${cat}">${cat}${count}</button>`;
-    }).join('');
+  // Lấy danh sách category theo thứ tự xuất hiện trong RECIPES
+  function getOrderedCategories() {
+    const seen = new Set();
+    const list = [];
+    RECIPES.forEach(r => {
+      if (!seen.has(r.category)) { seen.add(r.category); list.push(r.category); }
+    });
+    return list;
+  }
 
-    wrap.querySelectorAll('.chip').forEach(btn => {
+  function filterRecipes() {
+    return RECIPES.filter(r => {
+      let matchCat = true;
+      if (activeCategory === FAV_KEY_FILTER) matchCat = favorites.has(r.id);
+      // categoryName filter: lọc theo tên category cụ thể (không dùng cho sidebar — sidebar chỉ scroll)
+      const q = searchQuery.toLowerCase();
+      const matchSearch = !q || r.title.toLowerCase().includes(q) ||
+                          (r.subtitle && r.subtitle.toLowerCase().includes(q));
+      return matchCat && matchSearch;
+    });
+  }
+
+  // ========== SIDEBAR ==========
+  function toggleSidebar() {
+    const open = document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarBackdrop').classList.toggle('open', open);
+    document.getElementById('sidebar').setAttribute('aria-hidden', open ? 'false' : 'true');
+    if (open) {
+      renderSidebar();
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarBackdrop').classList.remove('open');
+    document.getElementById('sidebar').setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function renderSidebar() {
+    const cats = getOrderedCategories();
+    const html = `
+      <button class="sidebar-item ${activeCategory === ALL_KEY_FILTER ? 'active' : ''}" data-action="filter" data-value="${ALL_KEY_FILTER}">
+        <span class="sidebar-item-roman">⌂</span>
+        <span class="sidebar-item-name">Tất cả món</span>
+        <span class="sidebar-item-count">${RECIPES.length}</span>
+      </button>
+      <button class="sidebar-item ${activeCategory === FAV_KEY_FILTER ? 'active' : ''}" data-action="filter" data-value="${FAV_KEY_FILTER}">
+        <span class="sidebar-item-roman">❤</span>
+        <span class="sidebar-item-name">Đã lưu</span>
+        <span class="sidebar-item-count">${favorites.size}</span>
+      </button>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section-label">Theo nhóm món</div>
+      ${cats.map((cat, idx) => {
+        const count = RECIPES.filter(r => r.category === cat).length;
+        return `<button class="sidebar-item" data-action="scroll" data-value="${slugify(cat)}">
+          <span class="sidebar-item-roman">${ROMAN_NUMERALS[idx] || (idx+1)}.</span>
+          <span class="sidebar-item-name">${cat}</span>
+          <span class="sidebar-item-count">${count}</span>
+        </button>`;
+      }).join('')}
+    `;
+    const menu = document.getElementById('sidebarMenu');
+    menu.innerHTML = html;
+    menu.querySelectorAll('.sidebar-item').forEach(btn => {
       btn.addEventListener('click', () => {
-        activeCategory = btn.dataset.cat;
-        renderChips();
-        renderGrid();
-        // scroll chip active vào view (mobile horizontal scroll)
-        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        const action = btn.dataset.action;
+        const value = btn.dataset.value;
+        if (action === 'filter') {
+          activeCategory = value;
+          renderGrid();
+          closeSidebar();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (action === 'scroll') {
+          // Nếu đang lọc favorites, chuyển về tất cả trước rồi scroll
+          if (activeCategory !== ALL_KEY_FILTER) {
+            activeCategory = ALL_KEY_FILTER;
+            renderGrid();
+          }
+          closeSidebar();
+          // delay để chờ render xong
+          setTimeout(() => {
+            const target = document.getElementById('section-' + value);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 50);
+        }
       });
     });
   }
 
-  function renderGrid() {
-    const grid = document.getElementById('recipeGrid');
-    const filtered = RECIPES.filter(r => {
-      const matchCat = activeCategory === 'Tất cả'
-        || (activeCategory === FAV_CATEGORY && favorites.has(r.id))
-        || r.category === activeCategory;
-      const matchSearch = !searchQuery || r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (r.subtitle && r.subtitle.toLowerCase().includes(searchQuery.toLowerCase()));
-      return matchCat && matchSearch;
-    });
-
-    if (filtered.length === 0) {
-      const msg = activeCategory === FAV_CATEGORY
-        ? 'Chưa có món nào được lưu — bấm trái tim ♡ trên món yêu thích để lưu lại'
-        : 'Không tìm thấy món nào…';
-      grid.innerHTML = `<div class="empty" style="grid-column: 1/-1;">${msg}</div>`;
-      return;
-    }
-
-    grid.innerHTML = filtered.map(r => {
-      const isFav = favorites.has(r.id);
-      return `
+  // ========== RENDER GRID (grouped by category) ==========
+  function renderCard(r) {
+    const isFav = favorites.has(r.id);
+    return `
       <div class="recipe-card" data-id="${r.id}" tabindex="0" role="button">
         <button class="fav-btn ${isFav ? 'active' : ''}" data-fav-id="${r.id}" aria-label="${isFav ? 'Bỏ lưu' : 'Lưu món'}" title="${isFav ? 'Bỏ lưu' : 'Lưu món'}"></button>
         <div class="recipe-card-num">№ ${String(r.id).padStart(2, '0')}</div>
@@ -1953,8 +2216,46 @@ const RECIPES = [
           <span>${r.category}</span>
         </div>
       </div>`;
-    }).join('');
+  }
 
+  function renderGrid() {
+    const grid = document.getElementById('recipeGrid');
+    const filtered = filterRecipes();
+
+    if (filtered.length === 0) {
+      const msg = activeCategory === FAV_KEY_FILTER
+        ? 'Chưa có món nào được lưu — bấm trái tim ♡ trên món yêu thích để lưu lại'
+        : 'Không tìm thấy món nào…';
+      grid.innerHTML = `<div class="empty">${msg}</div>`;
+      bindCardEvents(grid);
+      return;
+    }
+
+    // Group filtered theo category, giữ thứ tự xuất hiện
+    const groups = {};
+    const order = [];
+    filtered.forEach(r => {
+      if (!groups[r.category]) { groups[r.category] = []; order.push(r.category); }
+      groups[r.category].push(r);
+    });
+
+    grid.innerHTML = order.map((cat, idx) => `
+      <section class="recipe-section" id="section-${slugify(cat)}">
+        <header class="section-header">
+          <span class="section-roman">${ROMAN_NUMERALS[idx] || (idx+1)}.</span>
+          <h2 class="section-name">${cat}</h2>
+          <span class="section-count">${groups[cat].length} món</span>
+        </header>
+        <div class="section-cards">
+          ${groups[cat].map(renderCard).join('')}
+        </div>
+      </section>
+    `).join('');
+
+    bindCardEvents(grid);
+  }
+
+  function bindCardEvents(grid) {
     grid.querySelectorAll('.recipe-card').forEach(card => {
       card.addEventListener('click', e => {
         if (e.target.closest('.fav-btn')) return;
@@ -2141,11 +2442,13 @@ const RECIPES = [
   });
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') {
+      if (document.getElementById('sidebar').classList.contains('open')) closeSidebar();
+      else closeModal();
+    }
   });
 
   // ========== INIT ==========
-  renderChips();
   renderGrid();
 </script>
 </body>
