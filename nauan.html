@@ -340,28 +340,7 @@
     opacity: 1;
   }
 
-  .modal-close {
-    position: absolute;
-    top: 20px; right: 20px;
-    width: 40px; height: 40px;
-    background: var(--paper);
-    border: 1px solid var(--rule);
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 18px;
-    color: var(--ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    transition: all 0.2s;
-  }
-
-  .modal-close:hover {
-    background: var(--ink);
-    color: var(--paper);
-    border-color: var(--ink);
-  }
+  .modal-close { display: none; } /* thay bằng nút trong .modal-sticky-bar */
 
   .recipe-header {
     padding: 50px 60px 36px;
@@ -678,50 +657,346 @@
   .recipe-card:nth-child(8) { animation-delay: 0.40s; }
   .recipe-card:nth-child(n+9) { animation-delay: 0.45s; }
 
+  /* ====== FAVORITES (HEART BUTTON) ====== */
+  .fav-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 20px;
+    color: var(--ink-faded);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+    z-index: 2;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fav-btn:hover {
+    background: rgba(177, 74, 42, 0.08);
+    color: var(--terracotta);
+  }
+  .fav-btn.active {
+    color: var(--terracotta);
+  }
+  .fav-btn.active::before { content: '❤'; }
+  .fav-btn:not(.active)::before { content: '♡'; font-weight: 100; }
+  .fav-btn:active { transform: scale(0.88); }
+
+  /* ====== MODAL STRUCTURE: STICKY ====== */
+  .modal-scroll {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(100vh - 80px);
+    scroll-behavior: smooth;
+  }
+  .modal-sticky-bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(244, 237, 225, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 14px 60px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 60px;
+  }
+  .modal-sticky-title {
+    flex: 1;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .modal-scroll.scrolled .modal-sticky-title { opacity: 1; }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .icon-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .icon-btn.fav.active {
+    background: var(--terracotta);
+    color: #fff;
+    border-color: var(--terracotta);
+  }
+  .icon-btn:active { transform: scale(0.92); }
+
+  /* ====== TABS ====== */
+  .modal-tabs {
+    display: flex;
+    position: sticky;
+    top: 60px;
+    z-index: 14;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 60px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 14px 8px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink-faded);
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: 0.02em;
+  }
+  .tab-btn.active {
+    color: var(--terracotta-deep);
+    border-bottom-color: var(--terracotta);
+    font-weight: 600;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn 0.25s ease-out; }
+  .print-only-title {
+    display: none;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 16px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--rule);
+  }
+  @media print {
+    .print-only-title { display: block !important; }
+  }
+
   /* ====== RESPONSIVE ====== */
+  @media (max-width: 900px) {
+    .modal-sticky-bar { padding: 12px 28px; }
+    .modal-tabs { padding: 0 28px; }
+    .recipe-header { padding-left: 28px; padding-right: 28px; }
+    .servings-control { padding-left: 28px; padding-right: 28px; }
+    .recipe-content { padding-left: 28px; padding-right: 28px; }
+  }
+
   @media (max-width: 768px) {
-    .masthead { padding: 40px 20px 30px; }
-    .container { padding: 32px 16px 60px; }
+    .masthead {
+      padding: 32px 20px 24px;
+      padding-top: max(32px, env(safe-area-inset-top, 32px));
+    }
+    .masthead-title { font-size: clamp(40px, 11vw, 60px); }
+    .masthead-sub { font-size: 16px; }
+    .masthead-meta { font-size: 11px; gap: 12px; }
+
+    .container { padding: 28px 16px 60px; }
     .recipe-grid {
       grid-template-columns: 1fr;
-      gap: 20px;
+      gap: 14px;
+    }
+    .recipe-card { padding: 22px 20px 20px; }
+    .recipe-card-title { font-size: 23px; }
+
+    /* Controls: search alone top row, chips scroll-snap below */
+    .controls {
+      padding: 10px 0 0;
+      gap: 8px;
+      flex-direction: column;
+      align-items: stretch;
+      padding-top: max(10px, env(safe-area-inset-top, 10px));
+    }
+    .search-box {
+      padding: 0 16px;
+      min-width: 0;
+    }
+    .search-box input { padding: 12px 14px 12px 40px; font-size: 15px; }
+    .filter-chips {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 4px 16px 12px;
+      gap: 8px;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+    }
+    .filter-chips::-webkit-scrollbar { display: none; }
+    .chip {
+      padding: 9px 16px;
+      font-size: 12px;
+      flex-shrink: 0;
+      scroll-snap-align: start;
+      min-height: 36px;
+    }
+
+    /* Modal: bottom-sheet style */
+    .modal-backdrop {
+      align-items: flex-end;
+      display: flex;
+      padding: 0;
     }
     .modal {
       margin: 0;
+      width: 100%;
+      max-width: 100%;
       min-height: 100vh;
+      max-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      opacity: 1;
+      border-radius: 0;
     }
-    .recipe-header,
-    .servings-control,
-    .recipe-content {
-      padding-left: 20px;
-      padding-right: 20px;
+    .modal-backdrop.open .modal {
+      transform: translateY(0);
     }
-    .recipe-header { padding-top: 60px; padding-bottom: 24px; }
-    .recipe-content { padding-top: 32px; }
-    .step {
-      grid-template-columns: 40px 1fr;
-      gap: 16px;
+    .modal-scroll {
+      flex: 1;
+      max-height: none;
+      overflow-y: auto;
     }
-    .step-num { font-size: 32px; }
-    .ingredient {
+    .modal-close { display: none; } /* dùng icon trong sticky bar thay */
+
+    .modal-sticky-bar {
+      padding: 10px 16px;
+      padding-top: max(10px, env(safe-area-inset-top, 10px));
+      min-height: 56px;
+    }
+    .modal-tabs {
+      padding: 0 16px;
+      top: 56px;
+    }
+
+    .recipe-header { padding: 28px 20px 22px; }
+    .recipe-title { font-size: clamp(28px, 8vw, 38px); }
+    .recipe-subtitle { font-size: 18px; margin-bottom: 16px; }
+    .recipe-meta {
+      gap: 8px 16px;
+      font-size: 10px;
+    }
+    .recipe-num { font-size: 12px; margin-bottom: 10px; }
+
+    .servings-control {
+      padding: 14px 20px;
+      gap: 12px;
       flex-wrap: wrap;
     }
-    .ingredient-qty {
-      min-width: 80px;
-      font-size: 15px;
+    .servings-value { font-size: 26px; min-width: 44px; }
+    .servings-label { font-size: 16px; }
+    .servings-unit { font-size: 14px; }
+    .servings-btn { width: 36px; height: 36px; font-size: 16px; }
+
+    .recipe-content { padding: 28px 20px 40px; }
+
+    .ingredient-group-name { font-size: 19px; margin-bottom: 12px; }
+    .ingredient {
+      flex-wrap: wrap;
+      padding: 10px 0;
+      gap: 6px 12px;
     }
-    .recipe-meta { gap: 16px; }
-    .controls { padding: 12px 16px; gap: 8px; }
-    .filter-chips { gap: 4px; }
-    .chip { padding: 6px 10px; font-size: 11px; }
+    .ingredient-name { font-size: 14px; flex: 1 1 200px; }
+    .ingredient-qty {
+      font-size: 15px;
+      min-width: auto;
+      flex-shrink: 0;
+    }
+    .ingredient-dots { display: none; }
+
+    .step {
+      grid-template-columns: 36px 1fr;
+      gap: 14px;
+      padding: 18px 0;
+    }
+    .step-num { font-size: 30px; }
+    .step-title { font-size: 18px; }
+    .step-content { font-size: 14px; }
+  }
+
+  @media (max-width: 420px) {
+    .masthead { padding: 24px 14px 20px; }
+    .masthead-eyebrow { font-size: 10px; margin-bottom: 10px; letter-spacing: 0.28em; }
+    .masthead-title { font-size: 36px; }
+    .masthead-sub { font-size: 15px; }
+    .masthead-meta { font-size: 10px; gap: 10px; flex-wrap: wrap; }
+
+    .container { padding: 20px 12px 40px; }
+    .recipe-card { padding: 20px 18px 18px; }
+    .recipe-card-title { font-size: 22px; }
+    .recipe-card-num { font-size: 12px; margin-bottom: 10px; }
+    .recipe-card-sub { font-size: 14px; margin-bottom: 14px; }
+    .recipe-card-meta { font-size: 10px; gap: 12px; padding-top: 12px; }
+
+    .recipe-header { padding: 24px 16px 20px; }
+    .recipe-content { padding: 24px 16px 36px; }
+    .servings-control { padding-left: 16px; padding-right: 16px; }
+    .modal-sticky-bar { padding-left: 12px; padding-right: 12px; }
+    .modal-tabs.show { padding: 0 12px; }
+  }
+
+  /* Touch devices: disable hover effects */
+  @media (hover: none) {
+    .recipe-card:hover {
+      transform: none;
+      box-shadow: 0 4px 10px var(--shadow);
+      border-color: var(--rule);
+    }
+    .recipe-card:active {
+      transform: scale(0.98);
+      border-color: var(--terracotta);
+    }
+    .chip:hover {
+      border-color: var(--rule);
+      color: var(--ink-soft);
+    }
+    .icon-btn:hover {
+      background: var(--paper);
+      color: var(--ink);
+      border-color: var(--rule);
+    }
+    .fav-btn:hover { background: transparent; color: var(--ink-faded); }
+    .fav-btn.active:hover { color: var(--terracotta); }
   }
 
   /* Print */
   @media print {
-    .controls, .masthead, .footer, .modal-close, .servings-control { display: none; }
-    .modal-backdrop { position: static; background: white; }
-    .modal { box-shadow: none; margin: 0; }
+    .controls, .masthead, .footer, .modal-close, .modal-sticky-bar, .servings-control, .modal-tabs { display: none !important; }
+    .modal-backdrop { position: static; background: white; overflow: visible; }
+    .modal { box-shadow: none; margin: 0; max-height: none; transform: none; opacity: 1; }
+    .modal-scroll { max-height: none; overflow: visible; }
+    .tab-panel { display: block !important; }
     .recipe-card { page-break-inside: avoid; }
+    .step { page-break-inside: avoid; }
   }
 </style>
 </head>
@@ -758,7 +1033,7 @@
 <div class="modal-backdrop" id="modalBackdrop">
   <article class="modal" id="modal">
     <button class="modal-close" onclick="closeModal()">×</button>
-    <div id="modalContent"></div>
+    <div id="modalContent" class="modal-scroll"></div>
   </article>
 </div>
 
@@ -1524,11 +1799,58 @@ const RECIPES = [
 
 </script>
 <script>
+  console.log('%c[Sổ Công Thức] v2026.05.22-mobile-redesign ✓', 'background:#b14a2a;color:#f4ede1;padding:4px 10px;border-radius:4px;font-weight:bold');
+
   // ========== STATE ==========
   let activeCategory = 'Tất cả';
   let searchQuery = '';
   let currentRecipe = null;
   let currentServings = 4;
+  let currentTab = 'ingredients';
+
+  // Favorites (lưu vào localStorage)
+  const FAV_KEY = 'congthuc_favorites_v1';
+  let favorites = new Set();
+  try {
+    const raw = localStorage.getItem(FAV_KEY);
+    if (raw) favorites = new Set(JSON.parse(raw));
+  } catch(e) { console.warn('Không đọc được favorites:', e); }
+
+  function saveFavorites() {
+    try { localStorage.setItem(FAV_KEY, JSON.stringify([...favorites])); }
+    catch(e) { console.warn('Không lưu được favorites:', e); }
+  }
+
+  function toggleFavorite(id, ev) {
+    if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+    if (favorites.has(id)) favorites.delete(id);
+    else favorites.add(id);
+    saveFavorites();
+    renderGrid();
+    renderChips();
+    if (currentRecipe && currentRecipe.id === id) {
+      // cập nhật nút trong modal mà không re-render hết (giữ scroll position)
+      document.querySelectorAll(`[data-fav-id="${id}"]`).forEach(el => {
+        el.classList.toggle('active', favorites.has(id));
+      });
+    }
+  }
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === tab);
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => {
+      p.classList.toggle('active', p.dataset.panel === tab);
+    });
+  }
+
+  function printRecipe() {
+    if (!currentRecipe) return;
+    // Đảm bảo cả 2 panels hiện ra khi in (CSS @print đã handle, nhưng để chắc)
+    window.print();
+  }
 
   // ========== UTILITIES ==========
   function formatQty(qty, unit, baseServings, currentServings) {
@@ -1569,23 +1891,32 @@ const RECIPES = [
   }
 
   // ========== RENDER GRID ==========
+  const FAV_CATEGORY = '❤️ Đã lưu';
+
   function getCategories() {
-    const cats = new Set(['Tất cả']);
-    RECIPES.forEach(r => cats.add(r.category));
-    return Array.from(cats);
+    const cats = ['Tất cả'];
+    if (favorites.size > 0) cats.push(FAV_CATEGORY);
+    const others = new Set();
+    RECIPES.forEach(r => others.add(r.category));
+    return cats.concat([...others]);
   }
 
   function renderChips() {
     const wrap = document.getElementById('filterChips');
-    wrap.innerHTML = getCategories().map(cat => `
-      <button class="chip ${cat === activeCategory ? 'active' : ''}" data-cat="${cat}">${cat}</button>
-    `).join('');
+    // nếu user đang ở filter favorites nhưng không còn fav nào → quay về Tất cả
+    if (activeCategory === FAV_CATEGORY && favorites.size === 0) activeCategory = 'Tất cả';
+    wrap.innerHTML = getCategories().map(cat => {
+      const count = cat === FAV_CATEGORY ? ` (${favorites.size})` : '';
+      return `<button class="chip ${cat === activeCategory ? 'active' : ''}" data-cat="${cat}">${cat}${count}</button>`;
+    }).join('');
 
     wrap.querySelectorAll('.chip').forEach(btn => {
       btn.addEventListener('click', () => {
         activeCategory = btn.dataset.cat;
         renderChips();
         renderGrid();
+        // scroll chip active vào view (mobile horizontal scroll)
+        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       });
     });
   }
@@ -1593,19 +1924,27 @@ const RECIPES = [
   function renderGrid() {
     const grid = document.getElementById('recipeGrid');
     const filtered = RECIPES.filter(r => {
-      const matchCat = activeCategory === 'Tất cả' || r.category === activeCategory;
+      const matchCat = activeCategory === 'Tất cả'
+        || (activeCategory === FAV_CATEGORY && favorites.has(r.id))
+        || r.category === activeCategory;
       const matchSearch = !searchQuery || r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (r.subtitle && r.subtitle.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchCat && matchSearch;
     });
 
     if (filtered.length === 0) {
-      grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">Không tìm thấy món nào…</div>';
+      const msg = activeCategory === FAV_CATEGORY
+        ? 'Chưa có món nào được lưu — bấm trái tim ♡ trên món yêu thích để lưu lại'
+        : 'Không tìm thấy món nào…';
+      grid.innerHTML = `<div class="empty" style="grid-column: 1/-1;">${msg}</div>`;
       return;
     }
 
-    grid.innerHTML = filtered.map(r => `
-      <button class="recipe-card" data-id="${r.id}">
+    grid.innerHTML = filtered.map(r => {
+      const isFav = favorites.has(r.id);
+      return `
+      <div class="recipe-card" data-id="${r.id}" tabindex="0" role="button">
+        <button class="fav-btn ${isFav ? 'active' : ''}" data-fav-id="${r.id}" aria-label="${isFav ? 'Bỏ lưu' : 'Lưu món'}" title="${isFav ? 'Bỏ lưu' : 'Lưu món'}"></button>
         <div class="recipe-card-num">№ ${String(r.id).padStart(2, '0')}</div>
         <h3 class="recipe-card-title">${r.title}</h3>
         ${r.subtitle ? `<div class="recipe-card-sub">${r.subtitle}</div>` : ''}
@@ -1613,11 +1952,23 @@ const RECIPES = [
           <span><strong>${r.servings}</strong> người</span>
           <span>${r.category}</span>
         </div>
-      </button>
-    `).join('');
+      </div>`;
+    }).join('');
 
     grid.querySelectorAll('.recipe-card').forEach(card => {
-      card.addEventListener('click', () => openModal(parseInt(card.dataset.id)));
+      card.addEventListener('click', e => {
+        if (e.target.closest('.fav-btn')) return;
+        openModal(parseInt(card.dataset.id));
+      });
+      card.addEventListener('keydown', e => {
+        if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('.fav-btn')) {
+          e.preventDefault();
+          openModal(parseInt(card.dataset.id));
+        }
+      });
+    });
+    grid.querySelectorAll('.fav-btn').forEach(btn => {
+      btn.addEventListener('click', e => toggleFavorite(parseInt(btn.dataset.favId), e));
     });
   }
 
@@ -1626,6 +1977,7 @@ const RECIPES = [
     currentRecipe = RECIPES.find(r => r.id === id);
     if (!currentRecipe) return;
     currentServings = currentRecipe.servings;
+    currentTab = 'ingredients';
     renderModal();
     document.getElementById('modalBackdrop').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1641,15 +1993,96 @@ const RECIPES = [
     const next = currentServings + delta;
     if (next < 1 || next > 30) return;
     currentServings = next;
-    renderModal();
+    // chỉ re-render phần nguyên liệu để giữ scroll position
+    const ingredientsPanel = document.querySelector('.tab-panel[data-panel="ingredients"]');
+    if (ingredientsPanel) {
+      ingredientsPanel.innerHTML = renderIngredients(currentRecipe);
+    }
+    // cập nhật servings value + unit
+    const sv = document.querySelector('.servings-value');
+    const su = document.querySelector('.servings-unit');
+    if (sv) sv.textContent = currentServings;
+    if (su) su.textContent = currentServings !== currentRecipe.servings
+      ? `người (gốc: ${currentRecipe.servings})` : 'người';
+    // cập nhật disabled
+    document.querySelectorAll('.servings-btn').forEach((b, i) => {
+      b.disabled = (i === 0 && currentServings <= 1) || (i === 1 && currentServings >= 30);
+    });
+  }
+
+  function renderIngredients(r) {
+    const isScaled = currentServings !== r.servings;
+    if (r.note) {
+      return `<div class="recipe-note">${r.note}</div>` + r.groups.map(g => `
+        <div class="ingredient-group">
+          ${r.groups.length > 1 ? `<h3 class="ingredient-group-name">${g.name}</h3>` : ''}
+          <ul class="ingredient-list">
+            ${g.items.map(item => `
+              <li class="ingredient">
+                <span class="ingredient-name">
+                  ${item.name}
+                  ${item.note ? `<span class="ingredient-note">(${item.note})</span>` : ''}
+                </span>
+                <span class="ingredient-qty ${isScaled && item.qty !== null ? 'scaled' : ''}">
+                  ${formatQty(item.qty, item.unit, r.servings, currentServings)}
+                </span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `).join('');
+    }
+    return r.groups.map(g => `
+      <div class="ingredient-group">
+        ${r.groups.length > 1 ? `<h3 class="ingredient-group-name">${g.name}</h3>` : ''}
+        <ul class="ingredient-list">
+          ${g.items.map(item => `
+            <li class="ingredient">
+              <span class="ingredient-name">
+                ${item.name}
+                ${item.note ? `<span class="ingredient-note">(${item.note})</span>` : ''}
+              </span>
+              <span class="ingredient-qty ${isScaled && item.qty !== null ? 'scaled' : ''}">
+                ${formatQty(item.qty, item.unit, r.servings, currentServings)}
+              </span>
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+    `).join('');
+  }
+
+  function renderSteps(r) {
+    return r.steps.map((s, i) => `
+      <div class="step">
+        <div class="step-num">${String(i + 1).padStart(2, '0')}</div>
+        <div class="step-body">
+          <h4 class="step-title">
+            ${s.title}
+            ${s.time ? `<span class="step-time">${s.time}</span>` : ''}
+          </h4>
+          <p class="step-content">${s.content}</p>
+        </div>
+      </div>
+    `).join('');
   }
 
   function renderModal() {
     const r = currentRecipe;
     const isScaled = currentServings !== r.servings;
+    const isFav = favorites.has(r.id);
     const content = document.getElementById('modalContent');
 
     content.innerHTML = `
+      <div class="modal-sticky-bar">
+        <button class="icon-btn" onclick="closeModal()" aria-label="Đóng" title="Đóng">←</button>
+        <h3 class="modal-sticky-title">${r.title}</h3>
+        <div class="modal-actions">
+          <button class="icon-btn fav ${isFav ? 'active' : ''}" data-fav-id="${r.id}" onclick="toggleFavorite(${r.id}, event)" aria-label="${isFav ? 'Bỏ lưu' : 'Lưu món'}" title="${isFav ? 'Bỏ lưu' : 'Lưu món'}">${isFav ? '❤' : '♡'}</button>
+          <button class="icon-btn" onclick="printRecipe()" aria-label="In công thức" title="In công thức">⎙</button>
+        </div>
+      </div>
+
       <header class="recipe-header">
         <div class="recipe-num">№ ${String(r.id).padStart(2, '0')} · ${r.category}</div>
         <h2 class="recipe-title">${r.title}</h2>
@@ -1668,52 +2101,33 @@ const RECIPES = [
           <div class="servings-value">${currentServings}</div>
           <button class="servings-btn" onclick="adjustServings(1)" ${currentServings >= 30 ? 'disabled' : ''}>+</button>
         </div>
-        <span class="servings-unit">người ${isScaled ? `(gốc: ${r.servings})` : ''}</span>
+        <span class="servings-unit">${isScaled ? `người (gốc: ${r.servings})` : 'người'}</span>
+      </div>
+
+      <div class="modal-tabs">
+        <button class="tab-btn ${currentTab === 'ingredients' ? 'active' : ''}" data-tab="ingredients" onclick="switchTab('ingredients')">Nguyên liệu</button>
+        <button class="tab-btn ${currentTab === 'steps' ? 'active' : ''}" data-tab="steps" onclick="switchTab('steps')">Cách làm</button>
       </div>
 
       <div class="recipe-content">
-        ${r.note ? `<div class="recipe-note">${r.note}</div>` : ''}
-
-        <div class="section-title">Nguyên liệu</div>
-        ${r.groups.map(g => `
-          <div class="ingredient-group">
-            ${r.groups.length > 1 ? `<h3 class="ingredient-group-name">${g.name}</h3>` : ''}
-            <ul class="ingredient-list">
-              ${g.items.map(item => `
-                <li class="ingredient">
-                  <span class="ingredient-name">
-                    ${item.name}
-                    ${item.note ? `<span class="ingredient-note">(${item.note})</span>` : ''}
-                  </span>
-                  <span class="ingredient-qty ${isScaled && item.qty !== null ? 'scaled' : ''}">
-                    ${formatQty(item.qty, item.unit, r.servings, currentServings)}
-                  </span>
-                </li>
-              `).join('')}
-            </ul>
-          </div>
-        `).join('')}
-
-        <div class="steps-section">
-          <div class="section-title">Cách làm</div>
-          ${r.steps.map((s, i) => `
-            <div class="step">
-              <div class="step-num">${String(i + 1).padStart(2, '0')}</div>
-              <div class="step-body">
-                <h4 class="step-title">
-                  ${s.title}
-                  ${s.time ? `<span class="step-time">${s.time}</span>` : ''}
-                </h4>
-                <p class="step-content">${s.content}</p>
-              </div>
-            </div>
-          `).join('')}
+        <div class="tab-panel ${currentTab === 'ingredients' ? 'active' : ''}" data-panel="ingredients">
+          <h2 class="print-only-title">Nguyên liệu</h2>
+          ${renderIngredients(r)}
+        </div>
+        <div class="tab-panel ${currentTab === 'steps' ? 'active' : ''}" data-panel="steps">
+          <h2 class="print-only-title">Cách làm</h2>
+          ${renderSteps(r)}
         </div>
       </div>
     `;
 
-    // Scroll modal to top
-    document.getElementById('modalBackdrop').scrollTop = 0;
+    // Scroll modal to top + bind scroll listener for sticky title fade
+    const scrollEl = document.getElementById('modalContent');
+    scrollEl.scrollTop = 0;
+    scrollEl.classList.remove('scrolled');
+    scrollEl.onscroll = () => {
+      scrollEl.classList.toggle('scrolled', scrollEl.scrollTop > 80);
+    };
   }
 
   // ========== EVENT HANDLERS ==========
