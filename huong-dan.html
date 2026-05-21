@@ -163,6 +163,7 @@
     <li><a href="#navigation">Chuyển ngày và xem lịch sử</a></li>
     <li><a href="#items">Sửa danh sách hạng mục</a></li>
     <li><a href="#weather">Tự động lấy nhiệt độ</a></li>
+    <li><a href="#forecast">Dự báo thời tiết những ngày tới</a></li>
     <li><a href="#print-single">In hoặc lưu PDF từng ngày</a></li>
     <li><a href="#backup">Sao lưu / Khôi phục dữ liệu</a></li>
     <li><a href="#end">Kết thúc cuốn nhật ký (xuất Word + PDF)</a></li>
@@ -204,6 +205,7 @@
     <span class="btn">📂 Tải file</span> ·
     <span class="btn">📤 Xuất cuốn</span> (xuất JSON) ·
     <span class="btn">🌡️ Cập nhật nhiệt độ</span> ·
+    <span class="btn">🔮 Dự báo thời tiết</span> ·
     <span class="btn danger">🔄 Reset khối lượng</span>
   </td></tr>
 </table>
@@ -278,7 +280,30 @@
   Cần <strong>kết nối Internet</strong> và <strong>cho phép vị trí</strong> khi trình duyệt hỏi. Nếu mở bằng cách kéo file vào trình duyệt (<code>file://</code>), một số trình duyệt sẽ chặn — nên đặt file trên web host hoặc dùng localhost.
 </div>
 
-<h2 id="print-single">8. In hoặc lưu PDF từng ngày</h2>
+<h2 id="forecast">8. Dự báo thời tiết những ngày tới</h2>
+<p>Bấm <span class="btn">🔮 Dự báo thời tiết</span> để mở cửa sổ dự báo:</p>
+<ol>
+  <li>Nhập <strong>Số ngày</strong> muốn xem (mặc định <code>7</code>, tối đa <code>16</code>).</li>
+  <li>Bấm <span class="btn primary">Xem dự báo</span> (hoặc Enter trên ô số).</li>
+  <li>Phần mềm hiện bảng dự báo gồm:
+    <ul>
+      <li><strong>Ngày</strong> — thứ trong tuần + ngày tháng năm</li>
+      <li><strong>Thời tiết</strong> — biểu tượng + mô tả (Nắng, Mưa, Giông...)</li>
+      <li><strong>Nhiệt độ</strong> — min–max</li>
+      <li><strong>Mưa</strong> — lượng mưa (mm) và % khả năng</li>
+      <li><strong>Gió</strong> — tốc độ tối đa (km/h)</li>
+    </ul>
+  </li>
+  <li>Mỗi dòng có nút <span class="btn">Dùng cho ngày này</span> để áp dụng dự báo vào nhật ký ngày đó (cả Sáng và Chiều).</li>
+</ol>
+<div class="callout">
+  <strong>Tip:</strong> Hôm nay được tô màu xanh, Thứ 7 và Chủ nhật tô đỏ ở cột Ngày. Bấm phím <kbd>Esc</kbd> để đóng cửa sổ nhanh.
+</div>
+<div class="callout warn">
+  Open-Meteo cung cấp dữ liệu tối đa 16 ngày. Càng xa hôm nay thì độ chính xác càng giảm — tốt nhất xem 3-7 ngày tới.
+</div>
+
+<h2 id="print-single">9. In hoặc lưu PDF từng ngày</h2>
 <ol>
   <li>Mở ngày bạn muốn in.</li>
   <li>Bấm <span class="btn primary">🖨️ In / Lưu PDF</span>.</li>
@@ -293,7 +318,7 @@
   Thanh công cụ tự ẩn khi in — bản in chỉ có tờ A4 đúng định dạng.
 </div>
 
-<h2 id="backup">9. Sao lưu / Khôi phục dữ liệu</h2>
+<h2 id="backup">10. Sao lưu / Khôi phục dữ liệu</h2>
 <h3>Sao lưu</h3>
 <p>Bấm <span class="btn">📤 Xuất cuốn</span> để tải về file <code>nhat-ky-&lt;tên cuốn&gt;.json</code>. File này chứa <strong>toàn bộ ngày</strong> của cuốn hiện tại — gửi qua email, lưu USB, hoặc upload đám mây để dự phòng.</p>
 <h3>Khôi phục</h3>
@@ -307,7 +332,7 @@
   <strong>Khuyến nghị:</strong> Xuất file sao lưu mỗi tuần hoặc sau mỗi 5–10 ngày ghi.
 </div>
 
-<h2 id="end">10. Kết thúc cuốn nhật ký</h2>
+<h2 id="end">11. Kết thúc cuốn nhật ký</h2>
 <p>Khi công trình hoàn thành, bấm <span class="btn danger">🏁 Kết thúc</span>. Phần mềm sẽ:</p>
 <ol>
   <li>Hỏi xác nhận 2 lần.</li>
@@ -326,7 +351,7 @@
   Cần <strong>Internet</strong> lúc bấm Kết thúc vì cần tải thư viện tạo PDF. Nếu mất mạng, phần mềm sẽ báo lỗi và hỏi có muốn xóa cuốn không — chọn <strong>Cancel</strong> để giữ lại cuốn và thử lại sau.
 </div>
 
-<h2 id="tips">11. Mẹo và xử lý sự cố</h2>
+<h2 id="tips">12. Mẹo và xử lý sự cố</h2>
 
 <h3>Phần mềm không nhớ dữ liệu sau khi đóng trình duyệt?</h3>
 <ul>

@@ -18,7 +18,9 @@ diary/
 ## Dependencies (chỉ runtime, qua CDN)
 
 - **html2pdf.js v0.10.1** — gọi khi bấm "Kết thúc cuốn" để xuất PDF. Cần online lúc đó. Nếu offline, app báo lỗi và cho phép xóa thủ công.
-- **Open-Meteo API** (`api.open-meteo.com`) — tự động lấy nhiệt độ địa phương qua geolocation. Không cần API key.
+- **Open-Meteo API** (`api.open-meteo.com`) — tự động lấy nhiệt độ địa phương qua geolocation. Không cần API key. Dùng 2 endpoint:
+  - `hourly=temperature_2m,weather_code&forecast_days=1` → nhiệt độ sáng/chiều của hôm nay (`fetchLocalTemperature`)
+  - `daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum,precipitation_probability_max,wind_speed_10m_max&forecast_days=N` → dự báo N ngày tới (`loadForecast`, N do user nhập, default 7, max 16)
 
 ## Mô hình dữ liệu (localStorage key: `nktc_lavipco_v2`)
 
@@ -78,6 +80,14 @@ Khóa cũ `nktc_lavipco_v1` được auto-migrate sang v2 trong `migrateFromV1()
 - **Vietnamese diacritics** ở mọi nơi (filename sanitize, escape, search). Đừng strip.
 - **Geolocation/CDN** chỉ work qua HTTPS hoặc localhost — nếu test bằng `file://`, các tính năng đó sẽ fail. Đó là expected, không phải bug.
 
+## Modal dự báo thời tiết
+
+`#forecastModal` là overlay fixed full-viewport, ẩn mặc định (`display: none`), bật bằng class `.open`. Nút <span>🔮 Dự báo thời tiết</span> mở qua `openForecast()`. Đóng bằng nút ×, click overlay, hoặc phím <kbd>Esc</kbd>.
+
+- Số ngày: `<input type="number" id="forecastDays">` (1–16, default 7). Enter trên ô này = trigger `loadForecast()`.
+- Mỗi dòng dự báo có nút **"Dùng cho ngày này"** gọi `applyForecastToEntry(dateISO, tmin, tmax, code)` — `collectForm()` ngày hiện tại, switch sang ngày được chọn (tạo entry nếu chưa có), ghi nhiệt độ & mô tả thời tiết vào cả Sáng + Chiều, đóng modal.
+- `#forecastDays` cũng phải nằm trong allow-list bỏ qua của debounced auto-save (cùng `projectSelect`, `datePicker`, `importFile`).
+
 ## Test thủ công khi đổi code
 
 - [ ] Tạo cuốn mới với ngày bắt đầu khác hôm nay → ngày đầu = trang `startPage`
@@ -88,3 +98,5 @@ Khóa cũ `nktc_lavipco_v1` được auto-migrate sang v2 trong `migrateFromV1()
 - [ ] Mở file `.doc` trong Word/LibreOffice → định dạng bảng còn nguyên
 - [ ] Mở PDF → mỗi ngày 1 trang A4
 - [ ] In (Ctrl+P) → toolbar ẩn, form khớp A4
+- [ ] Bấm "🔮 Dự báo thời tiết" → modal mở, gõ số ngày → bảng dự báo hiện ra
+- [ ] Bấm "Dùng cho ngày này" trên 1 dòng dự báo → chuyển sang ngày đó, nhiệt độ + thời tiết được áp dụng
