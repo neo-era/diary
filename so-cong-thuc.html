@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sổ Công Thức · Nhà Văn Hóa Phụ Nữ TP.HCM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@400;500;600;700&family=Cormorant+Upright:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper: #f4ede1;
+    --paper-deep: #ebe0cd;
+    --ink: #1f1813;
+    --ink-soft: #4a3f33;
+    --ink-faded: #8a7a66;
+    --terracotta: #b14a2a;
+    --terracotta-deep: #8a3818;
+    --ochre: #c08a2e;
+    --leaf: #4a6a3a;
+    --rule: #d4c3a3;
+    --shadow: rgba(31, 24, 19, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(193, 138, 46, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(177, 74, 42, 0.03) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ====== HEADER / MASTHEAD ====== */
+  .masthead {
+    text-align: center;
+    padding: 60px 24px 40px;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+    background: linear-gradient(180deg, transparent, rgba(235, 224, 205, 0.3));
+  }
+
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: 12px; left: 50%;
+    transform: translateX(-50%);
+    width: 60px; height: 1px;
+    background: var(--terracotta);
+  }
+
+  .masthead-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+
+  .masthead-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+
+  .masthead-title em {
+    font-style: italic;
+    color: var(--terracotta-deep);
+  }
+
+  .masthead-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 19px;
+    color: var(--ink-soft);
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .masthead-meta {
+    margin-top: 24px;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .masthead-meta span {
+    display: inline-block;
+  }
+
+  .meta-dot {
+    width: 4px; height: 4px;
+    background: var(--ochre);
+    border-radius: 50%;
+  }
+
+  /* ====== CONTROLS BAR ====== */
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(244, 237, 225, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+    padding: 16px 24px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 10px 14px 10px 38px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    transition: all 0.2s;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--terracotta);
+    background: #fff;
+  }
+
+  .search-box::before {
+    content: '⌕';
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-faded);
+    font-size: 18px;
+  }
+
+  .filter-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .chip:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .chip.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  /* ====== MAIN CONTAINER ====== */
+  .container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ====== RECIPE GRID ====== */
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+    margin-bottom: 60px;
+  }
+
+  .recipe-card {
+    background: linear-gradient(180deg, #fbf6ec 0%, var(--paper-deep) 100%);
+    border: 1px solid var(--rule);
+    padding: 28px 24px 24px;
+    cursor: pointer;
+    transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+  }
+
+  .recipe-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(177, 74, 42, 0.04) 100%);
+    pointer-events: none;
+  }
+
+  .recipe-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px var(--shadow);
+    border-color: var(--terracotta);
+  }
+
+  .recipe-card-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: var(--terracotta);
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .recipe-card-num::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .recipe-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 26px;
+    line-height: 1.08;
+    color: var(--ink);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .recipe-card-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--ink-faded);
+    font-size: 15px;
+    margin-bottom: 18px;
+  }
+
+  .recipe-card-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding-top: 14px;
+    border-top: 1px dashed var(--rule);
+  }
+
+  .recipe-card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .recipe-card-meta strong {
+    color: var(--terracotta-deep);
+    font-weight: 600;
+  }
+
+  /* ====== EMPTY STATE ====== */
+  .empty {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--ink-faded);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 22px;
+  }
+
+  /* ====== MODAL / RECIPE DETAIL ====== */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 24, 19, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    overflow-y: auto;
+  }
+
+  .modal-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal {
+    max-width: 940px;
+    margin: 40px auto;
+    background: var(--paper);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
+    position: relative;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .modal-backdrop.open .modal {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    width: 40px; height: 40px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .recipe-header {
+    padding: 50px 60px 36px;
+    text-align: center;
+    border-bottom: 2px solid var(--ink);
+    position: relative;
+  }
+
+  .recipe-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--terracotta);
+    font-size: 14px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .recipe-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: clamp(36px, 6vw, 56px);
+    line-height: 1;
+    color: var(--ink);
+    margin-bottom: 8px;
+    letter-spacing: -0.015em;
+  }
+
+  .recipe-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink-faded);
+    margin-bottom: 22px;
+  }
+
+  .recipe-meta {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    flex-wrap: wrap;
+  }
+
+  .recipe-meta span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ====== SERVINGS CONTROL ====== */
+  .servings-control {
+    background: var(--paper-deep);
+    padding: 24px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .servings-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: var(--ink-soft);
+  }
+
+  .servings-control-buttons {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .servings-btn {
+    width: 38px; height: 38px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-size: 18px;
+    font-family: 'Cormorant Garamond', serif;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .servings-btn:hover:not(:disabled) {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .servings-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .servings-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 32px;
+    color: var(--terracotta-deep);
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .servings-unit {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 16px;
+  }
+
+  /* ====== RECIPE CONTENT ====== */
+  .recipe-content {
+    padding: 48px 60px 60px;
+  }
+
+  .recipe-note {
+    background: rgba(193, 138, 46, 0.08);
+    border-left: 3px solid var(--ochre);
+    padding: 14px 18px;
+    margin-bottom: 32px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 16px;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .section-title::before {
+    content: '§';
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    color: var(--ochre);
+    font-style: italic;
+  }
+
+  /* ====== INGREDIENT GROUPS ====== */
+  .ingredient-group {
+    margin-bottom: 32px;
+  }
+
+  .ingredient-group-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--ink);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+
+  .ingredient-list {
+    list-style: none;
+  }
+
+  .ingredient {
+    display: flex;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px dotted var(--rule);
+    gap: 12px;
+  }
+
+  .ingredient-name {
+    font-size: 15px;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .ingredient-dots {
+    flex: 0 0 auto;
+    color: var(--ink-faded);
+    overflow: hidden;
+    white-space: nowrap;
+    letter-spacing: 4px;
+    font-size: 10px;
+    align-self: end;
+    margin-bottom: 4px;
+    max-width: 80px;
+  }
+
+  .ingredient-qty {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--terracotta-deep);
+    text-align: right;
+    min-width: 100px;
+  }
+
+  .ingredient-qty.scaled {
+    color: var(--terracotta);
+    font-style: italic;
+  }
+
+  .ingredient-note {
+    font-size: 12px;
+    color: var(--ink-faded);
+    font-style: italic;
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* ====== STEPS ====== */
+  .steps-section {
+    margin-top: 48px;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .step:last-child {
+    border-bottom: none;
+  }
+
+  .step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 42px;
+    font-weight: 500;
+    color: var(--ochre);
+    line-height: 1;
+    text-align: center;
+  }
+
+  .step-body {
+    padding-top: 4px;
+  }
+
+  .step-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--ink);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .step-time {
+    font-family: 'DM Sans', sans-serif;
+    font-style: normal;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--leaf);
+    background: rgba(74, 106, 58, 0.1);
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-weight: 600;
+  }
+
+  .step-content {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+
+  /* ====== FOOTER ====== */
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-faded);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+  }
+
+  /* ====== ANIMATIONS ====== */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .recipe-card {
+    animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+
+  .recipe-card:nth-child(1) { animation-delay: 0.05s; }
+  .recipe-card:nth-child(2) { animation-delay: 0.10s; }
+  .recipe-card:nth-child(3) { animation-delay: 0.15s; }
+  .recipe-card:nth-child(4) { animation-delay: 0.20s; }
+  .recipe-card:nth-child(5) { animation-delay: 0.25s; }
+  .recipe-card:nth-child(6) { animation-delay: 0.30s; }
+  .recipe-card:nth-child(7) { animation-delay: 0.35s; }
+  .recipe-card:nth-child(8) { animation-delay: 0.40s; }
+  .recipe-card:nth-child(n+9) { animation-delay: 0.45s; }
+
+  /* ====== RESPONSIVE ====== */
+  @media (max-width: 768px) {
+    .masthead { padding: 40px 20px 30px; }
+    .container { padding: 32px 16px 60px; }
+    .recipe-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .modal {
+      margin: 0;
+      min-height: 100vh;
+    }
+    .recipe-header,
+    .servings-control,
+    .recipe-content {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .recipe-header { padding-top: 60px; padding-bottom: 24px; }
+    .recipe-content { padding-top: 32px; }
+    .step {
+      grid-template-columns: 40px 1fr;
+      gap: 16px;
+    }
+    .step-num { font-size: 32px; }
+    .ingredient {
+      flex-wrap: wrap;
+    }
+    .ingredient-qty {
+      min-width: 80px;
+      font-size: 15px;
+    }
+    .recipe-meta { gap: 16px; }
+    .controls { padding: 12px 16px; gap: 8px; }
+    .filter-chips { gap: 4px; }
+    .chip { padding: 6px 10px; font-size: 11px; }
+  }
+
+  /* Print */
+  @media print {
+    .controls, .masthead, .footer, .modal-close, .servings-control { display: none; }
+    .modal-backdrop { position: static; background: white; }
+    .modal { box-shadow: none; margin: 0; }
+    .recipe-card { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ MASTHEAD ============ -->
+<header class="masthead">
+  <div class="masthead-eyebrow">Nhà Văn Hóa Phụ Nữ TP.HCM</div>
+  <h1 class="masthead-title">Sổ <em>Công Thức</em></h1>
+  <p class="masthead-sub">Tổng hợp các món ăn được chép tay và in trên lớp — món bún, hủ tiếu, xôi, kho, nướng, xào, canh.</p>
+  <div class="masthead-meta">
+    <span>19 món</span>
+    <span class="meta-dot"></span>
+    <span>Đơn vị gốc</span>
+    <span class="meta-dot"></span>
+    <span>Khẩu phần tùy chỉnh</span>
+  </div>
+</header>
+
+<!-- ============ CONTROLS ============ -->
+<div class="controls">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Tìm món...">
+  </div>
+  <div class="filter-chips" id="filterChips"></div>
+</div>
+
+<!-- ============ MAIN ============ -->
+<main class="container">
+  <div class="recipe-grid" id="recipeGrid"></div>
+</main>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <article class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modalContent"></div>
+  </article>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  Lưu lại để nấu — không thay thế được kinh nghiệm của thầy cô
+</footer>
+
+<script>
+// Dữ liệu 19 công thức nấu ăn - Nhà Văn Hóa Phụ Nữ TP.HCM
+// Schema: {id, title, subtitle, category, servings, source, ingredients[group], steps, notes}
+
+const RECIPES = [
+  {
+    id: 1,
+    title: "Mì Hoành Thánh - Sủi Cảo",
+    subtitle: "bản lớp học",
+    category: "Mì - Hủ tiếu",
+    servings: 4,
+    source: "Chép trên bảng",
+    groups: [
+      {
+        name: "Nước dùng",
+        items: [
+          { name: "Nước", qty: 5, unit: "lít" },
+          { name: "Xương heo", qty: 1, unit: "kg" },
+          { name: "Củ cải trắng", qty: 0.5, unit: "kg" },
+          { name: "Muối", qty: 1, unit: "ms" },
+          { name: "Khô cá dảnh", qty: 30, unit: "gr" },
+          { name: "Khô mực nướng", qty: 50, unit: "gr" },
+          { name: "Bồ ho (thảo mộc)", qty: 0.2, unit: "kg" },
+          { name: "Hành tây", qty: 0.1, unit: "kg" },
+          { name: "Rễ ngò", qty: 50, unit: "gr" },
+        ]
+      },
+      {
+        name: "Nhân hoành thánh / sủi cảo",
+        items: [
+          { name: "Nạc dăm xay", qty: 0.3, unit: "kg" },
+          { name: "Tôm thẻ băm nhuyễn", qty: 0.3, unit: "kg" },
+          { name: "Bột năng", qty: 1, unit: "ms" },
+          { name: "Knor, bột ngọt, tiêu, đường", qty: 1, unit: "mc", note: "mỗi loại" },
+          { name: "Dầu mè", qty: 1, unit: "ms" },
+          { name: "Hành lá + hành tỏi xay", qty: 1, unit: "ms" },
+          { name: "Lá hoành thánh", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Hầm nước dùng", time: "~2 giờ", content: "Cho nước cùng xương heo vào nồi, đun sôi rồi hạ lửa hầm. Thêm củ cải trắng để nước ngọt thanh." },
+      { title: "Nêm nước dùng lần 1", time: "~30 phút", content: "Thêm muối vào nồi. Cho khô cá dảnh và khô mực nướng (đã nướng sơ) vào để tăng vị umami." },
+      { title: "Thêm thảo mộc", time: "~30 phút", content: "Cho bồ ho, hành tây và rễ ngò vào nồi. Tiếp tục hầm để nước dùng dậy mùi thơm." },
+      { title: "Lược nước dùng & nêm gia vị", content: "Lược bỏ xương và xác thảo mộc, giữ lại phần nước dùng trong. Nêm lại gia vị cho vừa miệng." },
+      { title: "Trộn nhân", content: "Cho nạc dăm xay và tôm thẻ băm nhuyễn vào tô. Thêm bột năng để nhân kết dính." },
+      { title: "Nêm nhân", content: "Cho knor, bột ngọt, tiêu, đường, dầu mè và hành lá + hành tỏi xay vào hỗn hợp thịt. Trộn đều theo một chiều cho nhân dai và quyện vị." },
+      { title: "Gói hoành thánh", content: "Dùng lá hoành thánh đặt phẳng, múc một muỗng nhân vào giữa, gói lại theo hình hoành thánh truyền thống." },
+      { title: "Hoàn thiện", content: "Luộc hoành thánh/sủi cảo trong nước sôi cho đến khi nổi lên. Vớt ra tô, chan nước dùng nóng, ăn kèm rau sống và gia vị tùy thích." }
+    ]
+  },
+  {
+    id: 2,
+    title: "Xôi Gà Hấp Lá Sen",
+    subtitle: "bản lớp học",
+    category: "Xôi - Cơm",
+    servings: 4,
+    source: "Chép trên bảng",
+    groups: [
+      {
+        name: "Gà ướp",
+        items: [
+          { name: "Gà (đã làm sạch)", qty: 1, unit: "con" },
+          { name: "Knor + bột ngọt + tiêu", qty: 1, unit: "ms" },
+          { name: "Dầu ăn", qty: 1, unit: "vá", note: "5 ms" },
+          { name: "Nước hành tỏi", qty: 1, unit: "vá", note: "5 ms" },
+          { name: "Bột ngũ vị hương", qty: 0.5, unit: "mcf" },
+          { name: "Bột paprika", qty: 2, unit: "mcf" },
+          { name: "Muối", qty: 0.5, unit: "mcf" },
+        ]
+      },
+      {
+        name: "Nếp",
+        items: [
+          { name: "Nếp (vo sạch để ráo)", qty: 0.5, unit: "kg" },
+          { name: "Muối", qty: 0.5, unit: "mcf" },
+          { name: "Nước cốt dừa", qty: 1, unit: "chén" },
+        ]
+      },
+      {
+        name: "Nhân xào",
+        items: [
+          { name: "Dầu ăn", qty: 1, unit: "vá" },
+          { name: "Tỏi băm", qty: null, unit: "vừa đủ" },
+          { name: "Hành tím băm", qty: null, unit: "vừa đủ" },
+          { name: "Hành tây", qty: null, unit: "vừa đủ" },
+          { name: "Lạp xưởng (cắt hạt lựu)", qty: null, unit: "vừa đủ" },
+          { name: "Nấm đông cô (cắt hạt lựu)", qty: null, unit: "vừa đủ" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+          { name: "Dầu mè", qty: 2, unit: "ms" },
+          { name: "Knor + tiêu + đường", qty: 1, unit: "ms" },
+          { name: "Lá sen", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Ướp gà", time: "~30 phút", content: "Trộn gà với knor, bột ngọt, tiêu, dầu ăn, nước hành tỏi, bột ngũ vị hương, paprika và muối. Để thấm 30 phút." },
+      { title: "Hấp nếp", time: "~30 phút", content: "Vớt nếp đã vo sạch ra cho ráo. Thêm muối và nước cốt dừa để nếp dẻo thơm. Hấp đều, mở nắp đảo vài lần cho đến khi chín." },
+      { title: "Xào nhân", time: "~5 phút", content: "Phi thơm dầu ăn với tỏi và hành tím băm. Cho hành tây, lạp xưởng, nấm đông cô vào xào nhanh." },
+      { title: "Trộn nhân vào xôi", time: "~3 phút", content: "Nêm dầu hào, dầu mè, knor, tiêu, đường vào chảo nhân. Trộn đều rồi cho nhân vào xôi, đảo đều tay." },
+      { title: "Gói lá sen", content: "Trải lá sen ra, cho xôi và gà đã ướp vào giữa, gói chặt lại." },
+      { title: "Hấp lần 1", time: "~30 phút", content: "Đem gói xôi-gà đi hấp sơ cho lá sen thấm mùi và gà bắt đầu chín." },
+      { title: "Nướng hoàn thiện", time: "~35 phút", content: "100°C/5 phút → 100°C/20 phút → 100°C/5-10 phút. Lưu ý: giai đoạn cuối thường cần lên 180-200°C để da giòn." }
+    ]
+  },
+  {
+    id: 3,
+    title: "Cá Lóc Kho Tiêu",
+    category: "Món mặn",
+    servings: 4,
+    source: "Tay viết",
+    groups: [
+      {
+        name: "Cá ướp",
+        items: [
+          { name: "Cá lóc (khoanh ~0,15 kg/khúc, rửa nước chanh hoặc giấm loãng, rửa lại nước muối)", qty: null, unit: "vừa đủ" },
+          { name: "Nước màu", qty: 3, unit: "ms" },
+          { name: "Đường, knor, bột ngọt, tiêu", qty: 1, unit: "ms" },
+          { name: "Gói ướp cá thịt", qty: 1, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Hành tím xay", qty: 1, unit: "ms" },
+          { name: "Mỡ heo (cắt hạt lựu, thắng lấy nước, tép để xương)", qty: 0.1, unit: "kg" },
+          { name: "Tiêu hột đen (rang thơm giã bể)", qty: 1, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế cá", content: "Cắt cá lóc khoanh ~0,15 kg/khúc, rửa sạch qua nước chanh hoặc giấm loãng để khử tanh, rửa lại với nước muối." },
+      { title: "Ướp cá", time: "~30 phút", content: "Trộn cá với nước màu, đường, knor, bột ngọt, tiêu, gói ướp cá thịt, tỏi xay, hành tím xay. Để thấm 30 phút." },
+      { title: "Kho cá", content: "Mỡ nước phi thơm với (tỏi + hành tím) 1 ms + đường 2 ms → thắng vàng + cá ướp gia vị. Thêm nước 1-2 vá, nhỏ lửa, cạn nước. Chỉnh nêm lại gia vị (tùy đầu miếng cá dày hay mỏng)." },
+      { title: "Hoàn thiện", content: "Rắc tiêu hột đen rang thơm giã bể lên, ăn nóng với cơm trắng." }
+    ]
+  },
+  {
+    id: 4,
+    title: "Canh Bí Đỏ Hầm Xương",
+    category: "Canh - Súp",
+    servings: 4,
+    source: "Tay viết",
+    note: "Tỉ lệ chuẩn: 1 kg xương gà = 3 lít nước",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Bí đỏ (gọt vỏ, cắt vừa ăn)", qty: 1, unit: "kg" },
+          { name: "Ngò gai, rau om (cắt nhuyễn)", qty: 0.1, unit: "kg" },
+          { name: "Xương heo (rửa nước muối)", qty: 0.5, unit: "kg" },
+          { name: "Muối (trụng xương)", qty: 1, unit: "mcf" },
+          { name: "Boro", qty: 0.1, unit: "kg" },
+          { name: "Hành tây", qty: 0.1, unit: "kg" },
+          { name: "Củ cải trắng (xu hào, củ sắn cũng được)", qty: 0.3, unit: "kg" },
+          { name: "Ngò rí (rễ ngò rửa sạch)", qty: 50, unit: "gr" },
+          { name: "Nước", qty: 3, unit: "lít" },
+          { name: "Knor / bột ngọt / tiêu / muối / rau mùi", qty: null, unit: "nêm vừa ăn" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế", content: "Bí đỏ gọt vỏ cắt vừa ăn. Cắt khúc hành tây, củ cải trắng, boro. Xương heo rửa nước muối, trụng nước sôi có muối." },
+      { title: "Nấu nước dùng", time: "~2 giờ", content: "3 lít nước + muối 1 mcf + boro + rễ ngò + hành tây + củ cải trắng + xương heo. Nấu sôi nhỏ lửa 2 giờ, lược lấy nước → lấy xương ra nấu tiếp." },
+      { title: "Hoàn thiện", time: "~15 phút", content: "Cho nước dùng + xương + bí đỏ vào nồi, nhỏ lửa 15 phút cho bí mềm." },
+      { title: "Nêm nếm", content: "Nêm lại gia vị: knor, bột ngọt, tiêu, rau mùi (ngò gai + rau om). Múc ra tô, ăn nóng." }
+    ]
+  },
+  {
+    id: 5,
+    title: "Gà Nướng Sốt Tiêu Đen",
+    subtitle: "gói giấy bạc",
+    category: "Món nướng",
+    servings: 4,
+    source: "Tay viết",
+    groups: [
+      {
+        name: "Nước luộc gà",
+        items: [
+          { name: "Hành tây (cắt khúc)", qty: 0.1, unit: "kg" },
+          { name: "Lá thơm", qty: 2.5, unit: "lá", note: "2-3 lá" },
+          { name: "Boro (cắt khúc)", qty: 0.1, unit: "kg" },
+          { name: "Muối", qty: 1, unit: "ms" },
+          { name: "Nước", qty: 2.25, unit: "lít", note: "2-2,5 lít" },
+        ]
+      },
+      {
+        name: "Sốt BBQ ướp",
+        items: [
+          { name: "BBQ sốt", qty: 3, unit: "mc" },
+          { name: "Tương cà", qty: 2, unit: "vá", note: "5 ms" },
+          { name: "Tương ớt", qty: 2, unit: "vá", note: "5 ms" },
+          { name: "Sốt tiêu đen", qty: 1, unit: "ms" },
+          { name: "Oregano", qty: 1, unit: "mcf" },
+          { name: "Thyme", qty: 1, unit: "mcf" },
+          { name: "Lá thơm", qty: 2.5, unit: "lá", note: "2-3 lá" },
+          { name: "Dầu hào", qty: 1.5, unit: "ms", note: "1-2 ms" },
+          { name: "Tiêu hột đen (rang thơm giã bể)", qty: 1, unit: "ms" },
+          { name: "Dầu", qty: 2, unit: "vá", note: "5 ms" },
+          { name: "Hành tây xay", qty: 1, unit: "củ" },
+          { name: "Knor gà", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 2.5, unit: "ms", note: "2-3 ms" },
+          { name: "Tiêu", qty: 1, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Luộc gà", time: "~15-20 phút", content: "Đun sôi nước với hành tây, lá thơm, boro, muối. Nấu sôi 5 phút rồi cho gà vào luộc 15-20 phút. Gà nhỏ 10-15 phút, gà lớn 20 phút." },
+      { title: "Phi thơm", content: "Dầu 2 vá + hành tây xay 1 củ + lá thơm + oregano + thyme + tương cà + tương ớt + BBQ sốt + sốt tiêu đen + nước 3 vá. Nấu sôi nhỏ lửa 5-10 phút + gia vị (knor gà 1 ms)." },
+      { title: "Hoàn thiện sốt", content: "Thêm đường (2-3 ms) + tiêu (1 ms) + dầu hào + tiêu hột đen. Nêm vừa ăn, kết hợp với gà luộc ướp khoảng 30 phút." },
+      { title: "Nướng", time: "~30 phút", content: "Gói gà với sốt trong giấy bạc. Nướng 150°C/5 phút → mở giấy → 180°C/10-15 phút cho cháy cạnh." }
+    ]
+  },
+  {
+    id: 6,
+    title: "Bánh Canh Cua - Giò Heo",
+    category: "Mì - Hủ tiếu",
+    servings: 4,
+    source: "Tay viết",
+    groups: [
+      {
+        name: "Bột bánh canh",
+        items: [
+          { name: "Bột gạo", qty: 0.2, unit: "kg" },
+          { name: "Bột năng", qty: 0.2, unit: "kg" },
+          { name: "Nước", qty: 250, unit: "gr" },
+          { name: "Muối", qty: 0.33, unit: "mcf" },
+          { name: "Dầu thơm (cho vào nước)", qty: 1, unit: "vá" },
+        ]
+      },
+      {
+        name: "Nước dùng",
+        items: [
+          { name: "Nước", qty: 5, unit: "lít" },
+          { name: "Xương heo", qty: 1, unit: "kg" },
+          { name: "Củ cải trắng", qty: 0.3, unit: "kg" },
+          { name: "Hành tây", qty: 0.1, unit: "kg" },
+          { name: "Boro", qty: 0.1, unit: "kg" },
+          { name: "Rễ ngò", qty: 50, unit: "gr" },
+          { name: "Muối", qty: 1, unit: "ms" },
+          { name: "Khô mực nướng", qty: 50, unit: "gr" },
+          { name: "Đường phèn", qty: 120, unit: "gr" },
+          { name: "Knor gà", qty: 50, unit: "gr" },
+          { name: "Bột ngọt", qty: 50, unit: "gr" },
+          { name: "Nước mắm", qty: 100, unit: "gr" },
+          { name: "Tiêu", qty: 1, unit: "ms" },
+          { name: "Màu cam", qty: 3, unit: "mcf", note: "+ nước 25 gr" },
+        ]
+      },
+      {
+        name: "Nguyên liệu chính",
+        items: [
+          { name: "Giò heo (rửa sạch, trụng nước sôi có muối, hầm mềm 40 phút, vớt ra ngâm nước lạnh)", qty: 0.5, unit: "kg" },
+          { name: "Thịt cua (gỡ bỏ xương)", qty: 0.2, unit: "kg" },
+          { name: "Càng cua thịt (ướp gia vị thấm 15-30 phút)", qty: 0.1, unit: "kg" },
+          { name: "Huyết heo (trụng nước sôi 10 phút, ngâm nước lạnh)", qty: 0.3, unit: "kg" },
+          { name: "Nấm rơm (gọt chân, ngâm nước muối)", qty: 0.2, unit: "kg" },
+          { name: "Cà rốt (gọt vỏ, tỉa hoa, luộc chín, cắt lát dày)", qty: 0.3, unit: "kg" },
+          { name: "Bột bắp / năng (làm sệt)", qty: null, unit: "vừa đủ" },
+        ]
+      },
+      {
+        name: "Nước sốt tắc",
+        items: [
+          { name: "Nước cốt tắc", qty: 2, unit: "vá" },
+          { name: "Nước mắm", qty: 2, unit: "vá" },
+          { name: "Đường", qty: 1, unit: "vá" },
+          { name: "Tỏi xay, ớt xay", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Làm bột bánh canh", content: "Trộn bột gạo + bột năng + nước + muối + dầu thơm. Dồn bột cắt mỏng cắt sợi → luộc sôi đầu → cho vào nước lạnh." },
+      { title: "Nấu nước dùng", time: "~2 giờ", content: "4-5 lít nước + xương heo + củ cải trắng + hành tây + boro + rễ ngò + muối 1 ms + khô mực nướng. Nấu sôi nhỏ lửa 2 giờ, lấy nước dùng." },
+      { title: "Thêm huyết & nấm", content: "Nước dùng + huyết heo + nấm rơm + màu cam (½ mcf pha 2 mcf nước) + đường phèn 120 gr + nước mắm 100 gr + knor 50 gr + bột ngọt 50 gr + thịt cua + bột bắp/năng + dầu thơm." },
+      { title: "Pha nước sốt tắc", content: "Trộn nước cốt tắc 2 vá + nước mắm 2 vá + đường 1 vá, quậy tan. Thêm tỏi xay và ớt xay." },
+      { title: "Hoàn thiện", content: "Cho bánh canh vào tô, thêm giò heo, càng cua, huyết, nấm, cà rốt. Chan nước dùng nóng. Ăn kèm nước sốt tắc." }
+    ]
+  },
+  {
+    id: 7,
+    title: "Heo Quay Kho Cải Chua",
+    category: "Món mặn",
+    servings: 4,
+    source: "Tay viết",
+    groups: [
+      {
+        name: "Nguyên liệu chính",
+        items: [
+          { name: "Heo quay (cắt khúc)", qty: 0.5, unit: "kg" },
+          { name: "Cải chua (cắt khúc)", qty: 0.6, unit: "kg" },
+          { name: "Tiêu hột đen (rang thơm giã bể)", qty: 1, unit: "ms" },
+          { name: "Mỡ heo (cắt hạt lựu, thắng lấy nước)", qty: 0.1, unit: "kg" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Hành tím xay", qty: 1, unit: "ms" },
+          { name: "Nước dừa (1 trái ~ 0,5 lít)", qty: 1, unit: "trái" },
+          { name: "Nước thêm hoặc nước dừa", qty: 1, unit: "lít" },
+        ]
+      },
+      {
+        name: "Ướp heo (~30 phút)",
+        items: [
+          { name: "Nước tương đậm đặc", qty: 1, unit: "vá" },
+          { name: "Tiêu, knor, bột ngọt, đg", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Gia vị kho",
+        items: [
+          { name: "Mỡ", qty: 1, unit: "vá" },
+          { name: "Hành tím + tỏi", qty: 1, unit: "ms" },
+          { name: "Gia vị (dầu hào, knor, bột ngọt, tiêu, đg)", qty: 0.5, unit: "ms" },
+          { name: "Thêm dầu hào", qty: 1, unit: "ms" },
+          { name: "Knor, bột ngọt thêm", qty: 0.5, unit: "ms" },
+          { name: "Hành lá, ớt", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Ướp heo", time: "~30 phút", content: "Trộn heo quay với nước tương đậm đặc 1 vá + tiêu, knor, bột ngọt, đường 1 ms." },
+      { title: "Phi thơm", content: "Mỡ 1 vá + (hành tím + tỏi) 1 ms, phi thơm vàng." },
+      { title: "Kho", content: "Nước dừa + cải chua + gia vị (dầu hào, knor, bột ngọt, tiêu, đg) ½ ms → xôi nhỏ lửa 15-20 phút + heo quay cạn bớt nước. Chỉnh gia vị (thêm dầu hào 1 ms, knor + bột ngọt ½ ms)." },
+      { title: "Hoàn thiện", content: "Tắt bếp, rắc hành lá + ớt + tiêu hột đen rang giã bể lên trên." }
+    ]
+  },
+  {
+    id: 8,
+    title: "Cà Tím Tay Cầm",
+    category: "Món mặn",
+    servings: 4,
+    source: "Tay viết",
+    note: "Có thể thay thịt heo bằng hải sản (nghêu, tôm, cá chiên/lóc) hoặc thịt băm, khô cá rúc xay nhuyễn",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Thịt heo xay", qty: 0.2, unit: "kg" },
+          { name: "Cà tím (cắt khúc chia 4, ngâm nước muối loãng → vớt ráo → chiên vàng)", qty: 1, unit: "kg" },
+          { name: "Hành tây (cắt vuông)", qty: 0.2, unit: "kg" },
+          { name: "Ớt Đà Lạt (cắt vuông)", qty: 0.3, unit: "kg" },
+          { name: "Hành lá (đầu hành lá cắt khúc)", qty: 50, unit: "gr" },
+          { name: "Ớt sừng đỏ (bỏ hạt, cắt xéo)", qty: 0.1, unit: "kg" },
+          { name: "Củ cải muối (rửa sạch, cắt lát mỏng xéo, luộc 15 phút, rửa sạch)", qty: 0.1, unit: "kg" },
+          { name: "Gừng (cắt lát dày)", qty: 50, unit: "gr" },
+          { name: "Mỡ / dầu ăn", qty: 1, unit: "vá" },
+          { name: "Tỏi + hành tím băm", qty: 1, unit: "ms" },
+          { name: "Gia vị: dầu hào, knor, bột ngọt, tiêu, đg", qty: 1, unit: "ms" },
+          { name: "Nước", qty: 1.5, unit: "vá", note: "1-2 vá" },
+          { name: "Bột năng / bột bắp (làm sệt)", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế cà tím", content: "Cắt cà tím khúc chia làm 4, ngâm nước muối loãng cho hết nhựa → vớt ráo → chiên vàng." },
+      { title: "Phi thơm", content: "Mỡ/dầu 1 vá + gừng + (tỏi + hành tím) 1 ms + thịt heo xay + gia vị (dầu hào, knor, bột ngọt, tiêu, đường) 1 ms." },
+      { title: "Nấu", time: "~5 phút", content: "Cho nước 1-2 vá + bột năng/bắp + củ cải muối → nấu 5 phút + rau củ xù (hành tây, ớt Đà Lạt, ớt sừng đỏ) + cà tím." },
+      { title: "Hoàn thiện", content: "Đảo đều, nêm lại nếu cần. Múc ra tay cầm (nồi đất nhỏ), ăn nóng với cơm." }
+    ]
+  },
+  {
+    id: 9,
+    title: "Sườn Nướng Cay",
+    category: "Món nướng",
+    servings: 4,
+    source: "Tay viết",
+    groups: [
+      {
+        name: "Sườn ướp",
+        items: [
+          { name: "Sườn cọng / non (rửa qua nước muối loãng, rửa sạch, để ráo, ướp gia vị, để thấm 30 phút)", qty: 0.5, unit: "kg" },
+          { name: "Sữa đặc", qty: 100, unit: "gr" },
+          { name: "Bột ngũ vị hương", qty: 0.5, unit: "mcf" },
+          { name: "Sữa tươi", qty: 50, unit: "gr" },
+          { name: "Tương cà", qty: 1, unit: "ms" },
+          { name: "Tương ớt", qty: 1, unit: "ms" },
+          { name: "Nước mắm, dầu hào, knor, bột ngọt, tiêu, đg", qty: 1, unit: "ms" },
+          { name: "Rượu mai quế lộ", qty: 1, unit: "ms" },
+          { name: "Ớt xay", qty: 1.5, unit: "ms", note: "1-2 ms" },
+          { name: "Dầu", qty: 2, unit: "vá" },
+          { name: "Sả xay (xào thơm)", qty: 2, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế sườn", content: "Sườn cọng/non rửa qua nước muối loãng, rửa sạch, để ráo." },
+      { title: "Ướp sườn", time: "~30 phút", content: "Trộn đều toàn bộ gia vị ướp. Quậy đều, nêm gia vị cho vừa ăn → đem nướng." },
+      { title: "Nướng", content: "100°C/5 phút (làm nóng lò) → 100°C/15-20 phút. Lưu ý: có thể cần lên cao hơn 180-200°C giai đoạn cuối để có độ cháy cạnh đẹp." }
+    ]
+  },
+  {
+    id: 10,
+    title: "Su Hào Xào Thịt Bò",
+    category: "Món xào",
+    servings: 4,
+    source: "Tay viết",
+    note: "Bí xanh có thể thay được su hào",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Thịt bò mềm (thái mỏng ngược sớ, ướp gia vị thấm 15-30 phút)", qty: 0.3, unit: "kg" },
+          { name: "Su hào (cắt sợi)", qty: 0.5, unit: "kg" },
+          { name: "Cà rốt (cắt sợi)", qty: 0.3, unit: "kg" },
+          { name: "Ớt sừng (bỏ hạt, cắt sợi)", qty: 50, unit: "gr" },
+          { name: "Tỏi xay", qty: 50, unit: "gr" },
+          { name: "Hành tím xay", qty: 50, unit: "gr" },
+          { name: "Hành lá (cắt khúc)", qty: 50, unit: "gr" },
+          { name: "Hành tây", qty: null, unit: "vừa đủ" },
+          { name: "Dầu", qty: 1, unit: "vá" },
+          { name: "Gia vị ướp thịt bò: dầu hào, dầu mè, knor, bột ngọt, tiêu, đg", qty: 0.5, unit: "mcf" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Ướp thịt bò", time: "~15-30 phút", content: "Thịt bò thái mỏng ngược sớ, ướp gia vị (dầu hào, dầu mè, knor, bột ngọt, tiêu, đg) ½ mcf. Để thấm 15-30 phút." },
+      { title: "Xào su hào", content: "Dầu 1 vá + (tỏi + hành tím) 1 ms + thịt bò + su hào + cà rốt + gia vị (dầu hào, knor, bột ngọt, tiêu, đường)." },
+      { title: "Hoàn thiện", content: "Cho hành tây + hành lá + ớt sừng vào đảo nhanh, tắt bếp. Múc ra dĩa." }
+    ]
+  },
+  {
+    id: 11,
+    title: "Gà Xào Chao",
+    category: "Món xào",
+    servings: 4,
+    source: "Tay viết",
+    note: "Cắt khoảng đầu ngón cái, vừa ăn",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Đùi gà tỏi / phi lê gà (rửa sạch, chặt vừa ăn, ướp gia vị)", qty: 1, unit: "kg" },
+          { name: "Knor, bột ngọt, tiêu, đg", qty: 1, unit: "mcf" },
+          { name: "Dầu điều", qty: 2.5, unit: "ms", note: "2-3 ms" },
+          { name: "Ớt Đà Lạt 3 màu (cắt vuông, cắt bỏ phần thịt trắng bên trong)", qty: 0.3, unit: "kg" },
+          { name: "Hành tây (cắt vuông)", qty: 0.1, unit: "kg" },
+          { name: "Cà chua bi (cắt đôi)", qty: 0.1, unit: "kg" },
+          { name: "Ớt sừng đỏ (bỏ hạt, cắt xéo)", qty: 0.1, unit: "kg" },
+          { name: "Đậu Hà Lan", qty: 0.1, unit: "kg" },
+          { name: "Chao đỏ (4 viên + tán nhuyễn, kề lấy nước)", qty: 4, unit: "viên" },
+          { name: "Mỡ heo (cắt hạt lựu)", qty: 0.1, unit: "kg" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Ướp gà", time: "~30 phút", content: "Gà cắt vừa ăn, ướp với knor, bột ngọt, tiêu, đg 1 mcf + dầu điều 2-3 ms. Để thấm 30 phút → xù dầu." },
+      { title: "Phi thơm", content: "Mỡ heo nóng + (tỏi + hành tím) 1 ms." },
+      { title: "Nấu sốt chao", content: "Cho ớt xay + chao đỏ + nước 2 vá + gia vị (đường, knor, bột ngọt, tiêu)." },
+      { title: "Hoàn thiện", content: "Cho nước chao + gà + rau củ (đậu phộng đã xù) → cà chua bi. Xào đều, múc ra dĩa." }
+    ]
+  },
+  {
+    id: 12,
+    title: "Canh Đuôi Heo Hầm Đậu Đen",
+    category: "Canh - Súp",
+    servings: 5,
+    source: "Tay viết",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Đậu đen (ngâm nước 2-3 giờ → luộc chín)", qty: 0.2, unit: "kg" },
+          { name: "Sườn heo (rửa sạch, chặt khúc)", qty: 0.5, unit: "kg" },
+          { name: "Xương đuôi (rửa sạch, hầm mềm)", qty: 0.5, unit: "kg" },
+          { name: "Củ sen (gọt vỏ, cắt khúc ngâm nước pha giấm loãng)", qty: 0.3, unit: "kg" },
+          { name: "Nước", qty: 2.25, unit: "lít", note: "2-2,5 lít" },
+          { name: "Muối", qty: 0.5, unit: "ms" },
+          { name: "Boro", qty: null, unit: "vừa đủ" },
+          { name: "Hành tây", qty: 2, unit: "củ", note: "0,1 kg x 2 củ" },
+          { name: "Củ cải trắng", qty: null, unit: "vừa đủ" },
+          { name: "Rễ ngò", qty: null, unit: "vừa đủ" },
+          { name: "Gia vị: knor, bột ngọt, tiêu, muối", qty: 1, unit: "ms" },
+          { name: "Hành ngò", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế đậu đen", content: "Đậu đen ngâm nước 2-3 giờ → luộc chín." },
+      { title: "Nấu nước dùng", time: "~1-2 giờ", content: "2-2,5 lít nước + xương/đuôi heo + muối ½ ms + boro + hành tây (0,1 kg x 2 củ) + củ cải trắng + rễ ngò + củ sen. Hầm 1-2 giờ, vớt lấy nước dùng." },
+      { title: "Hoàn thiện", content: "Nước dùng + củ sen + xương/đuôi + đậu đen + gia vị (knor 1 ms, bột ngọt, muối, tiêu)." },
+      { title: "Rắc rau", content: "Múc ra tô, rắc hành ngò lên ăn nóng." }
+    ]
+  },
+  {
+    id: 13,
+    title: "Xôi Gà Hấp Lá Sen",
+    subtitle: "bản in chi tiết",
+    category: "Xôi - Cơm",
+    servings: 5,
+    source: "Bản in",
+    note: "Nếp phải ngâm 30 phút",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Nếp (ngâm nước sôi xả sạch để ráo, dằn xíu muối)", qty: 1, unit: "kg" },
+          { name: "Lá dứa (rửa sạch để ráo cột thành bó)", qty: 0.1, unit: "kg" },
+          { name: "Nấm đông cô (luộc chín với gừng và hành lá, gọt bỏ chân, cắt hạt lựu)", qty: 30, unit: "gr" },
+          { name: "Tôm khô (ngâm mềm, vớt để ráo)", qty: 50, unit: "gr" },
+          { name: "Hạt sen (luộc chín, vớt để riêng, để khô)", qty: 0.2, unit: "kg" },
+          { name: "Gà (rửa sạch, ướp gia vị, thấm 30 phút)", qty: 1, unit: "con" },
+          { name: "Lá sen (rửa sạch, trụng nước sôi, ngâm nước lạnh)", qty: 2.5, unit: "lá", note: "2-3 lá" },
+          { name: "Tỏi (băm nhuyễn)", qty: 50, unit: "gr" },
+          { name: "Hành tím (băm nhuyễn)", qty: 50, unit: "gr" },
+          { name: "Tôm thẻ / chả lụa (lột bỏ vỏ, cắt đôi theo chiều dọc, trụng nước sôi, ngâm nước đá)", qty: 0.3, unit: "kg" },
+          { name: "Lạp xưởng (luộc chín, cắt hạt lựu)", qty: null, unit: "vừa đủ" },
+          { name: "Hành tây (cắt hạt lựu)", qty: 0.2, unit: "kg" },
+          { name: "Gia vị: muối, bột ngọt, tiêu, đường, knor", qty: 1, unit: "ms" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+          { name: "Dầu mè", qty: 2, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Ướp gà", content: "1 gói ướp gà + 1 ms knor + 1 ms tiêu + 1 ms bột ngọt + 1 ms dầu mè + ½ mcf muối + 1 ms nước tỏi - hành tím. Trộn đều, ướp gà từ trong ra ngoài 30 phút. Nếu hấp thì ướp thêm đường." },
+      { title: "Nướng gà", content: "Khởi động lò: 200°C/20 phút. Lần 1: 150°C/30 phút lấy ra quét nước ướp gà lên da cho vào lò nướng tiếp. Lần 2: 175°C/15 phút." },
+      { title: "Nấu xôi", content: "Xửng nước sôi, cho lá dứa phía dưới, cho nếp vào thau + tí muối. Hấp 30 phút, xới đều, hấp tiếp 15 phút, sau đó xới đều hấp thêm 15 phút." },
+      { title: "Xào nhân", content: "1 vá dầu + 1 ms tỏi + 1 ms hành tím + 1 ms đầu hành + hành tây + tôm khô + tôm tươi/chả lụa + nấm đông cô + hạt sen + 1 ms dầu hào + 1 ms dầu mè + nêm gia vị ½ ms (knor + bột ngọt + đường + tiêu)." },
+      { title: "Trộn xôi", content: "Xôi trắng + hỗn hợp nhân, trộn đều." },
+      { title: "Gói lá sen", content: "Trải lá sen ra, đặt gà vào giữa + cho xôi lên trên, gói gọn lại, đem hấp 1 giờ. Gà dưới xôi lên trên." }
+    ]
+  },
+  {
+    id: 14,
+    title: "Hủ Tiếu Xương",
+    category: "Mì - Hủ tiếu",
+    servings: 5,
+    source: "Bản in",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Xương ống có thịt (chặt miếng vừa ăn, trụng nước sôi có muối, rửa sạch)", qty: 2, unit: "kg" },
+          { name: "Hủ tiếu dốt (trụng nước sôi)", qty: 1, unit: "kg" },
+          { name: "Tỏi (băm nhuyễn)", qty: 100, unit: "gr" },
+          { name: "Hành tím (băm nhuyễn)", qty: 200, unit: "gr" },
+          { name: "Khô mực (nướng thơm, rửa sạch)", qty: 50, unit: "gr" },
+          { name: "Tôm khô (ngâm nước, rửa sạch)", qty: 50, unit: "gr" },
+          { name: "Nấm rơm (rửa sạch, gọt chân nấm, ngâm nước muối)", qty: 0.2, unit: "kg" },
+          { name: "Hành lá (đầu hành cắt khúc, thân hành cắt nhuyễn)", qty: 0.1, unit: "kg" },
+          { name: "Ngò rí (rễ ngò rửa sạch nấu nước dùng)", qty: 50, unit: "gr" },
+          { name: "Củ sắn / củ cải trắng (gọt vỏ cắt khúc)", qty: 0.5, unit: "kg" },
+          { name: "Hành tây (cắt khúc)", qty: 0.2, unit: "kg" },
+          { name: "Boro (cắt khúc)", qty: 0.2, unit: "kg" },
+          { name: "Giá (lặt đầu đuôi, ngâm nước)", qty: 0.2, unit: "kg" },
+          { name: "Huyết (trụng nước sôi 5-10 phút, ngâm nước lạnh)", qty: 0.5, unit: "kg" },
+          { name: "Chanh (cắt miếng)", qty: 0.2, unit: "kg" },
+          { name: "Ớt ba tri (cắt lát mỏng)", qty: 50, unit: "gr" },
+          { name: "Củ cải muối", qty: 0.2, unit: "kg" },
+          { name: "Hẹ", qty: 0.2, unit: "kg" },
+          { name: "Gia vị: đường phèn, knor, bột ngọt, tiêu, muối, nước mắm", qty: null, unit: "nêm vừa ăn" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Nấu nước dùng", time: "~2-3 giờ", content: "Xương heo + 6 lít nước + củ sắn / củ cải trắng + củ cải muối + hành tây + boro + rễ ngò + khô mực nướng / tôm khô + dầu thơm + muối → nấu lửa nhỏ 2-3 giờ, lượt lấy nước dùng trong." },
+      { title: "Chế biến", content: "6 lít nước dùng trong + nấm rơm + dầu thơm + gia vị (đường phèn, bột ngọt, knor, nước mắm, muối, tiêu)." },
+      { title: "Thưởng thức", content: "Hủ tiếu/bánh canh/nui/mì + xí quách + huyết + nấm rơm + hành ngò + hành tỏi phi + nước mắm + chanh ớt + giá hẹ." }
+    ]
+  },
+  {
+    id: 15,
+    title: "Hủ Tiếu Mực - Muối Ớt Xanh",
+    category: "Mì - Hủ tiếu",
+    servings: 4,
+    source: "Bản in",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Xương ống heo (trụng nước sôi có muối, rửa sạch)", qty: 1, unit: "kg" },
+          { name: "Củ sắn (gọt vỏ cắt khúc)", qty: 0.3, unit: "kg" },
+          { name: "Boro (cắt khúc nấu nước dùng ½, còn lại bào mỏng)", qty: 0.2, unit: "kg" },
+          { name: "Hành tây (cắt khúc)", qty: 0.2, unit: "kg" },
+          { name: "Ngò rí", qty: 50, unit: "gr" },
+          { name: "Hành lá", qty: 0.1, unit: "kg" },
+          { name: "Gừng (gọt vỏ nướng vàng đập dập)", qty: 0.1, unit: "kg" },
+          { name: "Hành tím (lột vỏ nướng vàng đập dập)", qty: 0.1, unit: "kg" },
+          { name: "Hủ tiếu khô (trụng nước sôi có dầu cho ra thau)", qty: 1, unit: "kg" },
+          { name: "Giá (lặt đầu và đuôi ngâm nước)", qty: 0.3, unit: "kg" },
+          { name: "Mực lá (rửa sạch cắt khoanh, trụng nước sôi ngâm nước đá)", qty: 0.5, unit: "kg" },
+          { name: "Hẹ (cắt khúc)", qty: 0.1, unit: "kg" },
+          { name: "Ớt sừng Ba Tri (bỏ hạt)", qty: 50, unit: "gr" },
+          { name: "Khô mực (nướng thơm, rửa sạch)", qty: 50, unit: "gr" },
+          { name: "Chanh (vắt nước bỏ hạt)", qty: 0.3, unit: "kg" },
+          { name: "Tỏi (xay)", qty: 0.1, unit: "kg" },
+          { name: "Sả tép (xay)", qty: 0.1, unit: "kg" },
+          { name: "Lá chanh thái", qty: 12.5, unit: "lá", note: "10-15 lá" },
+          { name: "Hành tím xay", qty: 0.1, unit: "kg" },
+          { name: "Giò sống", qty: 0.3, unit: "kg" },
+          { name: "Nấm mèo (ngâm nước, bỏ chân nấm, thái nhuyễn)", qty: 30, unit: "gr" },
+          { name: "Gia vị: knor, bột ngọt, muối, tiêu, đường phèn, nước mắm", qty: null, unit: "nêm vừa ăn" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Nấu nước dùng", time: "~2 giờ", content: "4 lít nước + xương + củ sắn + hành tây + boro + rễ ngò + gừng nướng + khô mực nướng + 1 ms muối → nấu lửa nhỏ 2 giờ, lượt lấy nước dùng trong." },
+      { title: "Hoàn thiện nước dùng", content: "Nước dùng trong + giò sống + dầu thơm + gia vị (đường phèn + bột ngọt + knor + tiêu + muối + nước mắm)." },
+      { title: "Muối ớt xanh", content: "Nước cốt chanh + đường + sữa đặc + muối hột quậy tan + sả xay + ớt Ba Tri + ngò rí + lá chanh thái + tỏi + hành tím." },
+      { title: "Ăn kèm", content: "Chanh ớt + hủ tiếu khô + mực luộc + giá hẹ + muối ớt xanh + hành ngò + hành tây rắc lên trên." }
+    ]
+  },
+  {
+    id: 16,
+    title: "Bún Gạo Xào Singapore",
+    category: "Mì - Hủ tiếu",
+    servings: 4,
+    source: "Bản in",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Giá (rửa sạch, để ráo)", qty: 0.3, unit: "kg" },
+          { name: "Cà rốt (cắt sợi)", qty: 0.2, unit: "kg" },
+          { name: "Cải ngọt (cắt khúc)", qty: 0.5, unit: "kg" },
+          { name: "Ớt đỏ sừng (bỏ hạt cắt sợi)", qty: 0.1, unit: "kg" },
+          { name: "Hành lá (cắt sợi)", qty: 0.1, unit: "kg" },
+          { name: "Ớt hiểm (xay)", qty: 50, unit: "gr" },
+          { name: "Tỏi (xay)", qty: 0.1, unit: "kg" },
+          { name: "Hành tím (xay)", qty: 0.1, unit: "kg" },
+          { name: "Thịt gà phi lê (ướp ½ mcf muối + knor + tiêu, chiên vàng, cắt sợi)", qty: 0.2, unit: "kg" },
+          { name: "Tôm thẻ/sú (lột vỏ, bỏ chỉ đen, ướp gia vị ½ mcf)", qty: 0.2, unit: "kg" },
+          { name: "Trứng gà (đánh tan, chiên lớp mỏng → cắt sợi)", qty: 3, unit: "cái" },
+          { name: "Tương cà", qty: 0.5, unit: "chai" },
+          { name: "Tương ớt", qty: 0.5, unit: "chai" },
+          { name: "Xà lách (cắt sợi)", qty: 0.2, unit: "kg" },
+          { name: "Ngò rí (cắt khúc)", qty: 50, unit: "gr" },
+          { name: "Bún gạo waiwai", qty: 0.5, unit: "kg" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Trụng bún", content: "Bún gạo trụng nước sôi có dầu, vừa chín tới, xốc dầu." },
+      { title: "Pha sốt", content: "2 vá dầu + 1 mcf tỏi + 1 mcf hành tím + 1 mcf ớt xay + ½ chai tương cà + ½ chai tương ớt + 3 vá nước + gia vị (2 mcf dầu hào + 3 mcf đường + 1 mcf bột ngọt + 1 mcf knor + 1 mcf tiêu + 1 mcf dầu mè). Nhỏ lửa 5-10 phút." },
+      { title: "Xào", content: "Cho rau củ (hành tây + hẹ + giá + cà rốt + cải ngọt) vào chảo sốt. Thêm bún gạo + thịt gà + tôm. Đảo đều với lửa lớn cho ra dĩa." },
+      { title: "Hoàn thiện", content: "Rắc lên trên: hành, ngò, ớt sợi, trứng cắt sợi + xà lách." }
+    ]
+  },
+  {
+    id: 17,
+    title: "Bún Bò Huế",
+    category: "Mì - Hủ tiếu",
+    servings: 6,
+    source: "Bản in",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Nạm bò / bắp bò (trụng nước sôi nấu nước dùng)", qty: 0.5, unit: "kg" },
+          { name: "Chân giò heo (cạo rửa sạch, trụng nước sôi, luộc chín)", qty: 0.5, unit: "kg" },
+          { name: "Củ sắn (gọt vỏ cắt khúc)", qty: 0.5, unit: "kg" },
+          { name: "Bắp giò trước (rút xương cột chỉ, trụng nước sôi có muối, luộc chín)", qty: 1, unit: "cái" },
+          { name: "Hành tây", qty: 0.2, unit: "kg" },
+          { name: "Boro (cắt khúc)", qty: 0.2, unit: "kg" },
+          { name: "Mắm ruốc Huế bà Duệ", qty: 1, unit: "hủ" },
+          { name: "Sả tép (băm nhuyễn ½, còn lại đập dập)", qty: 0.3, unit: "kg" },
+          { name: "Hành tím (nướng vàng ½, còn lại băm nhuyễn)", qty: 0.1, unit: "kg" },
+          { name: "Tỏi (băm nhuyễn)", qty: 0.1, unit: "kg" },
+          { name: "Gừng (gọt vỏ nướng vàng đập dập)", qty: 0.1, unit: "kg" },
+          { name: "Rau răm và ngò gai", qty: 0.1, unit: "kg" },
+          { name: "Bắp chuối + rau muống bào và rau thơm", qty: 0.4, unit: "kg" },
+          { name: "Giá", qty: 0.3, unit: "kg" },
+          { name: "Ngò rí", qty: 50, unit: "gr" },
+          { name: "Ớt ba tri (cắt lát mỏng)", qty: 0.1, unit: "kg" },
+          { name: "Ớt bột hạt", qty: 20, unit: "gr" },
+          { name: "Bún cọng to (trụng nước sôi xả lạnh)", qty: 1, unit: "kg" },
+          { name: "Dầu điều màu", qty: 3, unit: "vá" },
+          { name: "Nước", qty: 5, unit: "lít" },
+          { name: "Gia vị: bột ngọt, knor, đường phèn, nước mắm", qty: null, unit: "nêm vừa ăn" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Nấu nước dùng", time: "~3 giờ", content: "5 lít nước + nạm bò + bắp giò + chân giò heo + gừng nướng + củ sắn + hành tây + hành tím + boro + rễ ngò + muối. Nấu lửa nhỏ 3 giờ, lượt lấy nước dùng. Bắp bò/nạm bò, chân giò heo phần nào mềm vớt ngâm nước đá." },
+      { title: "Hỗn hợp đặc biệt", content: "Dầu (điều màu) + tỏi băm + hành tím băm + sả đập dập → xào thơm + mắm ruốc Huế + nước, nấu lửa nhỏ 5-10 phút." },
+      { title: "Sa tế", content: "Dầu / dầu điều màu + tỏi băm + hành tím băm xào thơm + sả băm + nêm gia vị + (ớt bột hạt hòa với nước mắm) cho vào sau cùng → tắt bếp." },
+      { title: "Nước dùng ăn bún", content: "Nước dùng trong + hỗn hợp đặc biệt + dầu điều màu + nêm gia vị (bột ngọt + knor + đường phèn + nước mắm)." },
+      { title: "Ăn kèm", content: "Bún cọng to + rau răm + ngò gai + thịt bò + giò heo + bắp giò + chanh + nước mắm + ớt sa tế + rau muống + bắp chuối + giá + rau thơm." }
+    ]
+  },
+  {
+    id: 18,
+    title: "Mì Hoành Thánh - Sủi Cảo",
+    subtitle: "bản in chi tiết",
+    category: "Mì - Hủ tiếu",
+    servings: 5,
+    source: "Bản in",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Xương ống (trụng nước sôi có muối)", qty: 0.5, unit: "kg" },
+          { name: "Nạc dăm (băm nhuyễn) - giò sống thay được", qty: 0.3, unit: "kg" },
+          { name: "Tôm sú (lột vỏ, bỏ chỉ đen băm nhuyễn)", qty: 0.3, unit: "kg" },
+          { name: "Tôm thẻ (luộc chín bóc vỏ chẻ đôi, vỏ tôm nấu nước dùng)", qty: 0.3, unit: "kg" },
+          { name: "Xá xíu (cắt lát mỏng)", qty: 0.2, unit: "kg" },
+          { name: "Củ sắn (cắt khúc)", qty: 0.5, unit: "kg" },
+          { name: "Boro (cắt khúc)", qty: 0.2, unit: "kg" },
+          { name: "Hành tây (cắt đôi)", qty: 0.2, unit: "kg" },
+          { name: "Ngò rí", qty: 50, unit: "gr" },
+          { name: "Tôm khô (ngâm mềm)", qty: 50, unit: "gr" },
+          { name: "Khô mực (nướng vàng giã dập)", qty: 50, unit: "gr" },
+          { name: "Hành tím (băm nhuyễn phi vàng)", qty: 50, unit: "gr" },
+          { name: "Tỏi (băm nhuyễn phi vàng)", qty: 50, unit: "gr" },
+          { name: "Hành lá", qty: 0.1, unit: "kg" },
+          { name: "Cải ngọt (trụng nước sôi có muối và dầu, ngâm nước đá)", qty: 0.5, unit: "kg" },
+          { name: "Hẹ (rửa sạch cắt khúc)", qty: 0.1, unit: "kg" },
+          { name: "Mì vắt tươi (trụng nước sôi có dầu, xốc dầu để ráo)", qty: 0.5, unit: "kg" },
+          { name: "Da hoành thánh (gói sủi cảo)", qty: 0.5, unit: "kg" },
+          { name: "Cải xá bấu", qty: 1, unit: "hủ" },
+          { name: "Mía lau", qty: 30, unit: "gr" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Nấu nước dùng", time: "~3 giờ", content: "4-5 lít nước + xương heo + củ sắn + hành tây + boro + rễ ngò + tôm khô + khô mực + muối → nấu lửa nhỏ 3 giờ, lượt lấy nước dùng trong." },
+      { title: "Nêm nước dùng", content: "Nước dùng trong + gia vị nêm vừa ăn (muối, đường, knor, bột ngọt, tiêu, dầu mè, nước mắm)." },
+      { title: "Trộn nhân", content: "Nạc dăm + đầu hành lá băm + tôm + bột năng + gia vị (knor + bột ngọt + tiêu + đường + nước mắm) + dầu mè → trộn đều nhồi dai." },
+      { title: "Gói sủi cảo", content: "Sủi cảo: da hoành thánh + ½ mcf nhân + ½ con tôm gấp đôi theo đường chéo, gấp 2 bên vào. Trụng nước sôi có dầu khi nào nổi lên vớt ra cho dầu vào để khỏi dính." },
+      { title: "Thưởng thức", content: "Mì vắt tươi + hoành thánh + sủi cảo + xá xíu + cải xá bấu + hành tỏi phi vàng + hẹ + cải ngọt + nước dùng. Ăn kèm ớt sừng xanh ngâm giấm - nước tương." }
+    ]
+  },
+  {
+    id: 19,
+    title: "Hủ Tiếu Gà Gò Công",
+    category: "Mì - Hủ tiếu",
+    servings: 5,
+    source: "Bản in",
+    groups: [
+      {
+        name: "Nguyên liệu",
+        items: [
+          { name: "Xương gà (trụng nước sôi có muối, rửa sạch)", qty: 1.5, unit: "kg", note: "1-2 kg" },
+          { name: "Gà ta / tam hoàng (luộc chín 25-30 phút vớt ngâm nước đá)", qty: 1, unit: "con" },
+          { name: "Hủ tiếu dốt (trụng nước sôi)", qty: 1, unit: "kg" },
+          { name: "Giá (lặt đầu đuôi rửa sạch)", qty: 0.3, unit: "kg" },
+          { name: "Khô mực (nướng thơm rửa sạch)", qty: 50, unit: "gr" },
+          { name: "Củ cải trắng (cắt khúc)", qty: 0.4, unit: "kg" },
+          { name: "Boro (cắt khúc)", qty: 0.2, unit: "kg" },
+          { name: "Hành tây (cắt đôi nướng vàng)", qty: 0.2, unit: "kg" },
+          { name: "Chanh (cắt miếng)", qty: 0.2, unit: "kg" },
+          { name: "Gừng (nướng vàng đập dập)", qty: 0.2, unit: "kg" },
+          { name: "Hành tím (nướng thơm lột vỏ đập nhẹ)", qty: 0.1, unit: "kg" },
+          { name: "Ngò rí", qty: 50, unit: "gr" },
+          { name: "Hành lá", qty: 0.1, unit: "kg" },
+          { name: "Huyết gà/heo (trụng nước sôi ngâm nước lạnh)", qty: 0.5, unit: "kg" },
+          { name: "Lòng gà / trứng non", qty: null, unit: "vừa đủ" },
+          { name: "Mỡ gà (thắng lấy nước cho ít gừng → lượt qua rây)", qty: 300, unit: "gr" },
+          { name: "Gia vị: bột ngọt, knor, đường phèn, nước mắm, muối", qty: null, unit: "nêm vừa ăn" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Nấu nước dùng", time: "~2 giờ", content: "5-6 lít nước + xương gà + gừng nướng + hành tím nướng + củ cải trắng + hành tây nướng + boro + rễ ngò + khô mực nướng + 1 ms muối → nấu lửa nhỏ 2 giờ, lượt lấy nước dùng trong." },
+      { title: "Nấu nước hủ tiếu", content: "Nước dùng trong + 1 vá mỡ gà đã thắng + gia vị (bột ngọt + knor + đường phèn + nước mắm)." },
+      { title: "Dọn kèm", content: "Hủ tiếu + lòng gà trứng non + huyết + thịt gà + hành ngò + hành tây thái sợi + giá + chanh ớt + nước mắm mặn." }
+    ]
+  }
+];
+
+</script>
+<script>
+  // ========== STATE ==========
+  let activeCategory = 'Tất cả';
+  let searchQuery = '';
+  let currentRecipe = null;
+  let currentServings = 4;
+
+  // ========== UTILITIES ==========
+  function formatQty(qty, unit, baseServings, currentServings) {
+    if (qty === null || qty === undefined) {
+      return unit; // "vừa đủ", "nêm vừa ăn"
+    }
+    const scaled = qty * (currentServings / baseServings);
+
+    // Format number nicely
+    let display;
+    if (scaled >= 100) {
+      display = Math.round(scaled).toString();
+    } else if (scaled >= 10) {
+      display = (Math.round(scaled * 10) / 10).toString();
+    } else if (scaled >= 1) {
+      display = (Math.round(scaled * 100) / 100).toString();
+    } else {
+      // Fractions for small amounts
+      display = formatFraction(scaled);
+    }
+
+    // Remove trailing zeros
+    display = display.replace(/\.?0+$/, '');
+    if (display === '' || display === '-') display = '0';
+
+    return `${display} ${unit}`;
+  }
+
+  function formatFraction(n) {
+    // Common fractions
+    if (Math.abs(n - 0.5) < 0.02) return '½';
+    if (Math.abs(n - 0.25) < 0.02) return '¼';
+    if (Math.abs(n - 0.33) < 0.02) return '⅓';
+    if (Math.abs(n - 0.67) < 0.02) return '⅔';
+    if (Math.abs(n - 0.75) < 0.02) return '¾';
+    if (Math.abs(n - 0.125) < 0.02) return '⅛';
+    return (Math.round(n * 100) / 100).toString();
+  }
+
+  // ========== RENDER GRID ==========
+  function getCategories() {
+    const cats = new Set(['Tất cả']);
+    RECIPES.forEach(r => cats.add(r.category));
+    return Array.from(cats);
+  }
+
+  function renderChips() {
+    const wrap = document.getElementById('filterChips');
+    wrap.innerHTML = getCategories().map(cat => `
+      <button class="chip ${cat === activeCategory ? 'active' : ''}" data-cat="${cat}">${cat}</button>
+    `).join('');
+
+    wrap.querySelectorAll('.chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCategory = btn.dataset.cat;
+        renderChips();
+        renderGrid();
+      });
+    });
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('recipeGrid');
+    const filtered = RECIPES.filter(r => {
+      const matchCat = activeCategory === 'Tất cả' || r.category === activeCategory;
+      const matchSearch = !searchQuery || r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (r.subtitle && r.subtitle.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchCat && matchSearch;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">Không tìm thấy món nào…</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(r => `
+      <button class="recipe-card" data-id="${r.id}">
+        <div class="recipe-card-num">№ ${String(r.id).padStart(2, '0')}</div>
+        <h3 class="recipe-card-title">${r.title}</h3>
+        ${r.subtitle ? `<div class="recipe-card-sub">${r.subtitle}</div>` : ''}
+        <div class="recipe-card-meta">
+          <span><strong>${r.servings}</strong> người</span>
+          <span>${r.category}</span>
+        </div>
+      </button>
+    `).join('');
+
+    grid.querySelectorAll('.recipe-card').forEach(card => {
+      card.addEventListener('click', () => openModal(parseInt(card.dataset.id)));
+    });
+  }
+
+  // ========== MODAL ==========
+  function openModal(id) {
+    currentRecipe = RECIPES.find(r => r.id === id);
+    if (!currentRecipe) return;
+    currentServings = currentRecipe.servings;
+    renderModal();
+    document.getElementById('modalBackdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modalBackdrop').classList.remove('open');
+    document.body.style.overflow = '';
+    currentRecipe = null;
+  }
+
+  function adjustServings(delta) {
+    const next = currentServings + delta;
+    if (next < 1 || next > 30) return;
+    currentServings = next;
+    renderModal();
+  }
+
+  function renderModal() {
+    const r = currentRecipe;
+    const isScaled = currentServings !== r.servings;
+    const content = document.getElementById('modalContent');
+
+    content.innerHTML = `
+      <header class="recipe-header">
+        <div class="recipe-num">№ ${String(r.id).padStart(2, '0')} · ${r.category}</div>
+        <h2 class="recipe-title">${r.title}</h2>
+        ${r.subtitle ? `<div class="recipe-subtitle">${r.subtitle}</div>` : ''}
+        <div class="recipe-meta">
+          <span>Nguồn · ${r.source}</span>
+          <span>${r.groups.length} phần nguyên liệu</span>
+          <span>${r.steps.length} bước</span>
+        </div>
+      </header>
+
+      <div class="servings-control">
+        <span class="servings-label">Khẩu phần cho</span>
+        <div class="servings-control-buttons">
+          <button class="servings-btn" onclick="adjustServings(-1)" ${currentServings <= 1 ? 'disabled' : ''}>−</button>
+          <div class="servings-value">${currentServings}</div>
+          <button class="servings-btn" onclick="adjustServings(1)" ${currentServings >= 30 ? 'disabled' : ''}>+</button>
+        </div>
+        <span class="servings-unit">người ${isScaled ? `(gốc: ${r.servings})` : ''}</span>
+      </div>
+
+      <div class="recipe-content">
+        ${r.note ? `<div class="recipe-note">${r.note}</div>` : ''}
+
+        <div class="section-title">Nguyên liệu</div>
+        ${r.groups.map(g => `
+          <div class="ingredient-group">
+            ${r.groups.length > 1 ? `<h3 class="ingredient-group-name">${g.name}</h3>` : ''}
+            <ul class="ingredient-list">
+              ${g.items.map(item => `
+                <li class="ingredient">
+                  <span class="ingredient-name">
+                    ${item.name}
+                    ${item.note ? `<span class="ingredient-note">(${item.note})</span>` : ''}
+                  </span>
+                  <span class="ingredient-qty ${isScaled && item.qty !== null ? 'scaled' : ''}">
+                    ${formatQty(item.qty, item.unit, r.servings, currentServings)}
+                  </span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+        `).join('')}
+
+        <div class="steps-section">
+          <div class="section-title">Cách làm</div>
+          ${r.steps.map((s, i) => `
+            <div class="step">
+              <div class="step-num">${String(i + 1).padStart(2, '0')}</div>
+              <div class="step-body">
+                <h4 class="step-title">
+                  ${s.title}
+                  ${s.time ? `<span class="step-time">${s.time}</span>` : ''}
+                </h4>
+                <p class="step-content">${s.content}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    // Scroll modal to top
+    document.getElementById('modalBackdrop').scrollTop = 0;
+  }
+
+  // ========== EVENT HANDLERS ==========
+  document.getElementById('searchInput').addEventListener('input', e => {
+    searchQuery = e.target.value;
+    renderGrid();
+  });
+
+  document.getElementById('modalBackdrop').addEventListener('click', e => {
+    if (e.target.id === 'modalBackdrop') closeModal();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // ========== INIT ==========
+  renderChips();
+  renderGrid();
+</script>
+</body>
+</html>
