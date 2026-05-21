@@ -286,6 +286,7 @@
     @page { size: A4; margin: 0; }
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
@@ -316,6 +317,7 @@
     <button onclick="exportData()">📤 Xuất cuốn</button>
     <button onclick="fetchLocalTemperature(true)" id="tempBtn">🌡️ Cập nhật nhiệt độ</button>
     <button class="danger" onclick="resetQty()">🔄 Reset khối lượng</button>
+    <a href="huong-dan.html" target="_blank" style="display:inline-block;padding:10px 14px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;color:#0f172a;font-weight:500;text-decoration:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;">📖 Hướng dẫn</a>
   </div>
 </div>
 
@@ -958,27 +960,199 @@ function renameProject() {
   persist();
 }
 
+// ====== XUẤT WORD / PDF ======
+function sanitizeFilename(s) {
+  return String(s || 'cuon').replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, '_').slice(0, 100);
+}
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+function multilineHtml(s) { return escapeHtml(s || '').replace(/\n/g, '<br>'); }
+
+function buildEntryHTML(p, e) {
+  const pn = computePagenum(p, e.date);
+  let itemsHtml = '';
+  let stt = 0;
+  (e.items || []).forEach(it => {
+    if (it.group) {
+      stt = 0;
+      itemsHtml += `<tr><td></td><td colspan="3" style="font-weight:bold;background:#fafafa;">${escapeHtml(it.group)}</td></tr>`;
+    } else {
+      stt++;
+      itemsHtml += `<tr><td style="text-align:center;">${stt}</td><td>${escapeHtml(it.name)}</td><td style="text-align:center;">${escapeHtml(it.unit)}</td><td style="text-align:center;">${it.qty ?? ''}</td></tr>`;
+    }
+  });
+  return `<div class="page">
+    <h1 class="title">Nhật ký thi công hàng ngày</h1>
+    <div class="project-line">Công trình: ${escapeHtml(p.name)}</div>
+    <div class="date-line">Ngày ${e.day} tháng ${e.month} năm ${e.year}</div>
+    <div class="section-num">1. Tình hình thời tiết:</div>
+    <table class="weather">
+      <tr><th></th><th>Sáng</th><th>Chiều</th></tr>
+      <tr><td>Thời tiết</td><td style="text-align:center;">${escapeHtml(e.w_morning)}</td><td style="text-align:center;">${escapeHtml(e.w_afternoon)}</td></tr>
+      <tr><td>Nhiệt độ</td><td style="text-align:center;">${escapeHtml(e.t_morning)}</td><td style="text-align:center;">${escapeHtml(e.t_afternoon)}</td></tr>
+    </table>
+    <div class="section-num">2. Nhân lực và thiết bị thi công:</div>
+    <div class="subsection">2.1. Nhân lực:</div>
+    <div style="padding-left:10mm">- Công nhân: ${escapeHtml(e.workers)} người</div>
+    <div style="padding-left:10mm">- Nhân lực khác: ${escapeHtml(e.workers_other)}</div>
+    <div class="subsection">2.2. Thiết bị thi công:</div>
+    <div style="padding-left:10mm">${escapeHtml(e.equipment)}</div>
+    <div class="section-num">3. Tình hình diễn biến thi công, nghiệm thu công việc:</div>
+    <div class="subsection">3.1. Diễn biến thi công, nghiệm thu công việc:</div>
+    <table class="work">
+      <thead><tr>
+        <th style="width:11mm;">STT</th>
+        <th>Công tác quản lý, vận hành</th>
+        <th style="width:22mm;">đơn vị tính</th>
+        <th style="width:24mm;">Khối lượng thực hiện</th>
+      </tr></thead>
+      <tbody>${itemsHtml}</tbody>
+    </table>
+    <div class="section-num">4. Công tác vệ sinh môi trường:</div>
+    <div style="padding-left:6mm">${escapeHtml(e.env || '')}</div>
+    <div class="section-num">5. Công tác an toàn lao động, an toàn giao thông:</div>
+    <div style="padding-left:6mm">${escapeHtml(e.safe || '')}</div>
+    <div class="section-num">6. Nhận xét và yêu cầu của giám sát bên A:</div>
+    <div style="min-height:2.4em">${multilineHtml(e.note_a)}</div>
+    <div class="section-num">7. Những kiến nghị đề xuất của bên B:</div>
+    <div style="min-height:2.4em">${multilineHtml(e.note_b)}</div>
+    <table style="width:100%; margin-top:24px; border:none;">
+      <tr>
+        <td style="width:50%; text-align:center; border:none; vertical-align:top;">
+          <div style="font-weight:bold; text-transform:uppercase;">Đại diện bên A</div>
+          <div style="height:56px;"></div>
+          <div>${escapeHtml(e.rep_a || '')}</div>
+        </td>
+        <td style="width:50%; text-align:center; border:none; vertical-align:top;">
+          <div style="font-weight:bold; text-transform:uppercase;">Đại diện bên B</div>
+          <div style="height:56px;"></div>
+          <div>${escapeHtml(e.rep_b || '')}</div>
+        </td>
+      </tr>
+    </table>
+    <div class="page-num">trang ${pn}</div>
+  </div>`;
+}
+
+const EXPORT_CSS = `
+  body { font-family: 'Times New Roman', Times, serif; font-size: 13pt; color: #000; margin: 0; background: #fff; }
+  .page { background: #fff; width: 210mm; min-height: 297mm; padding: 18mm 18mm 16mm 22mm; box-sizing: border-box; page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  .title { text-align: center; font-weight: bold; font-size: 16pt; text-transform: uppercase; margin: 0 0 14px 0; letter-spacing: 0.3px; }
+  .project-line { text-align: center; font-weight: bold; font-style: italic; margin: 0 0 10px 0; font-size: 14pt; }
+  .date-line { margin: 8px 0 10px 0; font-style: italic; }
+  .section-num { font-weight: bold; margin: 10px 0 6px 0; }
+  .subsection { font-style: italic; margin: 8px 0 4px 0; padding-left: 6mm; }
+  table { width: 100%; border-collapse: collapse; margin: 4px 0 10px 0; }
+  table th, table td { border: 1px solid #000; padding: 5px 7px; vertical-align: middle; }
+  table th { font-weight: bold; text-align: center; }
+  table.weather td:first-child { text-align: left; font-style: italic; width: 26%; }
+  .page-num { text-align: center; margin-top: 18px; font-size: 11pt; color: #444; }
+`;
+
+function buildWordHTML(p) {
+  const dates = Object.keys(p.entries || {}).sort();
+  const pagesHTML = dates.map(d => buildEntryHTML(p, p.entries[d])).join('\n');
+  return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset='utf-8'>
+<title>${escapeHtml(p.name)}</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->
+<style>
+@page WordSection1 { size: 21cm 29.7cm; margin: 1.8cm 1.8cm 1.6cm 2.2cm; mso-page-orientation: portrait; }
+div.WordSection1 { page: WordSection1; }
+${EXPORT_CSS}
+</style>
+</head>
+<body><div class='WordSection1'>${pagesHTML}</div></body>
+</html>`;
+}
+
+function exportBookAsWord(p) {
+  const html = buildWordHTML(p);
+  const blob = new Blob(['﻿', html], { type: 'application/msword' });
+  downloadBlob(blob, `nhat-ky-${sanitizeFilename(p.name)}.doc`);
+}
+
+async function exportBookAsPDF(p) {
+  if (typeof html2pdf === 'undefined') {
+    throw new Error('Chưa tải được thư viện PDF — kiểm tra kết nối mạng.');
+  }
+  const dates = Object.keys(p.entries || {}).sort();
+  if (!dates.length) return;
+  const container = document.createElement('div');
+  container.style.cssText = 'position:absolute; left:-99999px; top:0; background:#fff; width:210mm;';
+  const styleEl = document.createElement('style');
+  styleEl.textContent = EXPORT_CSS;
+  container.appendChild(styleEl);
+  container.insertAdjacentHTML('beforeend', dates.map(d => buildEntryHTML(p, p.entries[d])).join('\n'));
+  document.body.appendChild(container);
+  try {
+    await html2pdf().set({
+      margin: 0,
+      filename: `nhat-ky-${sanitizeFilename(p.name)}.pdf`,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 794 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+      pagebreak: { mode: ['css', 'legacy'] }
+    }).from(container).save();
+  } finally {
+    container.remove();
+  }
+}
+
+async function exportBookAllFormats(p) {
+  // Word trước (nhẹ, đồng bộ) rồi đến PDF (chậm)
+  try { exportBookAsWord(p); } catch(e) { console.warn('Word export failed', e); }
+  try { await exportBookAsPDF(p); } catch(e) { console.warn('PDF export failed', e); throw e; }
+}
+
 function endProject() {
   const p = getProject();
   if (!p) return;
   const count = Object.keys(p.entries).length;
-  if (!confirm(`Kết thúc và XÓA cuốn "${p.name}" (${count} ngày)?\nTất cả dữ liệu cuốn này sẽ mất.`)) return;
+  if (!confirm(`Kết thúc cuốn "${p.name}" (${count} ngày)?\n\nHệ thống sẽ TẢI XUỐNG file Word (.doc) và PDF của cuốn này, sau đó XÓA cuốn khỏi phần mềm.`)) return;
   if (!confirm('Bạn chắc chắn? Hành động này không thể hoàn tác.')) return;
-  delete appState.projects[p.id];
-  const remaining = Object.keys(appState.projects);
-  if (remaining.length === 0) {
-    const id = createProject('Công trình 1');
-    appState.currentProjectId = id;
-  } else {
-    appState.currentProjectId = remaining[0];
-  }
-  appState.currentDate = todayISO();
-  const e = ensureEntry(appState.currentDate);
-  if (e) delete e._isNew;
-  refreshProjectSelect();
-  refreshDatePicker();
-  renderForm();
+
+  collectForm();
   persist();
+
+  const finalize = () => {
+    delete appState.projects[p.id];
+    const remaining = Object.keys(appState.projects);
+    if (remaining.length === 0) {
+      const id = createProject('Công trình 1');
+      appState.currentProjectId = id;
+    } else {
+      appState.currentProjectId = remaining[0];
+    }
+    appState.currentDate = todayISO();
+    const e = ensureEntry(appState.currentDate);
+    if (e) delete e._isNew;
+    refreshProjectSelect();
+    refreshDatePicker();
+    renderForm();
+    persist();
+    flash(`Đã kết thúc cuốn "${p.name}" ✓`);
+  };
+
+  if (count === 0) {
+    if (confirm('Cuốn chưa có ngày nào — bỏ qua tải file và xóa luôn?')) finalize();
+    return;
+  }
+
+  flash('Đang tạo file Word + PDF...');
+  exportBookAllFormats(p).then(finalize).catch(err => {
+    if (confirm(`Lỗi khi tạo file: ${err.message}\n\nVẫn tiếp tục XÓA cuốn?`)) finalize();
+  });
 }
 
 function listEntries() {

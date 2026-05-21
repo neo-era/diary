@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hướng dẫn sử dụng — Nhật ký thi công</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    margin: 0;
+    background: #f3f4f6;
+    color: #0f172a;
+    line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+  }
+  .container {
+    max-width: 860px;
+    margin: 24px auto;
+    background: #fff;
+    padding: 36px 44px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    border-radius: 12px;
+  }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 6px 0;
+    color: #1e40af;
+    border-bottom: 3px solid #1e40af;
+    padding-bottom: 12px;
+  }
+  .sub { color: #64748b; margin: 0 0 28px 0; font-size: 14px; }
+  h2 {
+    font-size: 20px;
+    margin: 32px 0 10px 0;
+    color: #1e293b;
+    border-left: 4px solid #1e40af;
+    padding-left: 12px;
+  }
+  h3 { font-size: 16px; margin: 20px 0 8px 0; color: #334155; }
+  p, li { font-size: 15px; }
+  ol, ul { padding-left: 22px; }
+  ol li, ul li { margin-bottom: 6px; }
+  code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Cascadia Code', Consolas, Menlo, monospace;
+    font-size: 13px;
+    color: #b91c1c;
+  }
+  kbd {
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+  .btn {
+    display: inline-block;
+    padding: 3px 10px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #0f172a;
+    margin: 0 2px;
+    white-space: nowrap;
+  }
+  .btn.primary { background: #1e40af; color: #fff; border-color: #1e40af; }
+  .btn.danger { color: #b91c1c; border-color: #fecaca; }
+  .callout {
+    background: #eff6ff;
+    border-left: 4px solid #1e40af;
+    padding: 12px 16px;
+    margin: 14px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .callout.warn { background: #fef3c7; border-color: #d97706; }
+  .callout.danger { background: #fee2e2; border-color: #b91c1c; }
+  .callout strong { color: #0f172a; }
+  table.steps {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  table.steps th, table.steps td {
+    border: 1px solid #e2e8f0;
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  table.steps th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .toc {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 14px 22px;
+    border-radius: 8px;
+    margin-bottom: 28px;
+  }
+  .toc ol { margin: 6px 0; }
+  .toc a { color: #1e40af; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .top-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .top-actions a {
+    display: inline-block;
+    padding: 10px 18px;
+    background: #1e40af;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .top-actions a.secondary { background: #fff; color: #1e40af; border: 1px solid #1e40af; }
+  .top-actions a:hover { opacity: 0.9; }
+  @media (max-width: 720px) {
+    .container { margin: 0; padding: 22px 16px; border-radius: 0; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18px; }
+  }
+  @media print {
+    body { background: #fff; }
+    .container { box-shadow: none; max-width: 100%; padding: 0; }
+    .top-actions { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>📖 Hướng dẫn sử dụng — Nhật ký thi công</h1>
+<p class="sub">Phần mềm ghi nhật ký thi công hàng ngày trên trình duyệt — không cần cài đặt, dữ liệu lưu trực tiếp trên thiết bị.</p>
+
+<div class="top-actions">
+  <a href="index.html">🚀 Mở phần mềm</a>
+  <a class="secondary" href="javascript:window.print()">🖨️ In hướng dẫn này</a>
+</div>
+
+<div class="toc">
+  <strong>Mục lục</strong>
+  <ol>
+    <li><a href="#start">Bắt đầu sử dụng</a></li>
+    <li><a href="#toolbar">Thanh công cụ</a></li>
+    <li><a href="#new-book">Tạo cuốn nhật ký mới</a></li>
+    <li><a href="#daily">Ghi nhật ký hàng ngày</a></li>
+    <li><a href="#navigation">Chuyển ngày và xem lịch sử</a></li>
+    <li><a href="#items">Sửa danh sách hạng mục</a></li>
+    <li><a href="#weather">Tự động lấy nhiệt độ</a></li>
+    <li><a href="#print-single">In hoặc lưu PDF từng ngày</a></li>
+    <li><a href="#backup">Sao lưu / Khôi phục dữ liệu</a></li>
+    <li><a href="#end">Kết thúc cuốn nhật ký (xuất Word + PDF)</a></li>
+    <li><a href="#tips">Mẹo và xử lý sự cố</a></li>
+  </ol>
+</div>
+
+<h2 id="start">1. Bắt đầu sử dụng</h2>
+<ol>
+  <li>Mở file <code>index.html</code> trong trình duyệt (Chrome, Edge, Safari, Firefox đều dùng được).</li>
+  <li>Lần đầu, phần mềm tự tạo sẵn cuốn tên <strong>"Công trình 1"</strong> với ngày hôm nay.</li>
+  <li>Mọi thay đổi tự động lưu vào trình duyệt sau 0.8 giây — không cần bấm Lưu liên tục.</li>
+</ol>
+<div class="callout">
+  <strong>Lưu ý:</strong> Dữ liệu lưu trên <em>chính máy/điện thoại bạn đang dùng</em>. Nếu xóa lịch sử trình duyệt hoặc đổi máy, dữ liệu sẽ mất. Để an toàn, hãy <a href="#backup">xuất file sao lưu</a> định kỳ.
+</div>
+
+<h2 id="toolbar">2. Thanh công cụ</h2>
+<p>Thanh trên cùng chia làm <strong>3 hàng</strong>:</p>
+
+<table class="steps">
+  <tr><th style="width:120px;">Hàng 1 — Cuốn</th><td>
+    <span class="btn">📒 Cuốn:</span> chọn cuốn đang xem (mỗi cuốn 1 công trình) ·
+    <span class="btn">+ Cuốn mới</span> ·
+    <span class="btn">✏️ Đổi tên</span> ·
+    <span class="btn">📄 Trang bắt đầu</span> ·
+    <span class="btn danger">🏁 Kết thúc</span>
+  </td></tr>
+  <tr><th>Hàng 2 — Ngày</th><td>
+    <span class="btn">📅 Ngày:</span> chọn ngày để xem/sửa ·
+    <span class="btn">◀ Hôm trước</span> · <span class="btn">Hôm sau ▶</span> ·
+    <span class="btn">Hôm nay</span> ·
+    <span class="btn">📚 Danh sách ngày</span>
+  </td></tr>
+  <tr><th>Hàng 3 — Thao tác</th><td>
+    <span class="btn primary">🖨️ In / Lưu PDF</span> (in/PDF ngày hiện tại) ·
+    <span class="btn">✏️ Sửa hạng mục</span> ·
+    <span class="btn">💾 Lưu</span> ·
+    <span class="btn">📂 Tải file</span> ·
+    <span class="btn">📤 Xuất cuốn</span> (xuất JSON) ·
+    <span class="btn">🌡️ Cập nhật nhiệt độ</span> ·
+    <span class="btn danger">🔄 Reset khối lượng</span>
+  </td></tr>
+</table>
+
+<h2 id="new-book">3. Tạo cuốn nhật ký mới</h2>
+<p>Khi mở công trình mới, bấm <span class="btn">+ Cuốn mới</span> và làm 3 bước:</p>
+<ol>
+  <li><strong>Tên công trình:</strong> ví dụ <em>"Đường Lê Lợi - Q1 - 2026"</em>. Sau này có thể đổi qua nút <span class="btn">✏️ Đổi tên</span>.</li>
+  <li><strong>Ngày bắt đầu:</strong> điền theo định dạng <code>YYYY-MM-DD</code> (ví dụ <code>2026-05-21</code>). Đây sẽ là <strong>trang đầu tiên</strong> của cuốn.</li>
+  <li><strong>Số trang bắt đầu:</strong> mặc định <code>1</code>. Nếu cuốn này nối tiếp cuốn cũ (ví dụ cuốn cũ kết thúc ở trang 7), nhập <code>8</code>.</li>
+</ol>
+<div class="callout">
+  <strong>Mẹo:</strong> Mỗi cuốn được lưu độc lập. Bạn có thể có nhiều cuốn cùng lúc cho nhiều công trình khác nhau — chỉ cần chuyển bằng dropdown <span class="btn">📒 Cuốn</span>.
+</div>
+
+<h2 id="daily">4. Ghi nhật ký hàng ngày</h2>
+<p>Khi mở cuốn, bạn sẽ thấy form nhật ký với các mục:</p>
+<ul>
+  <li><strong>Tên công trình</strong> — tự điền từ tên cuốn, không sửa được trên form (đổi qua nút Đổi tên).</li>
+  <li><strong>Ngày tháng năm</strong> — tự đồng bộ theo date picker bên trên (không nhập tay).</li>
+  <li><strong>1. Tình hình thời tiết</strong> — 2 cột Sáng/Chiều, có thể bấm <span class="btn">🌡️ Cập nhật nhiệt độ</span> để tự lấy từ vị trí thực.</li>
+  <li><strong>2. Nhân lực và thiết bị</strong> — số công nhân, nhân lực khác, thiết bị đang dùng.</li>
+  <li><strong>3. Bảng công việc</strong> — nhập <em>khối lượng</em> cho từng hạng mục trong ngày. Nếu muốn thêm/sửa hạng mục, xem <a href="#items">phần 6</a>.</li>
+  <li><strong>4–5. Vệ sinh & An toàn</strong> — chọn Tốt / Bình thường / Kém.</li>
+  <li><strong>6–7. Ghi chú</strong> — nhận xét của giám sát A, đề xuất của B.</li>
+  <li><strong>Chữ ký</strong> — họ tên đại diện bên A và B (dùng chung cho các ngày trong cuốn, sửa lần đầu là xong).</li>
+</ul>
+<div class="callout">
+  ✅ Dữ liệu <strong>tự động lưu</strong> sau mỗi lần gõ phím — không lo mất.
+</div>
+
+<h2 id="navigation">5. Chuyển ngày và xem lịch sử</h2>
+<table class="steps">
+  <tr><th>Thao tác</th><th>Cách làm</th></tr>
+  <tr><td>Xem ngày khác</td><td>Chọn ngày trong ô <span class="btn">📅 Ngày</span></td></tr>
+  <tr><td>Tạo nhật ký ngày mới</td><td>Chọn ngày chưa có trong date picker → phần mềm tự tạo form trống cho ngày đó</td></tr>
+  <tr><td>Lùi/tới 1 ngày</td><td><span class="btn">◀ Hôm trước</span> / <span class="btn">Hôm sau ▶</span></td></tr>
+  <tr><td>Về hôm nay</td><td><span class="btn">Hôm nay</span></td></tr>
+  <tr><td>Xem tất cả ngày trong cuốn</td><td><span class="btn">📚 Danh sách ngày</span> — hiện danh sách kèm số trang &amp; khối lượng tổng. Gõ STT để mở nhanh.</td></tr>
+</table>
+<div class="callout warn">
+  <strong>Lưu ý số trang:</strong> Số trang ở cuối form là <strong>tự động</strong>, không sửa tay. Cách tính: ngày bắt đầu = trang <code>startPage</code>, ngày tiếp theo trong cuốn = trang <code>startPage+1</code>, v.v. Nếu cần đổi trang đầu, dùng nút <span class="btn">📄 Trang bắt đầu</span>.
+</div>
+
+<h2 id="items">6. Sửa danh sách hạng mục</h2>
+<p>Bảng công việc đi kèm sẵn danh sách mặc định. Để thay đổi:</p>
+<ol>
+  <li>Bấm <span class="btn">✏️ Sửa hạng mục</span> để vào chế độ chỉnh sửa.</li>
+  <li>Các nút ❌ đỏ hiện ra bên cạnh từng dòng — bấm để xóa.</li>
+  <li>Nút <span class="btn">+ Thêm hạng mục</span> ở dưới bảng cho phép thêm:
+    <ul>
+      <li><strong>OK</strong> → thêm <em>nhóm</em> (in đậm như "I - Tủ thường", "II - Tủ kết nối...").</li>
+      <li><strong>Cancel</strong> → thêm <em>hạng mục</em> thường (có cột đơn vị + khối lượng).</li>
+    </ul>
+  </li>
+  <li>Bấm <span class="btn">✓ Xong</span> để thoát chế độ sửa.</li>
+</ol>
+<div class="callout">
+  Khi sửa <strong>tên</strong> hoặc <strong>đơn vị</strong>, thay đổi áp dụng cho cả ngày hiện tại và các ngày mới sẽ tạo sau. Sửa <strong>khối lượng</strong> chỉ áp dụng cho ngày đang xem (mỗi ngày có khối lượng riêng).
+</div>
+<p>Nút <span class="btn danger">🔄 Reset khối lượng</span> sẽ đặt toàn bộ khối lượng của <em>ngày hiện tại</em> về 0 (không ảnh hưởng ngày khác).</p>
+
+<h2 id="weather">7. Tự động lấy nhiệt độ</h2>
+<p>Khi tạo nhật ký mới cho hôm nay, phần mềm <strong>tự động</strong> hỏi quyền vị trí và lấy nhiệt độ + tình hình thời tiết từ Open-Meteo:</p>
+<ul>
+  <li><strong>Sáng</strong>: nhiệt độ min–max khoảng 6h–11h</li>
+  <li><strong>Chiều</strong>: nhiệt độ min–max khoảng 12h–17h</li>
+  <li>Cột "Thời tiết" tự điền: Nắng / Ít mây / Mưa / Giông... theo mã thời tiết</li>
+</ul>
+<p>Muốn làm mới lúc khác, bấm <span class="btn">🌡️ Cập nhật nhiệt độ</span>.</p>
+<div class="callout warn">
+  Cần <strong>kết nối Internet</strong> và <strong>cho phép vị trí</strong> khi trình duyệt hỏi. Nếu mở bằng cách kéo file vào trình duyệt (<code>file://</code>), một số trình duyệt sẽ chặn — nên đặt file trên web host hoặc dùng localhost.
+</div>
+
+<h2 id="print-single">8. In hoặc lưu PDF từng ngày</h2>
+<ol>
+  <li>Mở ngày bạn muốn in.</li>
+  <li>Bấm <span class="btn primary">🖨️ In / Lưu PDF</span>.</li>
+  <li>Trong cửa sổ in của trình duyệt:
+    <ul>
+      <li>Chọn máy in để in giấy A4 thật, <em>hoặc</em></li>
+      <li>Chọn <strong>"Save as PDF"</strong> để lưu file PDF của riêng ngày đó.</li>
+    </ul>
+  </li>
+</ol>
+<div class="callout">
+  Thanh công cụ tự ẩn khi in — bản in chỉ có tờ A4 đúng định dạng.
+</div>
+
+<h2 id="backup">9. Sao lưu / Khôi phục dữ liệu</h2>
+<h3>Sao lưu</h3>
+<p>Bấm <span class="btn">📤 Xuất cuốn</span> để tải về file <code>nhat-ky-&lt;tên cuốn&gt;.json</code>. File này chứa <strong>toàn bộ ngày</strong> của cuốn hiện tại — gửi qua email, lưu USB, hoặc upload đám mây để dự phòng.</p>
+<h3>Khôi phục</h3>
+<p>Bấm <span class="btn">📂 Tải file</span> và chọn file JSON đã xuất. Phần mềm tự nhận diện 3 dạng:</p>
+<ul>
+  <li>File 1 cuốn → thêm vào danh sách như cuốn mới.</li>
+  <li>File nhiều cuốn (toàn bộ app) → gộp tất cả.</li>
+  <li>File ngày cũ (định dạng v1) → thêm vào cuốn hiện tại như 1 ngày.</li>
+</ul>
+<div class="callout">
+  <strong>Khuyến nghị:</strong> Xuất file sao lưu mỗi tuần hoặc sau mỗi 5–10 ngày ghi.
+</div>
+
+<h2 id="end">10. Kết thúc cuốn nhật ký</h2>
+<p>Khi công trình hoàn thành, bấm <span class="btn danger">🏁 Kết thúc</span>. Phần mềm sẽ:</p>
+<ol>
+  <li>Hỏi xác nhận 2 lần.</li>
+  <li>Tự động <strong>tải về 2 file</strong>:
+    <ul>
+      <li><code>nhat-ky-&lt;tên cuốn&gt;.doc</code> — mở được bằng Microsoft Word / LibreOffice, có thể chỉnh sửa.</li>
+      <li><code>nhat-ky-&lt;tên cuốn&gt;.pdf</code> — file PDF nhiều trang A4, mỗi ngày 1 trang, không sửa được, dùng để lưu trữ/in.</li>
+    </ul>
+  </li>
+  <li>Sau khi tải xong, <strong>xóa cuốn khỏi phần mềm</strong> để giải phóng không gian.</li>
+</ol>
+<div class="callout danger">
+  <strong>Không thể hoàn tác!</strong> Sau khi Kết thúc, cuốn bị xóa khỏi phần mềm — chỉ còn 2 file đã tải về. Hãy kiểm tra file mở được đúng trước khi đóng trình duyệt.
+</div>
+<div class="callout warn">
+  Cần <strong>Internet</strong> lúc bấm Kết thúc vì cần tải thư viện tạo PDF. Nếu mất mạng, phần mềm sẽ báo lỗi và hỏi có muốn xóa cuốn không — chọn <strong>Cancel</strong> để giữ lại cuốn và thử lại sau.
+</div>
+
+<h2 id="tips">11. Mẹo và xử lý sự cố</h2>
+
+<h3>Phần mềm không nhớ dữ liệu sau khi đóng trình duyệt?</h3>
+<ul>
+  <li>Kiểm tra trình duyệt không ở chế độ <em>Ẩn danh / InPrivate</em> — chế độ này không lưu localStorage.</li>
+  <li>Nếu dùng iOS Safari, bật cho phép "Cross-Site Tracking" hoặc dùng Chrome/Firefox.</li>
+  <li>Xuất file JSON định kỳ để khỏi phụ thuộc localStorage.</li>
+</ul>
+
+<h3>Không hỏi vị trí / không lấy được nhiệt độ?</h3>
+<ul>
+  <li>Mở file bằng <code>https://</code> hoặc <code>http://localhost</code>, không phải <code>file://</code>.</li>
+  <li>Trong thanh địa chỉ, bấm vào biểu tượng khóa 🔒 → kiểm tra quyền "Vị trí" có bị chặn không.</li>
+</ul>
+
+<h3>File Word mở bị lỗi định dạng?</h3>
+<ul>
+  <li>Cập nhật Microsoft Word lên bản mới (Word 2016+), hoặc dùng LibreOffice Writer (miễn phí).</li>
+  <li>Nếu cần file <code>.docx</code> chuẩn, mở file <code>.doc</code> trong Word rồi "Save As" → chọn Word Document (.docx).</li>
+</ul>
+
+<h3>PDF tạo ra quá lớn (>20 MB)?</h3>
+<ul>
+  <li>Cuốn dài 50+ ngày → bình thường. Có thể nén bằng các công cụ trực tuyến như smallpdf, ilovepdf.</li>
+  <li>Hoặc chia cuốn thành các cuốn nhỏ hơn (theo tháng/quý) bằng cách kết thúc và tạo cuốn mới.</li>
+</ul>
+
+<h3>Số trang bị nhảy không đúng?</h3>
+<ul>
+  <li>Kiểm tra <span class="btn">📚 Danh sách ngày</span> — đảm bảo không có ngày "lạc" trước ngày bắt đầu cuốn.</li>
+  <li>Dùng <span class="btn">📄 Trang bắt đầu</span> để cập nhật trang đầu nếu cần.</li>
+</ul>
+
+<h3>Muốn nhiều người cùng ghi 1 cuốn?</h3>
+<p>Phần mềm hiện chỉ lưu trên 1 máy. Cách workaround:</p>
+<ol>
+  <li>Một người ghi xong trong ngày → <span class="btn">📤 Xuất cuốn</span> gửi cho người tiếp theo.</li>
+  <li>Người tiếp theo <span class="btn">📂 Tải file</span> để cập nhật.</li>
+</ol>
+
+<hr style="border:none; border-top:1px solid #e2e8f0; margin:32px 0;">
+<p style="text-align:center; color:#64748b; font-size:13px;">
+  Mọi câu hỏi về phần mềm, liên hệ đội phát triển ·
+  <a href="index.html" style="color:#1e40af;">🚀 Quay về phần mềm</a>
+</p>
+
+</div>
+</body>
+</html>
