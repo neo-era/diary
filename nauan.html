@@ -408,7 +408,7 @@
   .recipe-card {
     background: linear-gradient(180deg, #fbf6ec 0%, var(--paper-deep) 100%);
     border: 1px solid var(--rule);
-    padding: 28px 24px 24px;
+    padding: 22px 24px 22px 54px;
     cursor: pointer;
     transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
     position: relative;
@@ -464,8 +464,17 @@
     font-style: italic;
     color: var(--ink-faded);
     font-size: 15px;
-    margin-bottom: 18px;
+    margin-bottom: 6px;
   }
+  .recipe-card-author {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--terracotta);
+    margin-bottom: 16px;
+    letter-spacing: 0.02em;
+  }
+  .recipe-card-author::before { content: '~ '; opacity: 0.5; }
 
   .recipe-card-meta {
     display: flex;
@@ -568,8 +577,18 @@
     font-style: italic;
     font-size: 22px;
     color: var(--ink-faded);
-    margin-bottom: 22px;
+    margin-bottom: 14px;
   }
+  .recipe-author {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--terracotta);
+    margin-bottom: 18px;
+    letter-spacing: 0.04em;
+  }
+  .recipe-author::before { content: '— '; opacity: 0.6; }
+  .recipe-author::after { content: ' —'; opacity: 0.6; }
 
   .recipe-meta {
     display: flex;
@@ -851,6 +870,170 @@
   .recipe-card:nth-child(8) { animation-delay: 0.40s; }
   .recipe-card:nth-child(n+9) { animation-delay: 0.45s; }
 
+  /* ====== SELECT BUTTON (FOR SHOPPING LIST) ====== */
+  .select-btn {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    width: 28px;
+    height: 28px;
+    border: 1.5px solid var(--rule);
+    background: var(--paper);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.18s;
+    z-index: 2;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .select-btn::before { content: '✓'; font-weight: 700; }
+  .select-btn:hover {
+    border-color: var(--terracotta);
+    background: #fff;
+  }
+  .select-btn.active {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+    color: #fff;
+  }
+  .select-btn:active { transform: scale(0.88); }
+
+  .recipe-card.selected {
+    border-color: var(--terracotta);
+    box-shadow: 0 0 0 1px var(--terracotta), 0 8px 22px var(--shadow);
+  }
+  .recipe-card.selected::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(177, 74, 42, 0.04);
+    pointer-events: none;
+  }
+
+  /* ====== SHOPPING BAR (FLOATING BOTTOM) ====== */
+  .shopping-bar {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--terracotta);
+    color: #fff;
+    padding: 14px 26px 14px 18px;
+    border-radius: 100px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 14px 36px rgba(31, 24, 19, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 80;
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+    border: none;
+    letter-spacing: 0.01em;
+    padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
+  }
+  .shopping-bar.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .shopping-bar:hover {
+    background: var(--terracotta-deep);
+    transform: translateX(-50%) translateY(-2px);
+  }
+  .shopping-bar:active { transform: translateX(-50%) translateY(0); }
+  .shopping-bar-count {
+    background: #fff;
+    color: var(--terracotta);
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 0 8px;
+  }
+  .shopping-bar-arrow {
+    font-size: 18px;
+    margin-left: 4px;
+    opacity: 0.8;
+  }
+
+  /* ====== SHOPPING LIST CONTENT IN MODAL ====== */
+  .shopping-summary {
+    background: var(--paper-deep);
+    padding: 14px 18px;
+    border-radius: 4px;
+    margin-bottom: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .shopping-summary-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .shopping-summary ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .shopping-summary li {
+    padding: 4px 0;
+    padding-left: 20px;
+    position: relative;
+    font-style: italic;
+  }
+  .shopping-summary li::before {
+    content: '·';
+    position: absolute;
+    left: 8px;
+    color: var(--terracotta);
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .shopping-source-list {
+    font-size: 12px;
+    color: var(--ink-faded);
+    font-style: italic;
+    display: block;
+    margin-top: 2px;
+  }
+  .clear-selection-btn {
+    margin-top: 32px;
+    padding: 12px 22px;
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .clear-selection-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
   /* ====== FAVORITES (HEART BUTTON) ====== */
   .fav-btn {
     position: absolute;
@@ -993,10 +1176,6 @@
     padding-bottom: 6px;
     border-bottom: 1px solid var(--rule);
   }
-  @media print {
-    .print-only-title { display: block !important; }
-  }
-
   /* ====== RESPONSIVE ====== */
   @media (max-width: 900px) {
     .modal-sticky-bar { padding: 12px 28px; }
@@ -1025,7 +1204,11 @@
       grid-template-columns: 1fr;
       gap: 14px;
     }
-    .recipe-card { padding: 22px 20px 20px; }
+    .recipe-card { padding: 20px 20px 18px 48px; }
+    .select-btn { top: 12px; left: 12px; width: 26px; height: 26px; }
+    .fav-btn { top: 11px; right: 11px; width: 32px; height: 32px; font-size: 18px; }
+    .shopping-bar { padding: 12px 22px 12px 16px; font-size: 15px; bottom: 14px; }
+    .shopping-bar-count { min-width: 24px; height: 24px; font-size: 12px; }
     .hamburger { width: 40px; height: 40px; }
     .sidebar { width: 300px; }
     .sidebar-header { padding: 18px 20px 12px; padding-top: max(18px, env(safe-area-inset-top, 18px)); }
@@ -1174,15 +1357,322 @@
     .fav-btn.active:hover { color: var(--terracotta); }
   }
 
-  /* Print */
+  /* ====== PRINT (A4) ====== */
   @media print {
-    .controls, .masthead, .footer, .modal-close, .modal-sticky-bar, .servings-control, .modal-tabs { display: none !important; }
-    .modal-backdrop { position: static; background: white; overflow: visible; }
-    .modal { box-shadow: none; margin: 0; max-height: none; transform: none; opacity: 1; }
-    .modal-scroll { max-height: none; overflow: visible; }
-    .tab-panel { display: block !important; }
-    .recipe-card { page-break-inside: avoid; }
-    .step { page-break-inside: avoid; }
+    @page {
+      size: A4 portrait;
+      margin: 1.6cm 1.8cm 1.8cm 1.8cm;
+    }
+
+    html, body {
+      background: #fff !important;
+      background-image: none !important;
+      color: #000 !important;
+      font-family: 'Cormorant Garamond', 'Times New Roman', serif !important;
+      font-size: 11pt;
+      line-height: 1.5;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Ẩn toàn bộ UI chrome */
+    .masthead, .controls, .hamburger, .sidebar, .sidebar-backdrop,
+    .footer, .modal-close, .modal-sticky-bar, .modal-tabs,
+    .fav-btn, .select-btn, .icon-btn, .recipe-grid, .servings-btn,
+    .ingredient-dots, .shopping-bar, .clear-selection-btn {
+      display: none !important;
+    }
+
+    /* Shopping summary trong danh sách đi chợ */
+    .shopping-summary {
+      background: transparent !important;
+      border: 1pt solid #888 !important;
+      padding: 8pt 12pt !important;
+      margin-bottom: 14pt !important;
+      page-break-inside: avoid !important;
+    }
+    .shopping-summary-label {
+      font-size: 9pt !important;
+      letter-spacing: 0.22em !important;
+      color: #000 !important;
+      margin-bottom: 4pt !important;
+    }
+    .shopping-summary li {
+      font-size: 11pt !important;
+      color: #000 !important;
+      padding: 2pt 0 2pt 16pt !important;
+    }
+    .shopping-source-list {
+      font-size: 9pt !important;
+      color: #555 !important;
+    }
+
+    /* Modal trở thành toàn trang in */
+    .modal-backdrop {
+      position: static !important;
+      background: #fff !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      overflow: visible !important;
+      display: block !important;
+      inset: auto !important;
+    }
+    .modal {
+      box-shadow: none !important;
+      margin: 0 !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      max-height: none !important;
+      min-height: 0 !important;
+      transform: none !important;
+      opacity: 1 !important;
+      background: #fff !important;
+      border: none !important;
+      display: block !important;
+    }
+    .modal-scroll {
+      max-height: none !important;
+      overflow: visible !important;
+      display: block !important;
+    }
+
+    /* TIÊU ĐỀ MÓN */
+    .recipe-header {
+      background: transparent !important;
+      border-bottom: 2pt solid #000 !important;
+      padding: 0 0 10pt 0 !important;
+      margin: 0 0 14pt 0 !important;
+      text-align: center !important;
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+    }
+    .recipe-num {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-style: italic !important;
+      font-size: 10pt !important;
+      letter-spacing: 0.22em !important;
+      color: #000 !important;
+      margin-bottom: 6pt !important;
+      text-transform: uppercase;
+    }
+    .recipe-title {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-size: 26pt !important;
+      font-weight: 500 !important;
+      line-height: 1.05 !important;
+      letter-spacing: -0.01em;
+      margin: 0 0 4pt 0 !important;
+      color: #000 !important;
+    }
+    .recipe-subtitle {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-style: italic !important;
+      font-size: 13pt !important;
+      color: #444 !important;
+      margin: 0 0 6pt 0 !important;
+    }
+    .recipe-author {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-style: italic !important;
+      font-size: 10pt !important;
+      color: #555 !important;
+      margin: 0 0 10pt 0 !important;
+      letter-spacing: 0.05em !important;
+    }
+    .recipe-author::before, .recipe-author::after { content: ''; }
+    .recipe-card-author { display: none !important; }
+    .recipe-meta {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-size: 9.5pt !important;
+      color: #333 !important;
+      gap: 12pt !important;
+      letter-spacing: 0.1em !important;
+      text-transform: none !important;
+      flex-wrap: wrap !important;
+      justify-content: center !important;
+    }
+
+    /* KHẨU PHẦN: hiện text, ẩn nút +/− */
+    .servings-control {
+      display: flex !important;
+      background: transparent !important;
+      border: none !important;
+      border-bottom: 0.5pt dashed #888 !important;
+      padding: 5pt 0 !important;
+      margin: 0 0 12pt 0 !important;
+      justify-content: center !important;
+      gap: 8pt !important;
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+    }
+    .servings-label, .servings-unit {
+      color: #000 !important;
+      font-family: 'Cormorant Garamond', serif !important;
+      font-style: italic !important;
+      font-size: 11pt !important;
+    }
+    .servings-value {
+      color: #000 !important;
+      font-family: 'Cormorant Garamond', serif !important;
+      font-weight: 600 !important;
+      font-size: 13pt !important;
+      min-width: 0 !important;
+    }
+    .servings-control-buttons {
+      display: inline-flex !important;
+      gap: 0 !important;
+      align-items: baseline !important;
+    }
+
+    /* NỘI DUNG */
+    .recipe-content {
+      padding: 0 !important;
+    }
+    .tab-panel {
+      display: block !important;
+      animation: none !important;
+    }
+
+    /* GHI CHÚ */
+    .recipe-note {
+      background: transparent !important;
+      border-left: 2pt solid #999 !important;
+      padding: 4pt 10pt !important;
+      margin: 0 0 8pt 0 !important;
+      font-family: 'Cormorant Garamond', serif !important;
+      font-style: italic !important;
+      font-size: 10pt !important;
+      color: #000 !important;
+      page-break-inside: avoid !important;
+    }
+
+    /* TIÊU ĐỀ MỤC NGUYÊN LIỆU / CÁCH LÀM */
+    .print-only-title {
+      display: block !important;
+      font-family: 'Cormorant Garamond', serif !important;
+      font-size: 10pt !important;
+      letter-spacing: 0.28em !important;
+      text-transform: uppercase !important;
+      color: #000 !important;
+      font-weight: 600 !important;
+      margin: 10pt 0 6pt 0 !important;
+      padding: 0 0 3pt 0 !important;
+      border: none !important;
+      border-bottom: 1pt solid #000 !important;
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+    }
+    /* Khoảng cách trước "Cách làm" để tách rõ với "Nguyên liệu" */
+    .tab-panel[data-panel="steps"] .print-only-title {
+      margin-top: 16pt !important;
+    }
+
+    /* NHÓM NGUYÊN LIỆU */
+    .ingredient-group {
+      margin-bottom: 10pt !important;
+      page-break-inside: avoid !important;
+    }
+    .ingredient-group-name {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-size: 12pt !important;
+      font-style: italic !important;
+      font-weight: 600 !important;
+      margin: 0 0 4pt 0 !important;
+      color: #000 !important;
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+    }
+    .ingredient-list {
+      list-style: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .ingredient {
+      display: flex !important;
+      align-items: baseline !important;
+      padding: 2pt 0 !important;
+      border-bottom: 0.5pt dotted #999 !important;
+      page-break-inside: avoid !important;
+      gap: 10pt !important;
+    }
+    .ingredient-name {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-size: 10.5pt !important;
+      color: #000 !important;
+      flex: 1 !important;
+    }
+    .ingredient-qty {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-size: 11pt !important;
+      font-weight: 600 !important;
+      color: #000 !important;
+      text-align: right !important;
+      min-width: 70pt !important;
+      font-style: normal !important;
+    }
+    .ingredient-note {
+      font-size: 9pt !important;
+      color: #555 !important;
+      font-style: italic !important;
+      display: block !important;
+      margin-top: 1pt !important;
+    }
+
+    /* CÁCH LÀM */
+    .step {
+      display: grid !important;
+      grid-template-columns: 32pt 1fr !important;
+      gap: 10pt !important;
+      padding: 5pt 0 !important;
+      border-bottom: 0.5pt solid #ccc !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    .step:last-child { border-bottom: none !important; }
+    .step-num {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-style: italic !important;
+      font-size: 20pt !important;
+      color: #000 !important;
+      line-height: 1 !important;
+      text-align: center !important;
+      font-weight: 500 !important;
+    }
+    .step-body {
+      padding-top: 1pt !important;
+    }
+    .step-title {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-size: 12pt !important;
+      font-weight: 600 !important;
+      margin: 0 0 3pt 0 !important;
+      color: #000 !important;
+      gap: 6pt !important;
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+    }
+    .step-time {
+      background: transparent !important;
+      border: 0.5pt solid #777 !important;
+      color: #000 !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: 8pt !important;
+      padding: 1pt 5pt !important;
+      border-radius: 0 !important;
+      letter-spacing: 0.08em !important;
+    }
+    .step-content {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-size: 10.5pt !important;
+      color: #222 !important;
+      line-height: 1.5 !important;
+      margin: 0 !important;
+    }
+
+    /* Tránh orphans/widows */
+    p, li { orphans: 3; widows: 3; }
   }
 </style>
 </head>
@@ -1194,7 +1684,7 @@
   <h1 class="masthead-title">Sổ <em>Công Thức</em></h1>
   <p class="masthead-sub">Tổng hợp các món ăn được chép tay và in trên lớp — món bún, hủ tiếu, xôi, kho, nướng, xào, canh.</p>
   <div class="masthead-meta">
-    <span>19 món</span>
+    <span id="recipeCount">— món</span>
     <span class="meta-dot"></span>
     <span>Đơn vị gốc</span>
     <span class="meta-dot"></span>
@@ -1244,8 +1734,15 @@
 
 <!-- ============ FOOTER ============ -->
 <footer class="footer">
-  Lưu lại để nấu — không thay thế được kinh nghiệm của thầy cô
+Reserved by MVL - 2026 - 0989725507 - <a href="mailto:mvulam@gmail.com">mvulam@gmail.com</a>
 </footer>
+
+<!-- ============ SHOPPING BAR ============ -->
+<button class="shopping-bar" id="shoppingBar" onclick="openShoppingList()" type="button">
+  <span class="shopping-bar-count" id="shoppingBarCount">0</span>
+  <span>Tổng hợp đi chợ</span>
+  <span class="shopping-bar-arrow">→</span>
+</button>
 
 <script>
 // Dữ liệu 19 công thức nấu ăn - Nhà Văn Hóa Phụ Nữ TP.HCM
@@ -1574,7 +2071,7 @@ const RECIPES = [
     category: "Món mặn",
     servings: 4,
     source: "Tay viết",
-    note: "Có thể thay thịt heo bằng hải sản (nghêu, tôm, cá chiên/lóc) hoặc thịt băm, khô cá rúc xay nhuyễn",
+    note: "Có thể thay thịt heo bằng hải sản (nghêu, tôm, cá chiên/lóc) hoặc thịt băm, khô cá sửu xay nhuyễn",
     groups: [
       {
         name: "Nguyên liệu",
@@ -1999,12 +2496,2725 @@ const RECIPES = [
       { title: "Nấu nước hủ tiếu", content: "Nước dùng trong + 1 vá mỡ gà đã thắng + gia vị (bột ngọt + knor + đường phèn + nước mắm)." },
       { title: "Dọn kèm", content: "Hủ tiếu + lòng gà trứng non + huyết + thịt gà + hành ngò + hành tây thái sợi + giá + chanh ớt + nước mắm mặn." }
     ]
+  },
+
+  /* ============================================
+     MÓN ĐẶC SẮC — SƯU TẦM CÓ TÊN TÁC GIẢ
+     ============================================ */
+
+  {
+    id: 20,
+    title: "Phở Bò Hà Nội",
+    subtitle: "phở chính hiệu Hà thành",
+    category: "Đặc sản vùng miền",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Nguyễn Thị Nhung · Hàng Đào, Hà Nội",
+    note: "Bí quyết của phở Hà Nội là nước dùng phải trong và ngọt từ xương, không dùng bột ngọt nhiều.",
+    groups: [
+      {
+        name: "Nước dùng",
+        items: [
+          { name: "Xương ống bò (chặt khúc)", qty: 2, unit: "kg" },
+          { name: "Thịt bắp bò (nguyên khối)", qty: 0.5, unit: "kg" },
+          { name: "Đuôi bò", qty: 0.3, unit: "kg", note: "tùy chọn, tăng độ ngọt" },
+          { name: "Nước lọc", qty: 5, unit: "lít" },
+          { name: "Gừng (nướng lột vỏ)", qty: 0.1, unit: "kg" },
+          { name: "Hành tây (nướng)", qty: 0.2, unit: "kg" },
+          { name: "Hành tím (nướng)", qty: 0.1, unit: "kg" },
+          { name: "Quế", qty: 1, unit: "thanh" },
+          { name: "Hoa hồi", qty: 4, unit: "hoa" },
+          { name: "Thảo quả (nướng đập dập)", qty: 2, unit: "quả" },
+          { name: "Đinh hương", qty: 6, unit: "hạt" },
+          { name: "Hạt mùi (rang)", qty: 1, unit: "ms" },
+          { name: "Đường phèn", qty: 50, unit: "gr" },
+          { name: "Muối hột", qty: 1.5, unit: "ms" },
+          { name: "Nước mắm ngon", qty: 80, unit: "ml" },
+        ]
+      },
+      {
+        name: "Bánh phở và topping",
+        items: [
+          { name: "Bánh phở tươi", qty: 1, unit: "kg" },
+          { name: "Thịt bò tái (nạc lưng thái lát mỏng)", qty: 0.3, unit: "kg" },
+          { name: "Thịt bò chín nạm hoặc gân (thái lát)", qty: 0.5, unit: "kg" },
+          { name: "Hành lá (thái nhỏ)", qty: 50, unit: "gr" },
+          { name: "Ngò gai (thái nhỏ)", qty: 50, unit: "gr" },
+          { name: "Húng quế, giá đỗ, chanh, ớt tươi", qty: null, unit: "ăn kèm" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế xương", time: "~10 phút", content: "Trụng xương bò qua nước sôi 5 phút để loại bỏ bọt bẩn. Rửa lại sạch dưới nước lạnh." },
+      { title: "Nướng gia vị", time: "~15 phút", content: "Nướng gừng + hành tây + hành tím cho thơm và xém vỏ. Rang quế, hồi, đinh hương, hạt mùi trong chảo khô đến khi dậy mùi. Bọc gia vị khô trong túi vải buộc lại." },
+      { title: "Hầm nước dùng", time: "~5 giờ", content: "Cho xương + thịt bắp bò + đuôi bò vào nồi với 5 lít nước. Đun sôi, hớt sạch bọt. Hạ lửa nhỏ liu riu, thả gừng/hành nướng + túi gia vị + muối hột. Hầm 4-5 giờ. Vớt thịt bắp ra sau 1.5-2 giờ ngâm nước lạnh cho săn." },
+      { title: "Lọc và nêm nước dùng", content: "Lọc nước dùng qua rây mịn cho thật trong. Nêm đường phèn + nước mắm. Nếm lại cho vừa miệng, vị ngọt thanh từ xương." },
+      { title: "Thái thịt", content: "Thịt bò chín đã ngâm nước lạnh thái lát thật mỏng theo thớ. Thịt bò tái thái lát mỏng để riêng. Xếp ra dĩa." },
+      { title: "Trụng bánh phở", time: "~30 giây", content: "Trụng bánh phở qua nước sôi 30 giây cho nóng và mềm. Vớt ra cho vào tô." },
+      { title: "Xếp tô phở", content: "Xếp thịt bò tái và chín lên trên bánh phở. Rắc hành lá + ngò gai thái nhỏ + ít hành tây thái mỏng." },
+      { title: "Chan nước dùng", content: "Chan nước dùng đang sôi sùng sục vào tô. Nhiệt làm thịt bò tái vừa chín tới. Ăn ngay khi nóng." },
+      { title: "Phục vụ", content: "Bày kèm dĩa giá, húng quế, lá chanh, ớt tươi thái lát, miếng chanh. Tương đen và tương ớt để bàn cho khách tự thêm." }
+    ]
+  },
+
+  {
+    id: 21,
+    title: "Bún Bò Huế",
+    subtitle: "cay nồng đậm vị xứ Huế",
+    category: "Đặc sản vùng miền",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Trần Thị Hậu · Vĩ Dạ, Huế",
+    note: "Linh hồn của bún bò Huế là mắm ruốc và sả. Không dùng quế hồi như phở.",
+    groups: [
+      {
+        name: "Nước dùng",
+        items: [
+          { name: "Xương bò ống", qty: 1.5, unit: "kg" },
+          { name: "Bắp bò (nguyên khối)", qty: 0.5, unit: "kg" },
+          { name: "Giò heo trước (chặt khoanh)", qty: 0.5, unit: "kg" },
+          { name: "Nước", qty: 4, unit: "lít" },
+          { name: "Sả tươi (đập dập)", qty: 0.2, unit: "kg" },
+          { name: "Gừng nướng (đập dập)", qty: 50, unit: "gr" },
+          { name: "Hành tím nướng", qty: 0.1, unit: "kg" },
+          { name: "Muối hột", qty: 1.5, unit: "ms" },
+          { name: "Đường phèn", qty: 50, unit: "gr" },
+          { name: "Nước mắm ngon", qty: 80, unit: "ml" },
+        ]
+      },
+      {
+        name: "Gia vị đặc trưng",
+        items: [
+          { name: "Mắm ruốc Huế chính hiệu", qty: 2, unit: "ms" },
+          { name: "Sa tế ớt", qty: 2, unit: "ms" },
+          { name: "Hột điều màu (thắng dầu)", qty: 1, unit: "ms" },
+          { name: "Dầu ăn", qty: 3, unit: "ms" },
+          { name: "Hành tây", qty: 0.1, unit: "kg" },
+        ]
+      },
+      {
+        name: "Topping và rau ăn kèm",
+        items: [
+          { name: "Bún sợi to (bún bò Huế)", qty: 1, unit: "kg" },
+          { name: "Chả cua viên", qty: 0.3, unit: "kg" },
+          { name: "Huyết heo (trụng nước sôi)", qty: 0.3, unit: "kg" },
+          { name: "Bắp chuối non thái sợi", qty: 0.2, unit: "kg" },
+          { name: "Rau muống chẻ", qty: 0.2, unit: "kg" },
+          { name: "Giá đỗ, húng quế, ngò gai, hành lá", qty: null, unit: "vừa đủ" },
+          { name: "Chanh, ớt hiểm, mắm ruốc nguyên chấm thêm", qty: null, unit: "ăn kèm" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế xương và thịt", time: "~10 phút", content: "Trụng xương bò, bắp bò, giò heo qua nước sôi 5 phút. Rửa lại sạch." },
+      { title: "Hầm nước dùng", time: "~3 giờ", content: "4 lít nước + xương + bắp bò + giò heo. Đun sôi hớt bọt. Thêm sả đập dập + gừng nướng + hành tím nướng + muối hột. Hầm lửa nhỏ 3 giờ." },
+      { title: "Vớt thịt giữa chừng", content: "Khi bắp bò chín tới (~1 giờ), vớt ra ngâm nước lạnh. Giò heo hầm tiếp đến khi mềm rục thì vớt ra." },
+      { title: "Pha mắm ruốc", content: "Hòa 2 ms mắm ruốc với 1 chén nước ấm, để lắng 5 phút. Lọc lấy nước trong, bỏ cặn. Đổ phần nước này vào nồi nước dùng." },
+      { title: "Thắng dầu điều", time: "~3 phút", content: "Đun nóng 3 ms dầu ăn, cho 1 ms hột điều màu vào phi lửa vừa đến khi dầu chuyển đỏ cam. Lọc bỏ hột. Cho dầu điều và sa tế 2 ms vào nồi nước dùng." },
+      { title: "Nêm hoàn thiện", content: "Thêm đường phèn 50 gr + nước mắm 80 ml. Nếm vừa miệng — vị mặn đậm, ngọt thanh, cay nhẹ, thơm mắm ruốc. Giữ nồi sôi lăn tăn." },
+      { title: "Thái thịt và chuẩn bị", content: "Thịt bò + giò heo thái lát vừa ăn. Hành tây thái mỏng. Bắp chuối, rau muống chẻ ngâm nước đá cho giòn." },
+      { title: "Trụng bún và xếp tô", content: "Trụng bún sợi to qua nước sôi. Cho vào tô. Xếp thịt bò + giò heo + chả cua + huyết." },
+      { title: "Hoàn thiện", content: "Chan nước dùng cay nóng. Rắc hành lá + hành tây + ngò gai. Bày kèm bắp chuối, rau muống chẻ, giá, húng quế, chanh, ớt và chén mắm ruốc nguyên." }
+    ]
+  },
+
+  {
+    id: 22,
+    title: "Bánh Xèo Miền Tây",
+    subtitle: "giòn rụm vị quê",
+    category: "Bánh - Cuốn",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Lê Thị Hồng · Cần Thơ",
+    note: "Bánh xèo Miền Tây to gấp đôi miền Trung, nhân nhiều giá. Đổ vào chảo gang lớn để vỏ giòn.",
+    groups: [
+      {
+        name: "Bột bánh",
+        items: [
+          { name: "Bột gạo", qty: 0.4, unit: "kg" },
+          { name: "Bột nghệ (tạo màu vàng)", qty: 0.5, unit: "mc" },
+          { name: "Nước cốt dừa", qty: 0.5, unit: "lít" },
+          { name: "Nước lọc", qty: 0.5, unit: "lít" },
+          { name: "Hành lá (thái nhỏ)", qty: 50, unit: "gr" },
+          { name: "Muối", qty: 0.5, unit: "mc" },
+          { name: "Đường", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Nhân bánh",
+        items: [
+          { name: "Tôm tươi (lột vỏ chừa đuôi)", qty: 0.3, unit: "kg" },
+          { name: "Thịt ba chỉ (thái mỏng)", qty: 0.3, unit: "kg" },
+          { name: "Giá đỗ", qty: 0.3, unit: "kg" },
+          { name: "Đậu xanh đã hấp (tùy)", qty: 0.2, unit: "kg" },
+          { name: "Hành tím (thái lát)", qty: 0.1, unit: "kg" },
+          { name: "Nấm rơm (cắt đôi)", qty: 0.2, unit: "kg", note: "tùy chọn" },
+          { name: "Dầu ăn", qty: null, unit: "vừa đủ" },
+        ]
+      },
+      {
+        name: "Nước chấm chua ngọt",
+        items: [
+          { name: "Nước mắm ngon", qty: 4, unit: "ms" },
+          { name: "Đường", qty: 3, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 2, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Ớt xay", qty: 1, unit: "ms" },
+          { name: "Nước lọc", qty: 4, unit: "ms" },
+          { name: "Cà rốt + đu đủ xanh thái sợi", qty: 0.1, unit: "kg" },
+        ]
+      },
+      {
+        name: "Rau sống ăn kèm",
+        items: [
+          { name: "Xà lách, rau thơm, diếp cá, húng quế, lá cải xanh, lá xoài non", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Pha bột bánh", time: "~30 phút nghỉ", content: "Trộn bột gạo + bột nghệ + nước cốt dừa + nước lọc + muối + đường. Khuấy thật mịn không vón cục. Thêm hành lá thái nhỏ. Để bột nghỉ 30 phút cho thấm." },
+      { title: "Sơ chế nhân", content: "Tôm rửa sạch lột vỏ chừa đuôi, ướp 1 mc muối + tiêu. Thịt ba chỉ thái mỏng ướp 1 mc muối + 1 ms nước mắm + tiêu." },
+      { title: "Pha nước chấm", content: "Hòa nước mắm + đường + nước lọc đun lửa nhỏ cho đường tan. Để nguội, thêm nước cốt chanh + tỏi + ớt xay. Cuối cùng cho cà rốt + đu đủ xanh thái sợi vào ngâm." },
+      { title: "Xào nhân", time: "~5 phút", content: "Cho ít dầu vào chảo, phi hành tím thơm. Cho thịt ba chỉ vào xào săn. Thêm tôm xào vừa chín hồng. Nhấc ra để riêng." },
+      { title: "Đổ bánh", time: "~3 phút/cái", content: "Đun nóng chảo gang/chống dính lửa lớn, thoa lớp dầu mỏng. Khuấy đều bột (bột hay lắng), đổ 1 vá vào chảo nóng, nghiêng chảo cho bột láng đều thành 1 lớp mỏng." },
+      { title: "Cho nhân vào bánh", content: "Khi bánh bắt đầu se mặt (~30 giây), rắc giá đỗ + đậu xanh + ít nhân tôm thịt lên 1/2 mặt bánh." },
+      { title: "Đậy nắp và gập bánh", time: "~2 phút", content: "Đậy nắp 1-2 phút cho giá chín tới. Mở nắp, kiểm tra rìa bánh vàng giòn thì gập đôi bánh lại (đậy nhân). Rán thêm 30 giây cho rìa thật giòn." },
+      { title: "Ăn kèm", content: "Lấy bánh ra dĩa nóng. Cuộn miếng bánh xèo với rau sống trong tay, chấm vào nước mắm chua ngọt. Ăn ngay khi giòn." }
+    ]
+  },
+
+  {
+    id: 23,
+    title: "Gỏi Cuốn Tôm Thịt",
+    subtitle: "tươi mát ngày hè",
+    category: "Bánh - Cuốn",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Thầy Trần Văn Minh · Sài Gòn",
+    note: "Bánh tráng phải nhúng vừa đủ — quá ướt sẽ rách, quá khô sẽ cứng.",
+    groups: [
+      {
+        name: "Nguyên liệu cuốn",
+        items: [
+          { name: "Bánh tráng cuốn mỏng (20-22cm)", qty: 20, unit: "cái" },
+          { name: "Tôm tươi loại trung (luộc, chẻ đôi)", qty: 0.3, unit: "kg" },
+          { name: "Thịt ba chỉ (luộc, thái lát mỏng)", qty: 0.3, unit: "kg" },
+          { name: "Bún tươi sợi nhỏ", qty: 0.3, unit: "kg" },
+          { name: "Xà lách lá xanh", qty: 0.2, unit: "kg" },
+          { name: "Hẹ tươi (cắt khúc dài)", qty: 50, unit: "gr" },
+          { name: "Húng quế, rau thơm, diếp cá", qty: 0.1, unit: "kg" },
+          { name: "Cà rốt thái sợi", qty: 0.1, unit: "kg" },
+          { name: "Dưa leo thái sợi (bỏ ruột)", qty: 0.2, unit: "kg" },
+        ]
+      },
+      {
+        name: "Nước chấm tương đậu phộng",
+        items: [
+          { name: "Tương đen (tương hột xay)", qty: 4, unit: "ms" },
+          { name: "Đậu phộng rang giã thô", qty: 2, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Ớt xay", qty: 1, unit: "ms", note: "tùy khẩu vị" },
+          { name: "Nước cốt me", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Nước dừa hoặc nước lọc", qty: 4, unit: "ms" },
+          { name: "Dầu ăn", qty: 1, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Luộc tôm", time: "~3 phút", content: "Đun sôi nước với 1 mc muối + lát gừng. Cho tôm vào luộc 2 phút đến vừa chín hồng. Vớt ra ngâm ngay vào nước đá cho giòn. Lột vỏ chừa đuôi, chẻ đôi theo chiều dọc." },
+      { title: "Luộc thịt", time: "~30 phút", content: "Luộc thịt ba chỉ với muối + gừng đập dập + hành tím 25-30 phút đến chín mềm. Vớt ra ngâm nước lạnh để miếng thịt săn chắc. Thái lát thật mỏng theo thớ ngang." },
+      { title: "Pha nước chấm tương", time: "~5 phút", content: "Phi tỏi với 1 ms dầu cho thơm vàng. Cho tương đen vào đảo đều. Thêm đường + nước dừa + nước cốt me. Đun lửa nhỏ 5 phút khuấy đều cho sánh sệt. Tắt bếp." },
+      { title: "Hoàn thiện nước chấm", content: "Đợi nguội bớt rồi cho ớt xay vào (muốn cay mới thêm). Múc ra chén, rắc đậu phộng rang giã lên trên. Có thể thêm vài giọt dầu mè cho thơm." },
+      { title: "Chuẩn bị rau", content: "Rửa sạch xà lách, hẹ, rau thơm để ráo. Cà rốt và dưa leo thái sợi nhỏ. Bún tươi gỡ rời từng sợi." },
+      { title: "Cuốn gỏi", content: "Nhúng bánh tráng qua nước ấm 2-3 giây cho mềm vừa. Trải lên thớt phẳng/dĩa. Xếp từ trong ra: 1 lá xà lách → ít bún → rau thơm → cà rốt + dưa leo → 2-3 lát thịt ba chỉ → 2-3 con tôm úp ngửa + 1 cọng hẹ thò ra." },
+      { title: "Cuộn chặt", content: "Gập 2 mép bánh tráng vào (trên dưới). Cuộn lại từ phía gần nhất, kéo cho chặt tay. Tôm và đuôi hẹ nhô ra 1 đầu để đẹp mắt." },
+      { title: "Bày và ăn", content: "Cắt đôi mỗi cuốn (tùy thích) bằng dao sắc. Xếp ra dĩa. Chấm với nước chấm tương đậu phộng. Ăn ngay để bánh tráng không bị khô." }
+    ]
+  },
+
+  {
+    id: 24,
+    title: "Cá Kho Tộ Bến Tre",
+    subtitle: "cá kho rim nước dừa",
+    category: "Món mặn",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bếp Mẹ Tâm · Bến Tre",
+    note: "Dùng tộ đất nung kho lửa nhỏ liu riu để cá thấm vị và mềm xương. Nước dừa là linh hồn.",
+    groups: [
+      {
+        name: "Cá ướp",
+        items: [
+          { name: "Cá lóc hoặc cá basa (cắt khoanh 3-4cm)", qty: 0.6, unit: "kg" },
+          { name: "Nước mắm ngon", qty: 3, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Hành tím xay", qty: 1, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+          { name: "Chanh + muối rửa cá", qty: null, unit: "vừa đủ" },
+        ]
+      },
+      {
+        name: "Gia vị kho",
+        items: [
+          { name: "Đường thắng nước màu", qty: 3, unit: "ms" },
+          { name: "Nước lọc (thắng đường)", qty: 1, unit: "ms" },
+          { name: "Nước cốt dừa", qty: 1, unit: "chén" },
+          { name: "Nước dừa tươi", qty: 1, unit: "chén" },
+          { name: "Mỡ heo cắt hạt lựu (thắng lấy nước)", qty: 50, unit: "gr" },
+          { name: "Ớt hiểm nguyên trái", qty: 3, unit: "trái" },
+          { name: "Hành lá thái khúc", qty: 30, unit: "gr" },
+          { name: "Tiêu hột (rang giã)", qty: 1, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế cá", time: "~5 phút", content: "Cá lóc/basa làm sạch, chà xát với muối + nước cốt chanh để khử tanh. Rửa lại sạch, để ráo. Cắt khoanh dày 3-4 cm." },
+      { title: "Ướp cá", time: "~30 phút", content: "Trộn cá với nước mắm + đường + hành tím xay + tỏi xay + tiêu. Ướp ít nhất 30 phút cho thấm gia vị, lâu hơn thì ngon hơn." },
+      { title: "Thắng nước màu", time: "~5 phút", content: "Cho 3 ms đường vào tộ đất (hoặc nồi đáy dày), đun lửa nhỏ liu riu đến khi đường chuyển màu cánh gián nâu đậm. Thêm 1 ms nước cho ngấm và dừng cháy." },
+      { title: "Thắng mỡ", time: "~3 phút", content: "Cho mỡ heo cắt hạt lựu vào tộ với đường thắng, đun cho mỡ chảy ra và tép mỡ vàng giòn. Để lại nước mỡ thơm." },
+      { title: "Xếp cá vào tộ", content: "Xếp các khoanh cá đã ướp vào tộ, không chồng chéo. Đảo nhẹ tay một lần để cá áo đều màu nước thắng." },
+      { title: "Thêm nước dừa", content: "Đổ nước cốt dừa + nước dừa tươi vào tộ sao cho xăm xắp 1/2 thân cá. Thả ớt hiểm nguyên trái vào. Đun sôi mạnh." },
+      { title: "Kho rim", time: "~30 phút", content: "Hạ lửa nhỏ nhất liu riu. Kho 25-30 phút, đảo nhẹ vài lần. Khi nước rút xuống còn 1/3 ban đầu và sánh sệt như mật là được. Cá thấm nâu đỏ đẹp mắt." },
+      { title: "Hoàn thiện", content: "Tắt bếp, rắc hành lá thái khúc + tiêu hột rang giã lên trên. Cá kho ngon nhất khi để 'ngấm' 15 phút rồi ăn với cơm trắng nóng, dưa cải hoặc rau luộc." }
+    ]
+  },
+
+  {
+    id: 25,
+    title: "Cao Lầu Hội An",
+    subtitle: "đặc sản phố cổ",
+    category: "Đặc sản vùng miền",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Ông Lê Văn Nam · Hội An, Quảng Nam",
+    note: "Cao lầu chính hiệu phải dùng nước giếng Bá Lễ và tro củi của vùng Cù Lao Chàm. Sợi cao lầu khô tự nhiên có màu vàng nâu nhạt.",
+    groups: [
+      {
+        name: "Sợi cao lầu và chuẩn bị",
+        items: [
+          { name: "Sợi cao lầu khô (mua tại Hội An hoặc thay bằng mì udon)", qty: 0.4, unit: "kg" },
+          { name: "Nước trụng sợi", qty: 2, unit: "lít" },
+        ]
+      },
+      {
+        name: "Thịt xá xíu",
+        items: [
+          { name: "Thịt heo nạc dăm (cắt khối)", qty: 0.5, unit: "kg" },
+          { name: "Ngũ vị hương", qty: 1, unit: "mc" },
+          { name: "Mật ong", qty: 2, unit: "ms" },
+          { name: "Nước tương đậm", qty: 2, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Hành tím xay", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "ms" },
+          { name: "Muối", qty: 0.5, unit: "mc" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Nước sốt và topping",
+        items: [
+          { name: "Nước xá xíu (từ thịt rim ra)", qty: 0.5, unit: "chén" },
+          { name: "Nước tương", qty: 2, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "ms" },
+          { name: "Bột năng (làm sệt)", qty: 1, unit: "mc" },
+          { name: "Tỏi phi vàng giòn", qty: 2, unit: "ms" },
+          { name: "Da heo chiên giòn (cắt vuông nhỏ)", qty: 50, unit: "gr" },
+          { name: "Đậu phộng rang giã thô", qty: 1, unit: "ms" },
+          { name: "Tôm khô (rang sơ, tùy)", qty: 30, unit: "gr" },
+        ]
+      },
+      {
+        name: "Rau sống ăn kèm",
+        items: [
+          { name: "Giá đỗ", qty: 0.2, unit: "kg" },
+          { name: "Rau đắng, húng quế, ngò om, xà lách (đặc trưng Hội An)", qty: 0.15, unit: "kg" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Ướp xá xíu", time: "~1 giờ (lý tưởng qua đêm)", content: "Trộn thịt heo với ngũ vị hương + mật ong + nước tương + tỏi xay + hành tím xay + đường + muối + tiêu + dầu hào. Đảo đều, ướp tối thiểu 1 giờ, để qua đêm trong tủ lạnh là ngon nhất." },
+      { title: "Rim xá xíu", time: "~30 phút", content: "Đặt thịt vào nồi đáy dày, đổ thêm 1 chén nước. Đun sôi rồi hạ lửa nhỏ rim 30 phút, đảo thường xuyên cho thịt áo đều nước sốt cô đặc. Khi thịt chín mềm và nước sốt sệt lại là được. Để nguội bớt thái lát mỏng." },
+      { title: "Pha nước sốt", time: "~5 phút", content: "Lấy 1/2 chén nước xá xíu cô đặc + nước tương + đường đun nhỏ lửa. Hòa bột năng với 2 ms nước lạnh, đổ vào nồi khuấy đều đến khi sệt vừa, bóng đẹp." },
+      { title: "Phi tỏi vàng", time: "~3 phút", content: "Băm nhỏ tỏi, phi với dầu ăn lửa vừa đến vàng giòn. Vớt ra để ráo dầu trên giấy thấm." },
+      { title: "Chiên da heo giòn", content: "Da heo đã làm sẵn (mua hoặc tự làm), chiên với dầu nóng cho phồng giòn rộp. Cắt vuông nhỏ 1cm." },
+      { title: "Trụng sợi cao lầu", time: "~2 phút", content: "Đun sôi 2 lít nước. Cho sợi cao lầu khô vào trụng 1-2 phút đến khi sợi vừa mềm dai. Không nấu lâu kẻo bị nhũn. Vớt ra để ráo, không xả nước lạnh." },
+      { title: "Xếp tô", content: "Cho sợi cao lầu vào tô. Xếp giá đỗ + thịt xá xíu thái lát lên trên. Rải da heo chiên giòn + tỏi phi + đậu phộng + tôm khô (nếu có)." },
+      { title: "Chan sốt và hoàn thiện", content: "Chan 2-3 ms nước sốt sệt lên trên (cao lầu không có nhiều nước như phở/bún). Bày kèm dĩa rau sống Hội An (rau đắng, húng quế, ngò om, xà lách). Trộn đều khi ăn cho sốt thấm sợi." }
+    ]
+  },
+
+  /* ============================================
+     CÁC MÓN BÚN
+     ============================================ */
+
+  {
+    id: 26,
+    title: "Bún Riêu Cua",
+    subtitle: "cua đồng nguyên chất",
+    category: "Bún",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Lê Thị Vân · Hàng Bè, Hà Nội",
+    note: "Cua đồng phải xay nhuyễn lọc kỹ qua rây để lấy nước cốt riêu. Đậu phụ rán vàng giòn mới ngon.",
+    groups: [
+      {
+        name: "Nước dùng cua",
+        items: [
+          { name: "Cua đồng xay (lọc lấy nước)", qty: 1, unit: "kg" },
+          { name: "Nước lọc", qty: 3, unit: "lít" },
+          { name: "Cà chua chín (cắt múi cau)", qty: 0.5, unit: "kg" },
+          { name: "Hành tím đập dập", qty: 50, unit: "gr" },
+          { name: "Tỏi đập dập", qty: 30, unit: "gr" },
+          { name: "Hành tây", qty: 0.1, unit: "kg" },
+          { name: "Mắm tôm Hà Nội", qty: 1, unit: "ms" },
+          { name: "Nước mắm ngon", qty: 3, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "ms" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Dấm bỗng (hoặc me chua)", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Gạch cua chưng",
+        items: [
+          { name: "Gạch cua lấy từ mai", qty: null, unit: "tự nhiên" },
+          { name: "Hành tím phi", qty: 1, unit: "ms" },
+          { name: "Dầu ăn", qty: 2, unit: "ms" },
+          { name: "Nước mắm", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Topping",
+        items: [
+          { name: "Đậu phụ (rán vàng giòn)", qty: 0.5, unit: "kg" },
+          { name: "Huyết heo (trụng nước sôi)", qty: 0.3, unit: "kg" },
+          { name: "Chả cá riêu cua viên", qty: 0.3, unit: "kg" },
+          { name: "Thịt bò tái thái lát", qty: 0.2, unit: "kg", note: "tùy chọn" },
+          { name: "Tóp mỡ chiên giòn", qty: 50, unit: "gr" },
+        ]
+      },
+      {
+        name: "Bún và rau ăn kèm",
+        items: [
+          { name: "Bún sợi nhỏ", qty: 1, unit: "kg" },
+          { name: "Rau muống chẻ", qty: 0.2, unit: "kg" },
+          { name: "Bắp chuối thái sợi", qty: 0.2, unit: "kg" },
+          { name: "Hoa chuối, kinh giới, tía tô, diếp cá", qty: 0.15, unit: "kg" },
+          { name: "Hành lá, chanh, ớt hiểm", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế cua", time: "~15 phút", content: "Cua đồng rửa sạch, gỡ mai để lấy gạch riêng. Phần thân xay nhuyễn hoặc giã nhuyễn cùng với 1 ít muối." },
+      { title: "Lọc nước cua", content: "Hòa cua xay với 3 lít nước. Khuấy đều, lọc qua rây dày 2 lần để bỏ xác, giữ lại nước cua." },
+      { title: "Chưng gạch cua", time: "~3 phút", content: "Phi 1 ms hành tím với 2 ms dầu, cho gạch cua vào chưng với 1 mc nước mắm cho thơm và lên màu đỏ cam đẹp." },
+      { title: "Nấu nước riêu", time: "~15 phút", content: "Đun nước cua đã lọc + muối + mắm tôm lửa nhỏ liu riu, KHÔNG khuấy để riêu cua đóng tảng nổi lên mặt. Khi sôi, vớt riêu ra dĩa riêng nhẹ tay." },
+      { title: "Xào cà chua", time: "~5 phút", content: "Phi tỏi hành tím với dầu ăn, cho cà chua cắt múi cau vào xào mềm. Đổ vào nồi nước riêu." },
+      { title: "Nêm nước dùng", content: "Thêm nước mắm + đường + dấm bỗng. Nếm cho có vị chua nhẹ, mặn vừa, ngọt thanh từ cua đồng." },
+      { title: "Chuẩn bị topping", content: "Đậu phụ chiên vàng giòn các mặt. Huyết heo trụng nước sôi 5 phút ngâm nước lạnh. Chả cá viên trụng chín." },
+      { title: "Trụng bún và xếp tô", content: "Trụng bún qua nước sôi. Xếp riêu cua + đậu phụ + huyết + chả cá lên bún." },
+      { title: "Hoàn thiện", content: "Chan nước dùng nóng. Thêm 1 mc gạch cua chưng lên trên. Rắc hành lá + tóp mỡ. Ăn kèm rau sống, chanh, ớt." }
+    ]
+  },
+
+  {
+    id: 27,
+    title: "Bún Mắm Châu Đốc",
+    subtitle: "đậm đà hương mắm cá linh",
+    category: "Bún",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Trần Thị Diệu · Châu Đốc, An Giang",
+    note: "Mắm cá linh và mắm cá sặc là linh hồn — nấu cùng để cân vị mặn ngọt. Lọc kỹ qua rây để nước dùng trong.",
+    groups: [
+      {
+        name: "Nước dùng mắm",
+        items: [
+          { name: "Mắm cá linh nguyên chất", qty: 0.2, unit: "kg" },
+          { name: "Mắm cá sặc", qty: 0.1, unit: "kg" },
+          { name: "Nước lọc", qty: 4, unit: "lít" },
+          { name: "Sả đập dập", qty: 0.15, unit: "kg" },
+          { name: "Hành tím nướng", qty: 0.1, unit: "kg" },
+          { name: "Tỏi nướng", qty: 50, unit: "gr" },
+          { name: "Đường thốt nốt", qty: 100, unit: "gr" },
+          { name: "Nước mắm nêm thêm", qty: 2, unit: "ms" },
+          { name: "Dầu điều màu", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Topping hải sản & thịt",
+        items: [
+          { name: "Tôm sú lột vỏ", qty: 0.3, unit: "kg" },
+          { name: "Mực ống cắt khoanh", qty: 0.3, unit: "kg" },
+          { name: "Heo quay cắt khúc", qty: 0.4, unit: "kg" },
+          { name: "Cá basa phi lê cắt khúc", qty: 0.3, unit: "kg" },
+          { name: "Cà tím cắt khúc (ngâm muối)", qty: 0.3, unit: "kg" },
+        ]
+      },
+      {
+        name: "Bún và rau miền Tây",
+        items: [
+          { name: "Bún sợi to", qty: 1, unit: "kg" },
+          { name: "Bông súng tước sợi", qty: 0.15, unit: "kg" },
+          { name: "Rau đắng đất", qty: 0.1, unit: "kg" },
+          { name: "Rau muống chẻ", qty: 0.15, unit: "kg" },
+          { name: "Hoa chuối thái sợi", qty: 0.1, unit: "kg" },
+          { name: "Giá đỗ, ngò gai, ngò om", qty: 0.2, unit: "kg" },
+          { name: "Ớt hiểm, chanh", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Nấu mắm lấy nước cốt", time: "~20 phút", content: "Cho mắm cá linh + mắm cá sặc vào nồi với 1 lít nước. Đun sôi 15 phút cho rã thịt mắm. Lọc qua rây mịn 2 lần để lấy nước mắm trong, bỏ xương cá." },
+      { title: "Nấu nước dùng", time: "~30 phút", content: "Cho nước mắm đã lọc vào nồi cùng 3 lít nước. Đun sôi với sả đập dập + hành tím + tỏi nướng. Hầm nhỏ lửa 30 phút cho thấm mùi." },
+      { title: "Nêm nước dùng", content: "Thêm đường thốt nốt + nước mắm + dầu điều màu. Nếm cho vị đậm đà, ngọt từ đường thốt nốt, mặn từ mắm." },
+      { title: "Ninh cà tím", content: "Cà tím cắt khúc, ngâm muối 10 phút rồi rửa sạch. Cho vào nồi nước dùng ninh 15 phút đến mềm." },
+      { title: "Trụng topping", content: "Trụng lần lượt tôm + mực + cá basa trong nước dùng cho chín tới. Vớt ra để riêng. Heo quay cắt khúc vừa ăn." },
+      { title: "Chuẩn bị rau", content: "Bông súng tước sợi ngâm nước đá. Rau đắng, rau muống chẻ rửa sạch. Hoa chuối thái sợi ngâm nước chanh tránh thâm." },
+      { title: "Trụng bún và xếp tô", content: "Bún sợi to trụng qua nước sôi. Cho vào tô. Xếp tôm, mực, cá, heo quay, cà tím lên trên." },
+      { title: "Hoàn thiện", content: "Chan nước dùng nóng. Rắc ngò gai, ngò om thái nhỏ. Dọn cùng dĩa rau sống lớn (bông súng, rau đắng, rau muống chẻ, giá, hoa chuối) và chanh, ớt hiểm." }
+    ]
+  },
+
+  {
+    id: 28,
+    title: "Bún Chả Giò",
+    subtitle: "chả giò chiên giòn rộp",
+    category: "Bún",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Phạm Thị Thắm · Bình Thạnh, Sài Gòn",
+    note: "Bí quyết chả giò giòn lâu là chiên 2 lần — lần đầu chín, lần hai vàng giòn rộp.",
+    groups: [
+      {
+        name: "Nhân chả giò",
+        items: [
+          { name: "Thịt heo xay", qty: 0.3, unit: "kg" },
+          { name: "Tôm tươi băm nhỏ", qty: 0.2, unit: "kg" },
+          { name: "Cà rốt bào sợi", qty: 0.1, unit: "kg" },
+          { name: "Củ sắn (hoặc khoai môn) bào sợi", qty: 0.1, unit: "kg" },
+          { name: "Nấm mèo (ngâm nở, băm nhỏ)", qty: 30, unit: "gr" },
+          { name: "Miến (ngâm cắt khúc 2cm)", qty: 30, unit: "gr" },
+          { name: "Hành tím băm", qty: 1, unit: "ms" },
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+          { name: "Trứng gà", qty: 1, unit: "quả" },
+          { name: "Knor, tiêu, đường, muối", qty: 1, unit: "ms", note: "mỗi loại 1 mc" },
+          { name: "Bánh tráng cuốn chả giò", qty: 20, unit: "cái" },
+        ]
+      },
+      {
+        name: "Nước chấm chua ngọt",
+        items: [
+          { name: "Nước mắm ngon", qty: 4, unit: "ms" },
+          { name: "Đường", qty: 4, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 2, unit: "ms" },
+          { name: "Nước lọc", qty: 6, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Ớt xay", qty: 1, unit: "ms" },
+          { name: "Cà rốt + đu đủ thái sợi", qty: 0.1, unit: "kg" },
+        ]
+      },
+      {
+        name: "Bún và rau ăn kèm",
+        items: [
+          { name: "Bún tươi", qty: 0.5, unit: "kg" },
+          { name: "Xà lách, rau thơm, húng quế, kinh giới", qty: 0.2, unit: "kg" },
+          { name: "Giá đỗ, dưa leo thái sợi", qty: 0.2, unit: "kg" },
+        ]
+      },
+      {
+        name: "Mỡ hành & topping",
+        items: [
+          { name: "Hành lá thái nhỏ", qty: 50, unit: "gr" },
+          { name: "Dầu ăn nóng", qty: 2, unit: "ms" },
+          { name: "Đậu phộng rang giã", qty: 2, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Pha nhân chả giò", time: "~15 phút nghỉ", content: "Trộn thịt xay + tôm băm + cà rốt + củ sắn + nấm mèo + miến + hành tỏi băm + trứng + knor + tiêu + đường + muối. Nhồi đều, để 15 phút cho thấm vị." },
+      { title: "Pha nước chấm", content: "Hòa nước mắm + đường + nước lọc đun nhỏ lửa cho tan đường. Để nguội, thêm chanh + tỏi + ớt xay + cà rốt đu đủ thái sợi." },
+      { title: "Cuốn chả giò", content: "Bánh tráng nhúng nước hoặc lau ẩm với khăn ướt cho mềm vừa. Múc 1.5 ms nhân vào, gập 2 mép, cuộn chặt vừa tay. Lăn nhẹ trên thớt cho đều." },
+      { title: "Chiên lần 1 (chín)", time: "~5 phút", content: "Dầu nóng ~150°C, cho chả giò vào chiên 5 phút cho chín tới, không vàng đậm. Vớt ra để nguội." },
+      { title: "Chiên lần 2 (giòn)", time: "~3 phút", content: "Dầu nóng ~180°C, chiên thêm 2-3 phút cho vàng giòn rộp đều. Vớt ra giấy thấm dầu." },
+      { title: "Làm mỡ hành", content: "Cho hành lá thái nhỏ vào chén, đổ dầu ăn nóng ~180°C vào cho hành xèo xèo thơm." },
+      { title: "Xếp tô bún", content: "Bún tươi vào tô lớn. Xếp xà lách, rau thơm, giá, dưa leo, cà rốt. Cắt chả giò thành 2-3 khúc vừa ăn xếp lên trên." },
+      { title: "Hoàn thiện", content: "Rưới mỡ hành + đậu phộng rang giã. Chan nước mắm chua ngọt khi ăn. Trộn đều để vị thấm." }
+    ]
+  },
+
+  {
+    id: 29,
+    title: "Bún Thịt Xào",
+    subtitle: "thịt nạc dăm xào sả ớt",
+    category: "Bún",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Hoàng Thị Lan · Thủ Đức, Sài Gòn",
+    groups: [
+      {
+        name: "Thịt xào",
+        items: [
+          { name: "Nạc dăm hoặc ba chỉ thái mỏng", qty: 0.5, unit: "kg" },
+          { name: "Sả băm nhuyễn", qty: 4, unit: "cây" },
+          { name: "Tỏi băm", qty: 2, unit: "ms" },
+          { name: "Hành tím băm", qty: 2, unit: "ms" },
+          { name: "Ớt hiểm băm", qty: 2, unit: "ms", note: "tùy khẩu vị cay" },
+          { name: "Hành tây cắt múi cau", qty: 0.2, unit: "kg" },
+          { name: "Nước mắm", qty: 2, unit: "ms" },
+          { name: "Đường", qty: 1.5, unit: "ms" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+          { name: "Hạt nêm", qty: 1, unit: "mc" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+          { name: "Dầu ăn", qty: 3, unit: "ms" },
+          { name: "Hành lá cắt khúc", qty: 30, unit: "gr" },
+        ]
+      },
+      {
+        name: "Bún và rau ăn kèm",
+        items: [
+          { name: "Bún tươi", qty: 0.5, unit: "kg" },
+          { name: "Xà lách, rau thơm, húng quế", qty: 0.2, unit: "kg" },
+          { name: "Giá đỗ, dưa leo thái sợi", qty: 0.2, unit: "kg" },
+          { name: "Đậu phộng rang giã", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Nước chấm chua ngọt",
+        items: [
+          { name: "Nước mắm", qty: 4, unit: "ms" },
+          { name: "Đường", qty: 4, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 2, unit: "ms" },
+          { name: "Tỏi ớt xay", qty: 1, unit: "ms" },
+          { name: "Nước lọc", qty: 6, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Ướp thịt", time: "~15 phút", content: "Thái thịt nạc dăm thật mỏng. Ướp với 1 ms nước mắm + 1 ms đường + 1 mc tiêu + 1 ms dầu hào + nửa lượng sả tỏi hành băm. Để 15 phút cho thấm." },
+      { title: "Phi sả tỏi", time: "~2 phút", content: "Đun nóng 3 ms dầu, phi sả + tỏi + hành tím + ớt còn lại đến vàng thơm dậy mùi." },
+      { title: "Xào thịt", time: "~3 phút", content: "Cho thịt vào chảo lửa lớn, xào nhanh tay để thịt không ra nước. Khi thịt săn lại, cho hành tây vào." },
+      { title: "Nêm nếm hoàn thiện", content: "Thêm 1 ms nước mắm + 0.5 ms đường + hạt nêm. Đảo đều cho thịt áo nâu đẹp, hành tây vừa chín." },
+      { title: "Tắt bếp", content: "Tắt bếp, rắc hành lá + tiêu lên. Đảo nhẹ thêm. Để riêng giữ nóng." },
+      { title: "Pha nước chấm", content: "Hòa nước mắm + đường + nước + chanh + tỏi ớt xay. Khuấy tan đường." },
+      { title: "Xếp tô bún", content: "Bún tươi vào tô. Xếp xà lách, rau thơm, giá, dưa leo. Múc thịt xào nóng cùng nước thịt lên trên." },
+      { title: "Hoàn thiện", content: "Rắc đậu phộng rang giã. Chan nước mắm chua ngọt. Trộn đều khi ăn để vị thịt và nước mắm hòa quyện." }
+    ]
+  },
+
+  {
+    id: 30,
+    title: "Bún Chả Hà Nội",
+    subtitle: "thịt nướng than hoa chấm nước mắm pha",
+    category: "Bún",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Ông Nguyễn Văn Đức · Hàng Mành, Hà Nội",
+    note: "Chả miếng và chả viên đều phải nướng trên than hoa cho đậm vị khói. Nước chấm pha chuẩn Hà Nội phải có đu đủ cà rốt thái mỏng.",
+    groups: [
+      {
+        name: "Chả miếng nướng",
+        items: [
+          { name: "Thịt ba chỉ thái lát mỏng (3mm)", qty: 0.4, unit: "kg" },
+          { name: "Nước mắm ngon", qty: 2, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Mật ong (hoặc nước hàng)", qty: 1, unit: "ms" },
+          { name: "Hành tím băm", qty: 1, unit: "ms" },
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Chả viên nướng",
+        items: [
+          { name: "Thịt nạc dăm xay (mịn)", qty: 0.3, unit: "kg" },
+          { name: "Nước mắm", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "ms" },
+          { name: "Hành tím xay", qty: 1, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "mc" },
+          { name: "Tiêu", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Nước chấm chuẩn Hà Nội",
+        items: [
+          { name: "Nước lọc ấm", qty: 1, unit: "chén" },
+          { name: "Nước mắm ngon", qty: 2, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 1, unit: "ms" },
+          { name: "Giấm gạo", qty: 1, unit: "ms" },
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+          { name: "Ớt hiểm thái lát", qty: 1, unit: "quả" },
+          { name: "Đu đủ xanh + cà rốt thái lát mỏng", qty: 0.2, unit: "kg" },
+          { name: "Hạt tiêu giã", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Bún và rau",
+        items: [
+          { name: "Bún rối Hà Nội", qty: 0.5, unit: "kg" },
+          { name: "Xà lách, kinh giới, tía tô, húng láng, rau mùi", qty: 0.2, unit: "kg" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Ướp chả miếng", time: "~30 phút", content: "Trộn thịt ba chỉ với nước mắm + đường + mật ong + hành tỏi băm + tiêu + dầu hào. Ướp 30 phút (hoặc qua đêm trong tủ lạnh)." },
+      { title: "Ướp chả viên", time: "~30 phút", content: "Trộn thịt xay với nước mắm + đường + hành tỏi xay + tiêu. Nhồi mạnh tay cho dẻo. Vo thành viên dẹt nhỏ ~3cm. Ướp 30 phút." },
+      { title: "Nướng chả", time: "~12-15 phút", content: "Nướng trên than hoa hoặc vỉ nướng điện 5-7 phút mỗi mặt. Phết thêm chút mật ong và nước ướp cho bóng vàng. Đến khi cháy cạnh thơm khói." },
+      { title: "Pha nước chấm", content: "Hòa nước ấm + nước mắm + đường khuấy tan. Thêm giấm + chanh để có vị chua nhẹ. Cho tỏi băm + ớt thái lát. Cho đu đủ + cà rốt thái lát mỏng ngâm vào. Rắc tiêu giã." },
+      { title: "Chuẩn bị bún và rau", content: "Bún rối cho vào dĩa nhỏ. Rau sống rửa sạch để ráo, xếp dĩa lớn (xà lách, kinh giới, tía tô, húng láng đặc trưng)." },
+      { title: "Cho chả vào nước chấm", content: "Khi ăn, gắp chả nóng vào bát nước chấm. Đu đủ và cà rốt sẽ thấm vị thịt nướng." },
+      { title: "Cách ăn đúng điệu", content: "Gắp 1 đũa bún, nhúng vào bát nước chấm có chả + đu đủ, cuộn thêm rau sống. Ăn nóng vị chua ngọt mặn cay đậm đà. Bát nước chấm cũng có thể ăn cuối như canh." }
+    ]
+  },
+
+  /* ============================================
+     CÁC MÓN CƠM
+     ============================================ */
+
+  {
+    id: 31,
+    title: "Cơm Tấm Sài Gòn",
+    subtitle: "sườn nướng, bì, chả, trứng ốp la",
+    category: "Xôi - Cơm",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Nguyễn Thị Nga · Quận 3, Sài Gòn",
+    note: "Cơm tấm là hạt gạo bể vụn, hấp lên dẻo bùi đặc trưng Sài Gòn. Sườn ướp phải có sữa đặc cho ngọt mềm.",
+    groups: [
+      {
+        name: "Cơm tấm",
+        items: [
+          { name: "Gạo tấm (gạo bể vụn)", qty: 0.6, unit: "kg" },
+          { name: "Nước", qty: 0.7, unit: "lít" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Mỡ hành phết cơm", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Sườn nướng",
+        items: [
+          { name: "Sườn cốt lết heo", qty: 0.6, unit: "kg" },
+          { name: "Sữa đặc có đường", qty: 2, unit: "ms" },
+          { name: "Mật ong", qty: 1, unit: "ms" },
+          { name: "Nước mắm", qty: 2, unit: "ms" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Hành tím xay", qty: 1, unit: "ms" },
+          { name: "Ngũ vị hương", qty: 0.5, unit: "mc" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+          { name: "Dầu ăn", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Bì heo",
+        items: [
+          { name: "Bì heo luộc thái sợi", qty: 0.2, unit: "kg" },
+          { name: "Thịt nạc thái sợi (luộc)", qty: 0.1, unit: "kg" },
+          { name: "Thính gạo rang", qty: 2, unit: "ms" },
+          { name: "Tỏi phi", qty: 1, unit: "ms" },
+          { name: "Nước mắm", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Chả trứng nướng",
+        items: [
+          { name: "Thịt heo xay", qty: 0.3, unit: "kg" },
+          { name: "Trứng vịt", qty: 3, unit: "quả" },
+          { name: "Miến ngâm nở", qty: 30, unit: "gr" },
+          { name: "Nấm mèo (băm nhỏ)", qty: 20, unit: "gr" },
+          { name: "Hành lá thái nhỏ", qty: 30, unit: "gr" },
+          { name: "Nước mắm", qty: 1, unit: "ms" },
+          { name: "Tiêu, đường", qty: 1, unit: "mc", note: "mỗi loại 1 mc" },
+        ]
+      },
+      {
+        name: "Đồ ăn kèm",
+        items: [
+          { name: "Trứng gà ốp la", qty: 4, unit: "quả" },
+          { name: "Dưa leo, cà chua thái lát", qty: 0.3, unit: "kg" },
+          { name: "Đồ chua (cà rốt + củ cải ngâm)", qty: 0.2, unit: "kg" },
+        ]
+      },
+      {
+        name: "Nước mắm chan",
+        items: [
+          { name: "Nước mắm ngon", qty: 4, unit: "ms" },
+          { name: "Đường", qty: 5, unit: "ms" },
+          { name: "Nước lọc", qty: 4, unit: "ms" },
+          { name: "Nước dừa", qty: 2, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Ớt xay", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Mỡ hành",
+        items: [
+          { name: "Hành lá", qty: 50, unit: "gr" },
+          { name: "Dầu ăn nóng", qty: 3, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Ướp sườn", time: "~2-3 giờ (qua đêm tốt nhất)", content: "Trộn sườn với sữa đặc + mật ong + nước mắm + dầu hào + tỏi hành xay + ngũ vị + tiêu + dầu. Ướp 2-3 giờ hoặc qua đêm trong tủ lạnh." },
+      { title: "Nấu cơm tấm", time: "~30 phút", content: "Vo gạo tấm sạch, ngâm 30 phút. Nấu với tỉ lệ 1:1.2 nước, thêm muối. Khi gần chín, đảo và hấp tiếp 10 phút cho hạt dẻo." },
+      { title: "Làm bì", content: "Trộn bì heo + thịt thái sợi + thính + tỏi phi + nước mắm + đường. Trộn đều, ướp 15 phút cho thấm." },
+      { title: "Làm chả trứng", time: "~25 phút", content: "Trộn thịt xay + 2 trứng (giữ lòng đỏ 1 quả) + miến cắt khúc + nấm mèo + hành lá + gia vị. Đổ vào khay hấp 20 phút. Phết lòng đỏ trứng lên mặt, nướng tiếp 5 phút cho vàng." },
+      { title: "Nướng sườn", time: "~20-25 phút", content: "Nướng trên than hoa hoặc vỉ điện 10-12 phút mỗi mặt. Phết nước ướp còn lại cho bóng đẹp, cháy cạnh thơm." },
+      { title: "Ốp la trứng", time: "~3 phút", content: "Đập trứng vào chảo dầu nóng, ốp la lòng đào hoặc chín hẳn tùy thích." },
+      { title: "Pha nước mắm chan", content: "Đun nước mắm + đường + nước + nước dừa cho tan. Để nguội, thêm tỏi ớt xay. Vị chua ngọt mặn cân bằng." },
+      { title: "Làm mỡ hành", content: "Cho hành lá thái nhỏ vào chén, đổ dầu nóng vào xèo xèo." },
+      { title: "Bày dĩa", content: "Múc cơm tấm ra dĩa lớn. Xếp sườn nướng + chả + bì + trứng ốp la xung quanh. Dưa leo, cà chua, đồ chua bên cạnh. Rưới mỡ hành lên cơm. Chan nước mắm khi ăn." }
+    ]
+  },
+
+  {
+    id: 32,
+    title: "Cơm Chiên Dương Châu",
+    subtitle: "cơm chiên thập cẩm Hoa kiều",
+    category: "Xôi - Cơm",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Đầu bếp Trần Văn Tài · Chợ Lớn, Sài Gòn",
+    note: "Cơm để qua đêm chiên ngon nhất vì hạt khô tơi không dính. Đảo lửa lớn để cơm có 'wok hei' (mùi khói chảo).",
+    groups: [
+      {
+        name: "Cơm và topping",
+        items: [
+          { name: "Cơm nguội (gạo dài, để qua đêm)", qty: 4, unit: "chén" },
+          { name: "Tôm khô (ngâm mềm)", qty: 30, unit: "gr" },
+          { name: "Lạp xưởng (cắt hạt lựu)", qty: 0.1, unit: "kg" },
+          { name: "Thịt xá xíu (cắt hạt lựu)", qty: 0.15, unit: "kg" },
+          { name: "Trứng gà", qty: 3, unit: "quả" },
+          { name: "Đậu Hà Lan", qty: 0.1, unit: "kg" },
+          { name: "Cà rốt cắt hạt lựu nhỏ", qty: 0.1, unit: "kg" },
+          { name: "Hành lá cắt nhỏ", qty: 50, unit: "gr" },
+          { name: "Hành tím băm", qty: 1, unit: "ms" },
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Gia vị",
+        items: [
+          { name: "Nước tương", qty: 2, unit: "ms" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Đường", qty: 1, unit: "mc" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+          { name: "Dầu mè", qty: 1, unit: "mc" },
+          { name: "Dầu ăn", qty: 3, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Chuẩn bị", content: "Cơm nguội bóp tơi rời (cơm để qua đêm là tốt nhất). Tôm khô ngâm 15 phút, vớt ra để ráo." },
+      { title: "Đánh trứng", content: "Đập 3 quả trứng vào bát, đánh tan với 1 mc muối + 1 mc tiêu." },
+      { title: "Chiên trứng vụn", time: "~2 phút", content: "Đun nóng 1 ms dầu, đổ trứng vào chảo lửa lớn, dùng đũa khuấy nhanh tay tạo trứng vụn. Đổ ra dĩa." },
+      { title: "Xào nhân", time: "~2 phút", content: "Cho 2 ms dầu vào chảo lửa lớn, phi tỏi + hành tím thơm. Cho tôm khô + lạp xưởng + xá xíu vào xào 1 phút." },
+      { title: "Thêm rau củ", time: "~1 phút", content: "Cho đậu Hà Lan + cà rốt vào xào thêm 1 phút cho vừa chín tới (vẫn giữ độ giòn)." },
+      { title: "Cho cơm vào", time: "~3-4 phút", content: "Cho cơm nguội vào chảo, đảo đều liên tục bằng đũa hoặc xẻng để cơm tơi rời. Đảo trên lửa lớn 3-4 phút cho hạt cơm vàng đều và khô." },
+      { title: "Nêm và trộn trứng", content: "Rưới nước tương + dầu hào quanh thành chảo (để cơm thấm mùi xèo). Thêm đường + tiêu. Trộn trứng vụn vào đảo đều." },
+      { title: "Hoàn thiện", content: "Tắt bếp, rắc hành lá + nhỏ vài giọt dầu mè cho thơm. Đảo nhẹ. Múc ra dĩa, có thể dùng tô úp ngược tạo hình tròn đẹp mắt." }
+    ]
+  },
+
+  {
+    id: 33,
+    title: "Cơm Gà Hải Nam",
+    subtitle: "gà luộc da giòn, cơm nấu nước luộc",
+    category: "Xôi - Cơm",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Đầu bếp Lý Minh Khôi · Phú Mỹ Hưng, Sài Gòn",
+    note: "Bí quyết da giòn là sốc gà qua nước đá ngay sau khi luộc. Nước luộc dùng nấu cơm cho gạo thơm đậm.",
+    groups: [
+      {
+        name: "Gà luộc",
+        items: [
+          { name: "Gà ta làm sạch", qty: 1.5, unit: "kg", note: "1 con" },
+          { name: "Nước", qty: 3, unit: "lít" },
+          { name: "Gừng đập dập", qty: 50, unit: "gr" },
+          { name: "Hành tím đập dập", qty: 50, unit: "gr" },
+          { name: "Sả đập dập", qty: 2, unit: "cây" },
+          { name: "Muối", qty: 1, unit: "ms" },
+          { name: "Đá viên (sốc gà)", qty: 1, unit: "kg" },
+        ]
+      },
+      {
+        name: "Cơm gà",
+        items: [
+          { name: "Gạo jasmine (gạo dài)", qty: 0.5, unit: "kg" },
+          { name: "Nước luộc gà (hớt mỡ)", qty: 0.6, unit: "lít" },
+          { name: "Mỡ gà (lấy từ phần bụng)", qty: 50, unit: "gr" },
+          { name: "Tỏi băm", qty: 2, unit: "ms" },
+          { name: "Hành tím băm", qty: 1, unit: "ms" },
+          { name: "Gừng nạo", qty: 1, unit: "ms" },
+          { name: "Muối", qty: 0.5, unit: "mc" },
+        ]
+      },
+      {
+        name: "Nước chấm gừng tỏi ớt",
+        items: [
+          { name: "Gừng nạo nhuyễn", qty: 3, unit: "ms" },
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+          { name: "Ớt hiểm băm", qty: 1, unit: "ms" },
+          { name: "Nước mắm ngon", qty: 3, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 2, unit: "ms" },
+          { name: "Nước luộc gà", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Ăn kèm",
+        items: [
+          { name: "Dưa leo thái lát", qty: 0.3, unit: "kg" },
+          { name: "Ngò rí + hành lá thái nhỏ", qty: 30, unit: "gr" },
+          { name: "Tương ớt + nước tương đậm", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế gà", time: "~5 phút", content: "Gà rửa sạch với muối + chanh, để ráo. Nhét gừng + hành tím + sả vào bụng gà." },
+      { title: "Luộc gà", time: "~25 phút", content: "Đun 3 lít nước sôi, cho gà + muối + chút gừng đập dập vào. Vớt bọt. Hạ lửa nhỏ liu riu 20 phút (không sôi mạnh kẻo da nứt)." },
+      { title: "Sốc đá", time: "~15 phút", content: "Tắt bếp, để gà ngâm trong nồi 10 phút. Vớt gà ra ngâm ngay vào tô đá lạnh 5 phút cho da săn giòn." },
+      { title: "Treo gà ráo", content: "Treo gà lên hoặc úp ngược trên rổ cho ráo nước, da gà se lại bóng giòn." },
+      { title: "Phi mỡ gà", time: "~5 phút", content: "Cho mỡ gà vào chảo nhỏ lửa, đến khi mỡ chảy ra và phần thịt mỡ vàng giòn. Lọc lấy mỡ trong." },
+      { title: "Xào gạo", time: "~3 phút", content: "Cho 2 ms mỡ gà vào chảo, phi tỏi + hành tím + gừng nạo thơm. Cho gạo vào đảo đều 2-3 phút cho hạt gạo áo dầu thơm phức." },
+      { title: "Nấu cơm gà", time: "~20 phút", content: "Cho gạo vào nồi cơm điện, thêm nước luộc gà (đã hớt mỡ) + muối. Nấu chế độ thường. Khi cơm chín có màu vàng nhẹ, thơm béo." },
+      { title: "Pha nước chấm", content: "Trộn gừng + tỏi + ớt + nước mắm + đường + chanh + nước luộc gà. Khuấy đều cho đường tan." },
+      { title: "Chặt và bày", content: "Chặt gà miếng vừa ăn theo kiểu Hải Nam (giữ nguyên da). Bày trên dĩa với cơm gà. Trang trí dưa leo + ngò rí. Múc nước canh luộc gà ra chén nhỏ. Ăn kèm 2 chén nước chấm: gừng tỏi ớt + tương đen ớt." }
+    ]
+  },
+
+  {
+    id: 34,
+    title: "Cơm Niêu Cá Kho",
+    subtitle: "cơm đáy giòn nồi đất, ăn với cá kho",
+    category: "Xôi - Cơm",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bếp Tâm Lâm · Cái Bè, Tiền Giang",
+    note: "Nồi đất phải đốt lửa than hoặc trên bếp gas đều mới có lớp cơm cháy giòn. Nghe tiếng 'tách tách' là cơm cháy hoàn hảo.",
+    groups: [
+      {
+        name: "Cơm niêu",
+        items: [
+          { name: "Gạo thơm hạt dài", qty: 0.5, unit: "kg" },
+          { name: "Nước", qty: 0.65, unit: "lít" },
+          { name: "Muối", qty: 0.5, unit: "mc" },
+          { name: "Mỡ heo phết đáy nồi", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Cá kho",
+        items: [
+          { name: "Cá lóc cắt khoanh 3cm", qty: 0.6, unit: "kg" },
+          { name: "Đường thắng nước màu", qty: 3, unit: "ms" },
+          { name: "Nước cốt dừa", qty: 1, unit: "chén" },
+          { name: "Nước mắm ngon", qty: 3, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "ms" },
+          { name: "Hành tím + tỏi băm", qty: 2, unit: "ms" },
+          { name: "Mỡ heo cắt hạt lựu", qty: 50, unit: "gr" },
+          { name: "Tiêu hột", qty: 1, unit: "ms" },
+          { name: "Ớt hiểm", qty: 3, unit: "trái" },
+          { name: "Hành lá", qty: 30, unit: "gr" },
+        ]
+      },
+      {
+        name: "Ăn kèm",
+        items: [
+          { name: "Rau muống luộc", qty: 0.3, unit: "kg" },
+          { name: "Cà chua, dưa leo", qty: 0.2, unit: "kg" },
+          { name: "Mắm ớt chanh", qty: null, unit: "ăn kèm" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Chuẩn bị nồi đất", content: "Nồi đất ngâm nước 30 phút trước khi nấu cho khỏi nứt. Lau khô, phết 1 lớp mỡ heo mỏng lên đáy nồi để cơm không dính." },
+      { title: "Vo gạo nấu cơm", time: "~20 phút", content: "Vo gạo sạch, để ráo 15 phút. Cho gạo vào nồi đất + nước + muối. Đậy nắp, đặt lên bếp lửa vừa." },
+      { title: "Nấu cơm niêu", time: "~25 phút", content: "Khi sôi, hạ lửa nhỏ nhất, đậy nắp kín. Nấu 18-20 phút. Tắt bếp, để ủ trên bếp 10 phút cho cơm chín tới." },
+      { title: "Tạo cơm cháy", time: "~5 phút", content: "Sau khi cơm chín, mở lửa nhỏ liu riu 3-5 phút nữa để tạo lớp cháy giòn đáy nồi. Nghe tiếng 'tách tách' là được." },
+      { title: "Sơ chế và ướp cá", time: "~35 phút", content: "Cá lóc làm sạch, rửa với muối + chanh. Cắt khoanh 3 cm. Ướp với nước mắm + đường + hành tím tỏi băm + tiêu 30 phút." },
+      { title: "Thắng nước màu", time: "~5 phút", content: "Cho 3 ms đường vào nồi đáy dày, thắng đến cánh gián nâu đậm. Thêm mỡ heo cắt hạt lựu, phi vàng giòn." },
+      { title: "Kho cá", time: "~30 phút", content: "Cho cá vào nồi, đảo nhẹ áo màu. Đổ nước cốt dừa + ngập 1/2 cá. Thả ớt hiểm + tiêu hột. Đun sôi rồi hạ lửa rim 25-30 phút đến nước cạn sệt lại." },
+      { title: "Hoàn thiện", content: "Rắc hành lá lên cá kho. Mở nắp cơm niêu, xới cơm ra. Lớp cháy giòn dùng muỗng nạy lên ăn riêng. Ăn với cá kho, rau muống luộc chấm nước cá kho." }
+    ]
+  },
+
+  /* ============================================
+     CÁC MÓN NƯỚNG
+     ============================================ */
+
+  {
+    id: 35,
+    title: "Nem Nướng Nha Trang",
+    subtitle: "cuốn rau với bánh tráng và tương đậu",
+    category: "Món nướng",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Đỗ Thị Mai · Nha Trang, Khánh Hòa",
+    note: "Nem nướng Nha Trang cuốn cùng rau diếp cá, dưa leo và bánh tráng nướng giòn. Tương đậu là điểm nhấn không thể thiếu.",
+    groups: [
+      {
+        name: "Nem nướng",
+        items: [
+          { name: "Thịt nạc dăm xay nhuyễn", qty: 0.5, unit: "kg" },
+          { name: "Mỡ heo xay nhuyễn", qty: 0.1, unit: "kg" },
+          { name: "Tỏi xay", qty: 2, unit: "ms" },
+          { name: "Hành tím xay", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Nước mắm", qty: 1.5, unit: "ms" },
+          { name: "Tiêu", qty: 1, unit: "mc" },
+          { name: "Bột nở (baking powder)", qty: 0.5, unit: "mc" },
+          { name: "Bột năng", qty: 1, unit: "ms" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+          { name: "Que tre nướng", qty: 12, unit: "cái" },
+        ]
+      },
+      {
+        name: "Nước chấm tương đậu Nha Trang",
+        items: [
+          { name: "Tương đậu xay nhuyễn", qty: 4, unit: "ms" },
+          { name: "Đậu phộng rang xay nhuyễn", qty: 3, unit: "ms" },
+          { name: "Gan heo luộc xay", qty: 2, unit: "ms", note: "tùy chọn, đặc trưng" },
+          { name: "Cơm dừa nạo", qty: 2, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Nước cốt dừa", qty: 0.5, unit: "chén" },
+          { name: "Tỏi phi", qty: 1, unit: "ms" },
+          { name: "Ớt sa tế", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Bánh tráng và rau ăn kèm",
+        items: [
+          { name: "Bánh tráng nướng mỏng giòn", qty: 8, unit: "cái" },
+          { name: "Bánh tráng cuốn mềm", qty: 12, unit: "cái" },
+          { name: "Xà lách, rau thơm, diếp cá, húng quế", qty: 0.3, unit: "kg" },
+          { name: "Dưa leo thái lát dài", qty: 0.2, unit: "kg" },
+          { name: "Khế chua thái lát mỏng", qty: 0.1, unit: "kg" },
+          { name: "Chuối xanh thái lát mỏng", qty: 0.1, unit: "kg" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Nhồi nhân nem", time: "~10 phút nhồi + 1 giờ nghỉ", content: "Trộn thịt nạc xay + mỡ xay nhuyễn + tỏi hành tím + đường + nước mắm + tiêu + bột nở + bột năng + dầu hào. Nhồi mạnh tay 10 phút cho thịt dai và quyện." },
+      { title: "Ướp tủ lạnh", content: "Để nhân vào tủ lạnh 1 giờ cho ngấm vị và se mặt, dễ nặn hơn." },
+      { title: "Nặn nem lên que", content: "Lấy nhân ra, dùng tay ướt vê thành thanh dài quanh que tre (cỡ ngón tay cái, dài 10 cm). Nén chặt cho thịt bám que." },
+      { title: "Nướng nem", time: "~14-16 phút", content: "Nướng trên than hoa hoặc vỉ điện 7-8 phút mỗi mặt đến chín vàng đều, có cháy cạnh thơm khói. Hoặc rán ngập dầu cũng được." },
+      { title: "Pha sốt tương đậu", time: "~10 phút", content: "Phi tỏi vàng. Cho tương đậu + cơm dừa nạo + nước cốt dừa vào đun nhỏ lửa. Thêm đậu phộng xay + gan heo xay (nếu có) + đường. Khuấy đến sệt. Cuối cùng cho sa tế." },
+      { title: "Chuẩn bị rau và bánh tráng", content: "Bánh tráng nướng giòn xếp dĩa. Bánh tráng cuốn để nguyên. Rau sống, dưa leo, khế chua, chuối xanh thái lát xếp ra dĩa." },
+      { title: "Cách cuốn", content: "Lấy bánh tráng cuốn mềm trải dĩa. Đặt 1 miếng bánh tráng nướng giòn ở giữa. Xếp rau + dưa leo + khế + chuối + 1-2 thanh nem (rút que). Thêm vụn bánh tráng nướng giòn cho dòn." },
+      { title: "Cuốn và ăn", content: "Cuốn lại với bánh tráng mềm. Chấm vào nước sốt tương đậu. Vị thơm khói nem + bùi tương + giòn rau + chua khế tạo thành món đặc trưng Nha Trang." }
+    ]
+  },
+
+  {
+    id: 36,
+    title: "Bò Nướng Lá Lốt",
+    subtitle: "thịt bò bằm cuốn lá lốt nướng than",
+    category: "Món nướng",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Lý Thị Hồng · Quận 10, Sài Gòn",
+    note: "Lá lốt phải chọn lá to bản, không quá già để không bị đắng. Nướng than hoa cho mùi thơm đặc trưng.",
+    groups: [
+      {
+        name: "Nhân bò",
+        items: [
+          { name: "Thịt bò xay nhuyễn (nạc dăm)", qty: 0.4, unit: "kg" },
+          { name: "Mỡ heo xay (cho béo)", qty: 50, unit: "gr" },
+          { name: "Sả băm nhuyễn", qty: 3, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Hành tím xay", qty: 1, unit: "ms" },
+          { name: "Riềng băm", qty: 1, unit: "ms", note: "tùy chọn" },
+          { name: "Bột nghệ", qty: 0.5, unit: "mc" },
+          { name: "Nước mắm", qty: 1.5, unit: "ms" },
+          { name: "Đường", qty: 1.5, unit: "ms" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+          { name: "Bột nở", qty: 0.5, unit: "mc" },
+        ]
+      },
+      {
+        name: "Lá lốt và bún",
+        items: [
+          { name: "Lá lốt tươi (chọn lá to bản)", qty: 30, unit: "lá" },
+          { name: "Bún tươi", qty: 0.5, unit: "kg" },
+          { name: "Xà lách, rau thơm, húng quế", qty: 0.2, unit: "kg" },
+          { name: "Khế chua, chuối xanh thái lát", qty: 0.1, unit: "kg" },
+          { name: "Dưa leo thái sợi", qty: 0.2, unit: "kg" },
+        ]
+      },
+      {
+        name: "Mỡ hành và topping",
+        items: [
+          { name: "Hành lá thái nhỏ", qty: 50, unit: "gr" },
+          { name: "Dầu ăn nóng", qty: 2, unit: "ms" },
+          { name: "Đậu phộng rang giã", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Nước chấm mắm nêm",
+        items: [
+          { name: "Mắm nêm cá cơm pha sẵn", qty: 3, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Nước dừa", qty: 4, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Ớt xay", qty: 1, unit: "ms" },
+          { name: "Sả băm", qty: 1, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 1, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Nhồi nhân bò", time: "~10 phút nhồi + 30 phút nghỉ", content: "Trộn thịt bò xay + mỡ heo + sả + tỏi + hành tím + riềng + bột nghệ + nước mắm + đường + dầu hào + tiêu + bột nở. Nhồi 10 phút cho dẻo quyện. Để tủ lạnh 30 phút." },
+      { title: "Rửa lá lốt", content: "Lá lốt rửa sạch, lau khô. Tỉa bớt phần sống lá cứng (mặt sau) để dễ cuốn." },
+      { title: "Cuốn bò", content: "Đặt lá lốt mặt lưng (mờ) lên trên. Cho khoảng 1 ms nhân thịt vào, dàn dài 4cm. Cuộn lại từ phần cuống, gài đầu lá vào để không bung." },
+      { title: "Nướng", time: "~8-10 phút", content: "Xếp lên vỉ nướng. Nướng than hoa hoặc vỉ điện 4-5 phút mỗi mặt, phết ít dầu cho không khô. Đến khi lá lốt xém mép thơm và thịt chín hồng đẹp." },
+      { title: "Pha mắm nêm", content: "Hòa mắm nêm + đường + nước dừa + tỏi + ớt + sả băm + chanh. Khuấy đều, có thể đun sôi nhẹ rồi để nguội cho đậm vị." },
+      { title: "Làm mỡ hành", content: "Hành lá thái nhỏ vào chén, đổ dầu nóng 180°C vào xèo xèo." },
+      { title: "Xếp tô ăn", content: "Bún tươi vào tô. Rau sống, khế, chuối, dưa leo xếp xung quanh. Xếp 5-6 cuốn bò lá lốt nóng lên trên." },
+      { title: "Hoàn thiện", content: "Rưới mỡ hành + đậu phộng rang giã. Chan mắm nêm khi ăn, trộn đều để hương vị hòa quyện." }
+    ]
+  },
+
+  {
+    id: 37,
+    title: "Cá Nướng Lá Chuối",
+    subtitle: "cá điêu hồng bọc lá chuối nướng",
+    category: "Món nướng",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Phạm Thị Hương · Hội An, Quảng Nam",
+    note: "Lá chuối phải hơ qua lửa cho mềm dẻo dễ cuốn. Cá phải tươi nguyên con — mắt cá còn trong, mang đỏ.",
+    groups: [
+      {
+        name: "Cá ướp",
+        items: [
+          { name: "Cá điêu hồng nguyên con (~0.5kg/con)", qty: 1, unit: "kg", note: "2 con" },
+          { name: "Sả băm nhuyễn", qty: 3, unit: "ms" },
+          { name: "Tỏi xay", qty: 2, unit: "ms" },
+          { name: "Hành tím xay", qty: 2, unit: "ms" },
+          { name: "Ớt sừng băm", qty: 1, unit: "ms" },
+          { name: "Riềng băm", qty: 1, unit: "ms", note: "tùy chọn" },
+          { name: "Bột nghệ", qty: 1, unit: "mc" },
+          { name: "Nước mắm ngon", qty: 3, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+          { name: "Mật ong", qty: 1, unit: "ms" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Lá chuối và phụ kiện",
+        items: [
+          { name: "Lá chuối tươi to bản", qty: 5, unit: "lá" },
+          { name: "Dây buộc (lạt hoặc cọng lá chuối)", qty: null, unit: "vừa đủ" },
+          { name: "Bơ thực vật phết khi nướng", qty: 30, unit: "gr" },
+        ]
+      },
+      {
+        name: "Bún và rau ăn kèm",
+        items: [
+          { name: "Bún tươi", qty: 0.4, unit: "kg" },
+          { name: "Xà lách, rau thơm, diếp cá, húng láng", qty: 0.2, unit: "kg" },
+          { name: "Khế chua, chuối xanh, dưa leo thái lát", qty: 0.2, unit: "kg" },
+        ]
+      },
+      {
+        name: "Nước chấm",
+        items: [
+          { name: "Nước mắm ngon", qty: 3, unit: "ms" },
+          { name: "Đường", qty: 3, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 2, unit: "ms" },
+          { name: "Nước lọc", qty: 3, unit: "ms" },
+          { name: "Tỏi ớt xay", qty: 1, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế cá", time: "~10 phút", content: "Cá làm sạch, cạo vảy, bỏ ruột. Khía 2-3 đường chéo trên thân cá để gia vị thấm. Rửa muối + chanh khử tanh, lau khô hoàn toàn." },
+      { title: "Pha gia vị ướp", content: "Trộn sả + tỏi + hành tím + ớt + riềng + bột nghệ + nước mắm + đường + dầu hào + mật ong + tiêu thành hỗn hợp đặc sánh." },
+      { title: "Ướp cá", time: "~45 phút", content: "Phết đều hỗn hợp gia vị lên thân cá, nhét cả vào bụng và khe khía. Ướp 30-60 phút trong tủ lạnh cho thấm sâu." },
+      { title: "Chuẩn bị lá chuối", time: "~5 phút", content: "Hơ lá chuối qua lửa cho mềm dẻo, lau sạch. Cắt thành tấm vừa bọc 1 con cá." },
+      { title: "Gói cá", content: "Đặt cá đã ướp lên giữa lá chuối. Bôi thêm chút bơ lên cá để khi nướng không khô. Gấp lá chuối bọc kín cá, buộc dây cố định 2-3 chỗ." },
+      { title: "Nướng cá", time: "~25-30 phút", content: "Đặt lên vỉ nướng than hoa hoặc lò nướng 200°C trong 25-30 phút. Lật một lần giữa chừng. Lá chuối có thể xém đen bên ngoài, không sao." },
+      { title: "Kiểm tra chín", content: "Mở nhẹ 1 đầu lá chuối kiểm tra. Thịt cá trắng đục, không còn trong là đã chín hoàn toàn. Mùi thơm sả + lá chuối + cá hòa quyện." },
+      { title: "Pha nước chấm", content: "Trộn nước mắm + đường + nước + chanh + tỏi ớt xay khuấy tan đường." },
+      { title: "Trình bày và ăn", content: "Mở lá chuối tại bàn cho mùi thơm bùng lên. Gỡ thịt cá khỏi xương. Cuốn với bún + rau sống + khế + chuối xanh, chấm nước mắm. Hoặc ăn thẳng với cơm trắng." }
+    ]
+  },
+
+  /* ============================================
+     CANH - SÚP
+     ============================================ */
+
+  {
+    id: 38,
+    title: "Canh Chua Cá Lóc",
+    subtitle: "vị chua thanh từ me, cá lóc tươi",
+    category: "Canh - Súp",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Trần Thị Hậu · Cần Thơ",
+    note: "Cá lóc đồng cho vị ngọt, nước canh phải có vị chua nhẹ và thơm dứa, đậu bắp.",
+    groups: [
+      {
+        name: "Nguyên liệu chính",
+        items: [
+          { name: "Cá lóc làm sạch cắt khúc", qty: 0.6, unit: "kg" },
+          { name: "Me chua (vắt nước cốt)", qty: 100, unit: "gr" },
+          { name: "Cà chua cắt múi", qty: 0.3, unit: "kg" },
+          { name: "Đậu bắp cắt khúc xéo", qty: 0.2, unit: "kg" },
+          { name: "Dứa (thơm) cắt miếng", qty: 0.2, unit: "kg" },
+          { name: "Bạc hà (dọc mùng) tước vỏ", qty: 0.2, unit: "kg" },
+          { name: "Giá đỗ", qty: 0.1, unit: "kg" },
+          { name: "Nước", qty: 2, unit: "lít" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Nước mắm", qty: 3, unit: "ms" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Hành tím phi", qty: 1, unit: "ms" },
+          { name: "Dầu ăn", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Rau gia vị",
+        items: [
+          { name: "Ngò gai thái nhỏ", qty: 30, unit: "gr" },
+          { name: "Rau om thái nhỏ", qty: 30, unit: "gr" },
+          { name: "Ớt hiểm cắt khoanh", qty: 2, unit: "trái" },
+          { name: "Tỏi phi vàng giòn", qty: 1, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế cá", content: "Cá lóc rửa muối + chanh khử tanh. Cắt khúc 4cm. Để ráo." },
+      { title: "Vắt nước me", content: "Cho me chua vào tô, thêm 1 chén nước nóng, dầm cho rã. Lọc bỏ hạt và xơ, giữ nước cốt me." },
+      { title: "Nấu nước dùng", time: "~7 phút", content: "2 lít nước đun sôi với muối. Cho cá vào luộc 5 phút." },
+      { title: "Cho rau củ chính", time: "~2 phút", content: "Thêm cà chua + dứa vào nồi, đun 2 phút cho thơm." },
+      { title: "Đậu bắp & bạc hà", time: "~1 phút", content: "Cho đậu bắp + bạc hà vào, đun thêm 1 phút (không nấu lâu kẻo nhũn)." },
+      { title: "Nêm chua ngọt", content: "Đổ nước cốt me + đường + nước mắm. Nếm cho vị chua ngọt mặn cân bằng đặc trưng miền Tây." },
+      { title: "Cho giá", content: "Tắt bếp khi sôi lại, thả giá vào (giá chín bằng nhiệt nước). Không nấu giá kẻo nát." },
+      { title: "Hoàn thiện", content: "Múc ra tô lớn. Rắc ngò gai + rau om + ớt + tỏi phi + hành tím phi. Ăn nóng với cơm trắng và chén nước mắm ớt." }
+    ]
+  },
+
+  {
+    id: 39,
+    title: "Súp Cua",
+    subtitle: "súp cua vi cá, trứng cút, nấm tuyết",
+    category: "Canh - Súp",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Nguyễn Thị Bích · Quận 5, Sài Gòn",
+    note: "Bột năng từ từ vào khuấy nhẹ tay để súp sánh không bị vón.",
+    groups: [
+      {
+        name: "Nguyên liệu chính",
+        items: [
+          { name: "Thịt cua biển bóc sẵn", qty: 0.3, unit: "kg" },
+          { name: "Vi cá", qty: 50, unit: "gr", note: "tùy chọn cao cấp" },
+          { name: "Trứng cút luộc bóc vỏ", qty: 12, unit: "quả" },
+          { name: "Nấm tuyết ngâm nở", qty: 30, unit: "gr" },
+          { name: "Nấm hương khô ngâm", qty: 20, unit: "gr" },
+          { name: "Nước dùng gà", qty: 2, unit: "lít" },
+          { name: "Trứng gà đánh tan", qty: 2, unit: "quả" },
+          { name: "Bột năng (pha 5 ms nước)", qty: 4, unit: "ms" },
+          { name: "Bột bắp (pha 3 ms nước)", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Gia vị",
+        items: [
+          { name: "Nước mắm", qty: 2, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "ms" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Bột ngọt", qty: 1, unit: "mc" },
+          { name: "Tiêu", qty: 1, unit: "mc" },
+          { name: "Dầu mè", qty: 1, unit: "mc" },
+          { name: "Ngò rí thái nhỏ", qty: 30, unit: "gr" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế nguyên liệu", content: "Nấm tuyết và nấm hương ngâm nở mềm, cắt nhỏ. Trứng cút luộc bóc vỏ sẵn." },
+      { title: "Nấu nước dùng", content: "Đun 2 lít nước dùng gà sôi." },
+      { title: "Cho nấm", time: "~5 phút", content: "Thêm nấm tuyết + nấm hương + vi cá vào nồi, đun nhỏ lửa 5 phút cho thấm." },
+      { title: "Nêm gia vị", content: "Thêm nước mắm + đường + muối + bột ngọt. Nếm vừa miệng." },
+      { title: "Cho thịt cua", time: "~2 phút", content: "Thả thịt cua vào, đun nhẹ 2 phút (không để vỡ thịt cua thành sợi nát)." },
+      { title: "Làm sánh súp", content: "Khuấy đều nồi súp tạo xoáy nhẹ. Từ từ đổ bột năng pha vào, khuấy nhẹ. Đợi sôi lại đổ tiếp bột bắp đến độ sánh vừa ý (loãng vừa, không quá đặc)." },
+      { title: "Cho trứng (tạo vẩy)", content: "Khuấy súp tạo xoáy mạnh, từ từ rưới trứng đã đánh vào để tạo vẩy trứng đẹp nổi trên mặt." },
+      { title: "Cho trứng cút", content: "Thả trứng cút bóc vỏ vào nồi, đun thêm 30 giây." },
+      { title: "Hoàn thiện", content: "Tắt bếp, rưới dầu mè + tiêu. Múc ra chén, rắc ngò rí thái nhỏ. Ăn nóng kèm chanh + nước tương + ớt." }
+    ]
+  },
+
+  {
+    id: 40,
+    title: "Canh Khổ Qua Nhồi Thịt",
+    subtitle: "khổ qua nhồi thịt thanh mát",
+    category: "Canh - Súp",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Phan Thị Mai · Long An",
+    note: "Trụng khổ qua qua nước sôi 1 phút trước khi nhồi để bớt đắng. Chọn quả ngắn và đậm xanh cho ít đắng.",
+    groups: [
+      {
+        name: "Khổ qua nhồi",
+        items: [
+          { name: "Khổ qua tươi (chọn quả ngắn, đậm xanh)", qty: 0.6, unit: "kg" },
+          { name: "Thịt nạc dăm xay", qty: 0.3, unit: "kg" },
+          { name: "Mộc nhĩ (nấm mèo) ngâm nở băm", qty: 30, unit: "gr" },
+          { name: "Miến ngâm nở cắt khúc", qty: 30, unit: "gr" },
+          { name: "Hành tím băm", qty: 1, unit: "ms" },
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+          { name: "Trứng gà", qty: 1, unit: "quả" },
+          { name: "Nước mắm", qty: 1, unit: "ms" },
+          { name: "Tiêu", qty: 1, unit: "mc" },
+          { name: "Đường", qty: 1, unit: "mc" },
+          { name: "Hạt nêm", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Nước dùng",
+        items: [
+          { name: "Xương heo", qty: 0.3, unit: "kg" },
+          { name: "Nước", qty: 2, unit: "lít" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Nước mắm", qty: 2, unit: "ms" },
+          { name: "Hạt nêm", qty: 1, unit: "mc" },
+          { name: "Hành lá thái khúc", qty: 30, unit: "gr" },
+          { name: "Ngò rí", qty: 20, unit: "gr" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế khổ qua", content: "Khổ qua rửa sạch, cắt khúc 4-5 cm. Dùng muỗng nhỏ móc bỏ phần ruột và hạt bên trong." },
+      { title: "Trụng khổ qua", time: "~2 phút", content: "Đun nước sôi với chút muối, trụng khổ qua 1-2 phút cho bớt đắng. Vớt ra nước đá ngâm 1 phút để giữ màu xanh." },
+      { title: "Nhồi nhân", content: "Trộn thịt xay + mộc nhĩ + miến + hành tỏi băm + trứng + nước mắm + tiêu + đường + hạt nêm. Nhồi đều cho dẻo. Dùng tay nhồi vào từng khúc khổ qua đầy nhân." },
+      { title: "Hầm xương", time: "~1 giờ", content: "Trụng xương heo qua nước sôi, rửa sạch. Cho vào 2 lít nước nấu với muối, hạt nêm. Hầm nhỏ lửa 1 giờ, vớt bọt." },
+      { title: "Nấu canh", time: "~15 phút", content: "Cho khổ qua nhồi vào nồi nước xương đang sôi. Đun lửa vừa 15 phút đến khi khổ qua chín mềm và nhân đã chín." },
+      { title: "Nêm", content: "Thêm nước mắm. Nếm vừa miệng — vị thanh ngọt từ xương, hơi đắng nhẹ của khổ qua." },
+      { title: "Hoàn thiện", content: "Rắc hành lá + ngò rí + tiêu lên mặt canh. Múc ra tô, mỗi khúc khổ qua trong tô riêng. Ăn nóng với cơm trắng." }
+    ]
+  },
+
+  /* ============================================
+     MÓN XÀO
+     ============================================ */
+
+  {
+    id: 41,
+    title: "Mực Xào Dứa",
+    subtitle: "mực ống xào với dứa và rau cần",
+    category: "Món xào",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Lê Thị Lan · Vũng Tàu",
+    note: "Trụng mực qua nước sôi với gừng để khử tanh và giúp mực giòn không dai.",
+    groups: [
+      {
+        name: "Mực và rau",
+        items: [
+          { name: "Mực ống tươi cắt khoanh", qty: 0.5, unit: "kg" },
+          { name: "Dứa (thơm) cắt miếng tam giác", qty: 0.3, unit: "kg" },
+          { name: "Cần tây cắt khúc", qty: 0.1, unit: "kg" },
+          { name: "Hành tây cắt múi", qty: 0.1, unit: "kg" },
+          { name: "Ớt sừng cắt lát", qty: 1, unit: "quả" },
+          { name: "Hành lá cắt khúc", qty: 30, unit: "gr" },
+        ]
+      },
+      {
+        name: "Gia vị",
+        items: [
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+          { name: "Hành tím băm", qty: 1, unit: "ms" },
+          { name: "Gừng băm", qty: 1, unit: "mc" },
+          { name: "Dầu hào", qty: 2, unit: "ms" },
+          { name: "Nước mắm", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "ms" },
+          { name: "Hạt nêm", qty: 1, unit: "mc" },
+          { name: "Tiêu", qty: 1, unit: "mc" },
+          { name: "Bột năng (pha 2 ms nước)", qty: 1, unit: "mc" },
+          { name: "Dầu ăn", qty: 3, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế mực", content: "Mực làm sạch, lột màng. Cắt khoanh 1.5 cm. Khía hoa văn xéo trên bề mặt cho đẹp khi xào." },
+      { title: "Trụng mực", time: "~30 giây", content: "Đun nước sôi với chút gừng đập dập + muối. Trụng mực 30 giây cho săn. Vớt ra ngâm nước đá để giữ giòn." },
+      { title: "Phi thơm", time: "~1 phút", content: "Đun 3 ms dầu, phi tỏi + hành tím + gừng băm thơm vàng dậy mùi." },
+      { title: "Xào hành tây", time: "~30 giây", content: "Cho hành tây vào xào 30 giây cho hơi mềm." },
+      { title: "Cho mực và dứa", time: "~2 phút", content: "Cho mực + dứa vào, xào lửa lớn 1-2 phút." },
+      { title: "Nêm gia vị", content: "Thêm dầu hào + nước mắm + đường + hạt nêm. Đảo đều cho thấm." },
+      { title: "Cho cần tây", time: "~30 giây", content: "Thêm cần tây + ớt sừng, xào nhanh 30 giây (giữ độ giòn)." },
+      { title: "Sánh nước", content: "Đổ bột năng pha nước vào, đảo đều cho nước sốt sánh đẹp bám đều." },
+      { title: "Hoàn thiện", content: "Tắt bếp, rắc hành lá + tiêu. Múc ra dĩa nóng, ăn với cơm trắng." }
+    ]
+  },
+
+  {
+    id: 42,
+    title: "Tôm Xào Sa Tế",
+    subtitle: "tôm sú xào cay nồng",
+    category: "Món xào",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Nguyễn Thị Hà · Nha Trang",
+    note: "Tôm xào nhanh trên lửa lớn để giữ độ giòn ngọt, không bị dai.",
+    groups: [
+      {
+        name: "Tôm và rau",
+        items: [
+          { name: "Tôm sú lớn (lột vỏ chừa đuôi)", qty: 0.5, unit: "kg" },
+          { name: "Ớt chuông đỏ xanh cắt vuông", qty: 0.2, unit: "kg" },
+          { name: "Hành tây cắt múi", qty: 0.1, unit: "kg" },
+          { name: "Cà rốt thái lát xéo", qty: 0.1, unit: "kg" },
+          { name: "Hành lá cắt khúc", qty: 30, unit: "gr" },
+        ]
+      },
+      {
+        name: "Gia vị sa tế",
+        items: [
+          { name: "Sa tế tôm", qty: 2, unit: "ms" },
+          { name: "Tỏi băm", qty: 2, unit: "ms" },
+          { name: "Hành tím băm", qty: 1, unit: "ms" },
+          { name: "Sả băm", qty: 1, unit: "ms" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+          { name: "Tương cà", qty: 1, unit: "ms" },
+          { name: "Nước mắm", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 1.5, unit: "ms" },
+          { name: "Bột năng (pha 2 ms nước)", qty: 1, unit: "mc" },
+          { name: "Dầu ăn", qty: 3, unit: "ms" },
+          { name: "Tiêu", qty: 1, unit: "mc" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế tôm", time: "~10 phút", content: "Tôm rút chỉ đen, lột vỏ chừa đuôi. Ướp với 1 mc tiêu + 1 mc đường + 1 mc nước mắm. Để 10 phút." },
+      { title: "Phi thơm gia vị", time: "~1 phút", content: "Đun nóng 3 ms dầu, phi sả + tỏi + hành tím vàng thơm dậy mùi." },
+      { title: "Cho sa tế", content: "Thêm sa tế tôm vào đảo nhanh cho dậy mùi cay nồng đặc trưng." },
+      { title: "Xào tôm", time: "~1 phút", content: "Cho tôm vào chảo lửa lớn, xào nhanh 1 phút cho tôm chuyển hồng đỏ (chưa chín hẳn)." },
+      { title: "Nêm", content: "Thêm dầu hào + tương cà + nước mắm + đường. Đảo đều cho thấm vị và bóng đẹp." },
+      { title: "Cho rau củ", time: "~1 phút", content: "Thêm ớt chuông + hành tây + cà rốt. Xào lửa lớn 1 phút (rau vẫn giòn ngọt)." },
+      { title: "Sánh sốt", content: "Đổ bột năng pha nước, đảo đều cho sốt áo bám đều tôm và rau." },
+      { title: "Hoàn thiện", content: "Rắc hành lá + tiêu. Múc ra dĩa nóng, ăn với cơm trắng." }
+    ]
+  },
+
+  {
+    id: 43,
+    title: "Bò Xào Hành Tây",
+    subtitle: "bò thăn xào hành tây giòn ngọt",
+    category: "Món xào",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Hoàng Thị Vân · Hà Nội",
+    note: "Thịt bò ướp với chút dầu ăn để giữ mềm khi xào lửa lớn. Hành tây xào tới giòn ngọt vẫn còn độ cay nhẹ.",
+    groups: [
+      {
+        name: "Thịt bò ướp",
+        items: [
+          { name: "Thịt bò thăn (thái lát mỏng ngang thớ)", qty: 0.4, unit: "kg" },
+          { name: "Nước tương", qty: 1, unit: "ms" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "mc" },
+          { name: "Tiêu", qty: 1, unit: "mc" },
+          { name: "Bột năng", qty: 1, unit: "mc" },
+          { name: "Dầu ăn ướp", qty: 1, unit: "ms" },
+          { name: "Tỏi băm ướp", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Rau và gia vị xào",
+        items: [
+          { name: "Hành tây cắt múi cau", qty: 0.3, unit: "kg" },
+          { name: "Hành lá cắt khúc", qty: 50, unit: "gr" },
+          { name: "Cần tây cắt khúc", qty: 50, unit: "gr", note: "tùy chọn" },
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+          { name: "Gừng băm", qty: 1, unit: "mc" },
+          { name: "Nước tương đậm", qty: 1, unit: "ms" },
+          { name: "Dầu hào", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "mc" },
+          { name: "Nước mắm", qty: 1, unit: "mc" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+          { name: "Dầu ăn", qty: 3, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Ướp thịt bò", time: "~15 phút", content: "Thái bò ngang thớ thật mỏng. Ướp với nước tương + dầu hào + đường + tiêu + bột năng + 1 ms dầu ăn + tỏi băm. Trộn đều, để 15 phút cho thấm." },
+      { title: "Phi tỏi gừng", time: "~30 giây", content: "Đun nóng 3 ms dầu chảo lửa lớn, phi tỏi + gừng băm thơm vàng." },
+      { title: "Xào bò", time: "~1-2 phút", content: "Cho bò vào chảo lửa lớn nhất, xào nhanh tay 1-2 phút cho bò vừa chín tới (không quá chín kẻo dai). Trút ra dĩa riêng giữ lại nước." },
+      { title: "Xào hành tây", time: "~1 phút", content: "Vẫn chảo đó, cho thêm 1 ms dầu, xào hành tây 1 phút cho hơi mềm nhưng vẫn giòn ngọt." },
+      { title: "Trộn bò vào", time: "~30 giây", content: "Cho bò trở lại chảo cùng hành tây. Thêm nước tương đậm + dầu hào + đường + nước mắm. Đảo lửa lớn 30 giây." },
+      { title: "Thêm hành lá", content: "Cho hành lá + cần tây (nếu dùng) vào đảo nhanh 10 giây." },
+      { title: "Hoàn thiện", content: "Tắt bếp, rắc tiêu xay. Múc ra dĩa nóng. Ăn với cơm trắng và rau luộc." }
+    ]
+  },
+
+  /* ============================================
+     BÁNH - CUỐN
+     ============================================ */
+
+  {
+    id: 44,
+    title: "Bánh Cuốn Thanh Trì",
+    subtitle: "bánh tráng mỏng tang, chấm nước mắm pha",
+    category: "Bánh - Cuốn",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Vũ Thị Hồng · Thanh Trì, Hà Nội",
+    note: "Bột bánh cuốn phải pha loãng vừa, hấp trên vải mỏng tạo lớp bánh mỏng tang. Bánh truyền thống có vài giọt cà cuống cho hương vị đặc Hà Nội.",
+    groups: [
+      {
+        name: "Bột bánh",
+        items: [
+          { name: "Bột gạo Thanh Trì (bột gạo tẻ)", qty: 0.3, unit: "kg" },
+          { name: "Bột năng", qty: 50, unit: "gr" },
+          { name: "Nước lọc", qty: 0.9, unit: "lít" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Dầu ăn", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Nhân thịt",
+        items: [
+          { name: "Thịt nạc dăm xay", qty: 0.2, unit: "kg" },
+          { name: "Mộc nhĩ (nấm mèo) ngâm nở băm", qty: 30, unit: "gr" },
+          { name: "Hành khô băm", qty: 1, unit: "ms" },
+          { name: "Nước mắm", qty: 1, unit: "mc" },
+          { name: "Tiêu", qty: 1, unit: "mc" },
+          { name: "Đường", qty: 0.5, unit: "mc" },
+          { name: "Dầu ăn", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Ăn kèm",
+        items: [
+          { name: "Chả lụa cắt lát", qty: 0.2, unit: "kg" },
+          { name: "Hành phi vàng giòn", qty: 50, unit: "gr" },
+          { name: "Rau thơm, húng láng, mùi tàu", qty: 0.1, unit: "kg" },
+          { name: "Giá đỗ trụng", qty: 0.1, unit: "kg" },
+          { name: "Dưa leo thái lát", qty: 0.1, unit: "kg" },
+        ]
+      },
+      {
+        name: "Nước chấm",
+        items: [
+          { name: "Nước mắm ngon", qty: 4, unit: "ms" },
+          { name: "Đường", qty: 4, unit: "ms" },
+          { name: "Nước lọc ấm", qty: 1, unit: "chén" },
+          { name: "Nước cốt chanh", qty: 1, unit: "ms" },
+          { name: "Giấm", qty: 1, unit: "ms" },
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+          { name: "Ớt thái lát", qty: 1, unit: "quả" },
+          { name: "Cà cuống", qty: null, unit: "1 giọt", note: "tùy chọn, truyền thống Hà Nội" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Pha bột", time: "~30 phút nghỉ", content: "Trộn bột gạo + bột năng + muối + 0.9 lít nước, khuấy thật mịn không vón. Để bột nghỉ 30 phút. Thêm 2 ms dầu khuấy đều." },
+      { title: "Xào nhân thịt", time: "~5 phút", content: "Phi hành khô với 1 ms dầu thơm. Cho thịt xay vào xào săn. Thêm mộc nhĩ + nước mắm + tiêu + đường. Đảo đều cho khô, tắt bếp." },
+      { title: "Pha nước chấm", content: "Đun nước + nước mắm + đường tan. Để nguội, thêm chanh + giấm + tỏi + ớt. (Truyền thống có thêm cà cuống cho vị đặc trưng.)" },
+      { title: "Chuẩn bị nồi hấp", content: "Đun nồi nước sôi mạnh. Căng tấm vải xô lên miệng nồi, buộc dây cố định. Thoa lớp dầu mỏng lên vải để bánh không dính." },
+      { title: "Tráng bánh", time: "~40 giây/cái", content: "Múc 1 vá bột nhỏ lên vải, dùng đáy vá tản đều thành lớp mỏng tang. Đậy nắp 30-40 giây cho bánh chín trong veo." },
+      { title: "Lấy bánh ra", content: "Mở nắp, dùng que tre dài (mỏng) luồn dưới bánh, nhẹ nhàng lấy ra trải lên dĩa đã thoa dầu." },
+      { title: "Cho nhân và cuốn", content: "Đặt 1 thìa nhân thịt vào đầu bánh, cuộn lại từ phía gần nhất. Cắt khúc vừa ăn nếu cuốn dài." },
+      { title: "Hoàn thiện", content: "Xếp bánh cuốn ra dĩa. Rắc hành phi vàng giòn. Bày kèm chả lụa, rau thơm, giá trụng, dưa leo. Chan nước chấm khi ăn." }
+    ]
+  },
+
+  {
+    id: 45,
+    title: "Bánh Khọt Vũng Tàu",
+    subtitle: "bánh khọt giòn vàng nhân tôm tươi",
+    category: "Bánh - Cuốn",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Nguyễn Thị Phương · Bãi Sau, Vũng Tàu",
+    note: "Khuôn đúc bánh khọt phải cũ, đã 'thuần dầu' thì bánh mới giòn không dính.",
+    groups: [
+      {
+        name: "Bột bánh",
+        items: [
+          { name: "Bột gạo", qty: 0.3, unit: "kg" },
+          { name: "Bột chiên giòn (hoặc bột năng)", qty: 50, unit: "gr" },
+          { name: "Bột nghệ", qty: 0.5, unit: "mc" },
+          { name: "Nước cốt dừa", qty: 0.3, unit: "lít" },
+          { name: "Nước lọc", qty: 0.3, unit: "lít" },
+          { name: "Nước có ga (soda)", qty: 0.1, unit: "lít", note: "tùy chọn cho bánh giòn" },
+          { name: "Hành lá thái nhỏ", qty: 50, unit: "gr" },
+          { name: "Muối", qty: 0.5, unit: "mc" },
+          { name: "Đường", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Nhân tôm",
+        items: [
+          { name: "Tôm tươi cỡ vừa (lột vỏ)", qty: 0.4, unit: "kg" },
+          { name: "Hành tím băm", qty: 1, unit: "ms" },
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+          { name: "Nước mắm", qty: 1, unit: "mc" },
+          { name: "Tiêu", qty: 1, unit: "mc" },
+          { name: "Đậu xanh hấp chín", qty: 100, unit: "gr", note: "tùy chọn" },
+        ]
+      },
+      {
+        name: "Mỡ hành",
+        items: [
+          { name: "Hành lá thái nhỏ", qty: 50, unit: "gr" },
+          { name: "Dầu ăn nóng", qty: 3, unit: "ms" },
+        ]
+      },
+      {
+        name: "Đồ ăn kèm",
+        items: [
+          { name: "Xà lách lá xanh", qty: 0.2, unit: "kg" },
+          { name: "Rau thơm, húng quế, kinh giới", qty: 0.1, unit: "kg" },
+          { name: "Cà rốt + đu đủ ngâm chua", qty: 0.15, unit: "kg" },
+          { name: "Bánh tráng cuốn mềm", qty: 12, unit: "cái", note: "tùy chọn để cuốn" },
+        ]
+      },
+      {
+        name: "Nước chấm",
+        items: [
+          { name: "Nước mắm", qty: 4, unit: "ms" },
+          { name: "Đường", qty: 4, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 2, unit: "ms" },
+          { name: "Nước lọc", qty: 5, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Ớt xay", qty: 1, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Pha bột", time: "~30 phút nghỉ", content: "Trộn bột gạo + bột chiên giòn + bột nghệ + muối + đường. Từ từ thêm nước cốt dừa + nước + nước soda, khuấy mịn. Để bột nghỉ 30 phút. Thêm hành lá thái nhỏ trước khi đổ." },
+      { title: "Sơ chế tôm", time: "~10 phút", content: "Tôm lột vỏ, rút chỉ đen. Ướp với hành tỏi băm + nước mắm + tiêu 10 phút." },
+      { title: "Pha nước chấm", content: "Hòa nước mắm + đường + nước + chanh + tỏi + ớt. Khuấy tan đường." },
+      { title: "Làm mỡ hành", content: "Cho hành lá thái nhỏ vào chén, đổ dầu nóng vào xèo xèo." },
+      { title: "Đun nóng khuôn", content: "Khuôn bánh khọt đặt lên bếp lửa vừa. Thoa dầu vào từng ô. Để khuôn nóng già." },
+      { title: "Đổ bột", content: "Khuấy đều bột (bột hay lắng). Múc bột đổ vào 2/3 chiều cao mỗi ô khuôn." },
+      { title: "Cho nhân", time: "~30 giây", content: "Khi bánh bắt đầu se mặt, đặt 1 con tôm + ít đậu xanh hấp vào giữa." },
+      { title: "Đậy nắp", time: "~2-3 phút", content: "Đậy nắp 2-3 phút cho bánh chín và rìa giòn vàng đẹp." },
+      { title: "Lấy bánh", content: "Dùng que tre nạy bánh ra, viền có nâu giòn là đạt." },
+      { title: "Trình bày", content: "Xếp bánh ra dĩa, rưới mỡ hành lên. Ăn cuốn với xà lách + rau thơm + cà rốt đu đủ chua, chấm nước mắm chua ngọt." }
+    ]
+  },
+
+  {
+    id: 46,
+    title: "Bánh Bột Lọc Huế",
+    subtitle: "bánh trong vắt nhân tôm thịt",
+    category: "Bánh - Cuốn",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Trần Thị Thanh · Huế",
+    note: "Bột nhồi với nước sôi mới dẻo. Bánh trần luộc + bánh gói lá chuối hấp đều ngon.",
+    groups: [
+      {
+        name: "Vỏ bánh",
+        items: [
+          { name: "Bột năng (bột lọc)", qty: 0.3, unit: "kg" },
+          { name: "Nước sôi nóng", qty: 0.25, unit: "lít" },
+          { name: "Muối", qty: 0.5, unit: "mc" },
+          { name: "Dầu ăn", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Nhân tôm thịt",
+        items: [
+          { name: "Tôm tươi nhỏ (cắt nhỏ)", qty: 0.2, unit: "kg" },
+          { name: "Thịt ba chỉ thái nhỏ", qty: 0.15, unit: "kg" },
+          { name: "Hành tím băm", qty: 1, unit: "ms" },
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+          { name: "Nước mắm", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "ms" },
+          { name: "Tiêu", qty: 1, unit: "mc" },
+          { name: "Hạt nêm", qty: 1, unit: "mc" },
+          { name: "Dầu ăn", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Lá chuối (cho bánh gói)",
+        items: [
+          { name: "Lá chuối tươi cắt vuông 12x12cm", qty: 30, unit: "lá" },
+          { name: "Dầu ăn phết lá", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Nước chấm Huế",
+        items: [
+          { name: "Nước mắm ngon", qty: 4, unit: "ms" },
+          { name: "Đường", qty: 3, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 1, unit: "ms" },
+          { name: "Nước lọc", qty: 4, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Ớt xay", qty: 1, unit: "ms", note: "Huế đặc trưng cay nồng" },
+        ]
+      },
+      {
+        name: "Mỡ hành & ăn kèm",
+        items: [
+          { name: "Hành lá thái nhỏ", qty: 50, unit: "gr" },
+          { name: "Dầu nóng", qty: 2, unit: "ms" },
+          { name: "Hành phi", qty: 2, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Nhồi bột", time: "~10 phút", content: "Cho bột năng + muối vào tô. Đổ từ từ nước sôi vào, dùng đũa đảo. Khi nguội bớt, dùng tay nhồi cho dẻo mịn 10 phút. Bột phải dẻo, không dính tay." },
+      { title: "Xào nhân", time: "~5 phút", content: "Phi hành tỏi với 1 ms dầu. Cho thịt ba chỉ vào xào săn, thêm tôm xào tiếp. Nêm nước mắm + đường + tiêu + hạt nêm. Xào đến khi nhân khô và thấm vị. Để nguội." },
+      { title: "Pha nước chấm Huế", content: "Đun nước + nước mắm + đường tan. Để nguội, thêm chanh + tỏi + ớt xay nhiều cho cay nồng đặc Huế." },
+      { title: "Làm mỡ hành", content: "Hành lá vào chén, đổ dầu nóng vào xèo xèo." },
+      { title: "Tạo hình bánh trần", content: "Lấy 1 viên bột 15gr, dùng tay ép dẹt thành hình tròn ~5cm. Cho 1 mc nhân vào giữa, gấp đôi lại thành nửa nguyệt, ép mép cho kín không bung." },
+      { title: "Luộc bánh trần", time: "~7 phút", content: "Đun nước sôi, thả bánh vào luộc 5-7 phút đến khi bánh nổi lên và trong veo. Vớt ra ngâm nước lạnh để bánh không dính." },
+      { title: "Bánh gói lá chuối", content: "Phết dầu lên lá chuối. Để 1 viên bột dẹt + nhân + 1 viên bột phủ trên. Gói lá chuối lại thành hình chữ nhật, gấp 2 đầu." },
+      { title: "Hấp bánh gói", time: "~20 phút", content: "Hấp 20 phút. Bánh trong veo, lá chuối thơm." },
+      { title: "Trình bày", content: "Bánh trần xếp dĩa, rưới mỡ hành + hành phi. Bánh gói xếp dĩa nguyên lá. Chấm nước mắm chua cay khi ăn." }
+    ]
+  },
+
+  /* ============================================
+     LẨU
+     ============================================ */
+
+  {
+    id: 47,
+    title: "Lẩu Thái",
+    subtitle: "lẩu chua cay vị Thái, tôm và nấm",
+    category: "Lẩu",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Đầu bếp Somchai Chen · Bangkok / Sài Gòn",
+    note: "Sả, lá chanh thái và riềng là 3 gia vị bắt buộc tạo nên hồn lẩu Thái. Thêm sữa dừa cuối cùng để không tách.",
+    groups: [
+      {
+        name: "Nước lẩu",
+        items: [
+          { name: "Nước dùng gà hoặc xương", qty: 3, unit: "lít" },
+          { name: "Sả đập dập cắt khúc", qty: 5, unit: "cây" },
+          { name: "Riềng thái lát mỏng", qty: 80, unit: "gr" },
+          { name: "Lá chanh thái (kaffir lime)", qty: 8, unit: "lá" },
+          { name: "Cà chua bi", qty: 0.2, unit: "kg" },
+          { name: "Nấm rơm", qty: 0.2, unit: "kg" },
+          { name: "Tom yum paste (sa tế Thái)", qty: 4, unit: "ms" },
+          { name: "Nước cốt me", qty: 3, unit: "ms" },
+          { name: "Đường thốt nốt", qty: 2, unit: "ms" },
+          { name: "Nước mắm", qty: 4, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 3, unit: "ms" },
+          { name: "Ớt hiểm đập dập", qty: 5, unit: "trái" },
+          { name: "Sữa dừa hoặc kem dừa", qty: 0.2, unit: "lít" },
+        ]
+      },
+      {
+        name: "Hải sản và thịt",
+        items: [
+          { name: "Tôm sú (chừa vỏ đuôi)", qty: 0.5, unit: "kg" },
+          { name: "Mực ống cắt khoanh", qty: 0.3, unit: "kg" },
+          { name: "Cá basa phi lê cắt khúc", qty: 0.3, unit: "kg" },
+          { name: "Nghêu hoặc sò", qty: 0.5, unit: "kg", note: "tùy chọn" },
+        ]
+      },
+      {
+        name: "Rau và sợi",
+        items: [
+          { name: "Bún hoặc miến hoặc mì gói", qty: 0.5, unit: "kg" },
+          { name: "Cải thảo cắt khúc", qty: 0.3, unit: "kg" },
+          { name: "Nấm bào ngư xé sợi", qty: 0.2, unit: "kg" },
+          { name: "Ngò gai, ngò om", qty: 50, unit: "gr" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế hải sản", content: "Tôm rút chỉ đen, để nguyên vỏ và đầu (đầu tôm có gạch ngon). Mực cắt khoanh, cá basa cắt khúc 3cm, nghêu ngâm sạch cát." },
+      { title: "Nấu nước lẩu", time: "~15 phút", content: "3 lít nước dùng gà đun sôi. Thả sả + riềng + lá chanh thái vào đun 15 phút cho dậy hương đặc Thái." },
+      { title: "Thêm tom yum paste", content: "Hòa 4 ms tom yum paste với 1 chén nước, đổ vào nồi. Khuấy đều cho tan và lên màu đỏ cam đẹp." },
+      { title: "Nêm chua cay", time: "~10 phút", content: "Thêm nước cốt me + đường thốt nốt + nước mắm + ớt hiểm đập dập. Đun nhỏ lửa 10 phút cho ngấm vị." },
+      { title: "Hoàn thiện vị", content: "Tắt bếp, thêm nước cốt chanh + sữa dừa vào (cho sau cùng để không bị tách kẻo nước lẩu lợn cợn)." },
+      { title: "Chuyển nồi ra bàn", content: "Đổ nước lẩu ra nồi lẩu điện hoặc bếp gas mini. Đun sôi tiếp." },
+      { title: "Nấu rau và topping", content: "Khi ăn, lần lượt thả nấm + cà chua + cải thảo vào nồi. Sau đó thả hải sản theo thứ tự: cá → tôm → mực → nghêu." },
+      { title: "Ăn kèm", content: "Trụng bún/mì riêng. Múc lẩu ra tô, ăn cùng bún. Rắc ngò gai + ngò om + thêm chanh + ớt theo khẩu vị." }
+    ]
+  },
+
+  {
+    id: 48,
+    title: "Lẩu Mắm Miền Tây",
+    subtitle: "lẩu mắm cá linh thơm nồng",
+    category: "Lẩu",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Trần Thị Diệu · Châu Đốc, An Giang",
+    note: "Lẩu mắm phải ăn cùng đủ loại rau đồng quê mới đúng vị miền Tây — bông súng, kèo nèo, rau dừa, bông điên điển...",
+    groups: [
+      {
+        name: "Nước lẩu mắm",
+        items: [
+          { name: "Mắm cá linh", qty: 0.3, unit: "kg" },
+          { name: "Mắm cá sặc", qty: 0.15, unit: "kg" },
+          { name: "Nước dùng heo", qty: 3, unit: "lít" },
+          { name: "Sả đập dập", qty: 0.15, unit: "kg" },
+          { name: "Hành tím nướng", qty: 0.1, unit: "kg" },
+          { name: "Tỏi nướng", qty: 50, unit: "gr" },
+          { name: "Đường thốt nốt", qty: 100, unit: "gr" },
+          { name: "Dầu điều màu", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Topping",
+        items: [
+          { name: "Cá basa phi lê", qty: 0.4, unit: "kg" },
+          { name: "Tôm sú", qty: 0.3, unit: "kg" },
+          { name: "Mực ống", qty: 0.3, unit: "kg" },
+          { name: "Heo quay cắt khúc", qty: 0.4, unit: "kg" },
+          { name: "Cà tím cắt khúc", qty: 0.3, unit: "kg" },
+          { name: "Đậu bắp", qty: 0.2, unit: "kg" },
+        ]
+      },
+      {
+        name: "Rau đồng quê miền Tây",
+        items: [
+          { name: "Bông súng tước sợi", qty: 0.2, unit: "kg" },
+          { name: "Kèo nèo", qty: 0.15, unit: "kg" },
+          { name: "Rau muống chẻ", qty: 0.15, unit: "kg" },
+          { name: "Rau dừa", qty: 0.1, unit: "kg" },
+          { name: "Bông điên điển", qty: 0.1, unit: "kg" },
+          { name: "Bắp chuối thái", qty: 0.15, unit: "kg" },
+          { name: "Hoa so đũa", qty: 0.1, unit: "kg" },
+          { name: "Giá đỗ", qty: 0.1, unit: "kg" },
+        ]
+      },
+      {
+        name: "Bún và phụ kiện",
+        items: [
+          { name: "Bún sợi to", qty: 1, unit: "kg" },
+          { name: "Ớt hiểm", qty: 5, unit: "trái" },
+          { name: "Chanh", qty: 2, unit: "trái" },
+          { name: "Tỏi ớt xay", qty: 2, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Nấu mắm lấy nước cốt", time: "~20 phút", content: "Cho 2 loại mắm vào 1 lít nước, đun sôi 15 phút cho rã. Lọc qua rây mịn 2 lần lấy nước trong, bỏ xương cặn." },
+      { title: "Nấu nước lẩu", time: "~30 phút", content: "Nước mắm đã lọc + 2 lít nước dùng heo. Đun với sả + hành + tỏi nướng. Hầm 30 phút." },
+      { title: "Nêm vị", content: "Thêm đường thốt nốt + dầu điều màu. Vị mặn ngọt đậm đà đặc trưng." },
+      { title: "Ninh cà tím", time: "~15 phút", content: "Cho cà tím vào nồi nước lẩu ninh 15 phút cho mềm thấm vị." },
+      { title: "Chuẩn bị rau", content: "Bông súng, kèo nèo, rau dừa, bông điên điển rửa sạch để ráo. Xếp ra dĩa lớn." },
+      { title: "Sơ chế topping", content: "Cá basa cắt khúc 3cm. Tôm rút chỉ. Mực cắt khoanh. Heo quay cắt khúc vừa ăn." },
+      { title: "Bày bàn lẩu", content: "Chuyển nồi nước lẩu sôi sùng sục ra bàn. Bày dĩa rau, dĩa topping, bún, ớt chanh xung quanh." },
+      { title: "Cách ăn", content: "Thả lần lượt heo quay → cá → tôm → mực vào nồi. Trụng rau (bông súng, kèo nèo, rau dừa, điên điển, bắp chuối). Trụng bún. Múc ra tô ăn kèm tất cả." }
+    ]
+  },
+
+  {
+    id: 49,
+    title: "Lẩu Cá Kèo",
+    subtitle: "lẩu chua ngọt với cá kèo lá giang",
+    category: "Lẩu",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Lê Thị Sương · Bạc Liêu",
+    note: "Cá kèo phải tươi nhảy, không cắt bỏ ruột — đó là phần ngon nhất. Lá giang vò nhẹ để ra vị chua thanh.",
+    groups: [
+      {
+        name: "Nước lẩu",
+        items: [
+          { name: "Cá kèo tươi", qty: 0.6, unit: "kg" },
+          { name: "Lá giang rửa sạch vò nhẹ", qty: 0.2, unit: "kg" },
+          { name: "Nước dùng xương heo", qty: 2.5, unit: "lít" },
+          { name: "Sả đập dập", qty: 4, unit: "cây" },
+          { name: "Cà chua cắt múi", qty: 0.3, unit: "kg" },
+          { name: "Khoai môn cắt miếng", qty: 0.2, unit: "kg", note: "tùy chọn" },
+          { name: "Nấm rơm", qty: 0.2, unit: "kg" },
+          { name: "Hành tím đập dập", qty: 50, unit: "gr" },
+          { name: "Tỏi đập dập", qty: 30, unit: "gr" },
+        ]
+      },
+      {
+        name: "Gia vị",
+        items: [
+          { name: "Nước mắm", qty: 4, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Hạt nêm", qty: 1, unit: "ms" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Bột ngọt", qty: 1, unit: "mc" },
+          { name: "Dầu điều màu", qty: 2, unit: "ms" },
+          { name: "Sa tế", qty: 1, unit: "ms", note: "tùy thích cay" },
+        ]
+      },
+      {
+        name: "Rau ăn kèm",
+        items: [
+          { name: "Rau muống chẻ", qty: 0.3, unit: "kg" },
+          { name: "Bông điên điển", qty: 0.15, unit: "kg" },
+          { name: "Kèo nèo", qty: 0.15, unit: "kg" },
+          { name: "Giá đỗ", qty: 0.1, unit: "kg" },
+          { name: "Ngò gai, ngò om, hành lá", qty: 50, unit: "gr" },
+          { name: "Ớt hiểm, chanh", qty: null, unit: "vừa đủ" },
+        ]
+      },
+      {
+        name: "Bún",
+        items: [
+          { name: "Bún sợi nhỏ", qty: 0.8, unit: "kg" },
+          { name: "Nước mắm chấm", qty: 2, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế cá kèo", time: "~10 phút", content: "Cá kèo còn sống, ngâm với muối + giấm cho cá nhả nhớt. Rửa thật sạch nước (không bỏ ruột — ruột cá kèo bùi ngon)." },
+      { title: "Chuẩn bị lá giang", content: "Lá giang rửa sạch, dùng tay vò nhẹ để dập gân lá cho ra vị chua. Để riêng." },
+      { title: "Nấu nước dùng", time: "~15 phút", content: "2.5 lít nước dùng heo + sả + hành tím + tỏi đập dập + muối. Đun sôi 15 phút." },
+      { title: "Phi điều màu xào cà", time: "~3 phút", content: "Phi 2 ms dầu điều màu thơm, cho cà chua vào xào mềm." },
+      { title: "Nêm nước lẩu", content: "Đổ phần cà chua xào + dầu điều vào nồi nước dùng. Thêm nước mắm + đường + hạt nêm + bột ngọt." },
+      { title: "Nấu khoai môn", time: "~5 phút", content: "Cho khoai môn vào nấu 5 phút trước. Thêm nấm rơm khi gần ăn." },
+      { title: "Bày bàn", content: "Chuyển nồi nước lẩu sôi ra bàn. Bày cá kèo, dĩa lá giang, dĩa rau, bún, ớt chanh xung quanh." },
+      { title: "Cách ăn", content: "Thả vài cọng lá giang vào nồi cho nước có vị chua thanh. Thả cá kèo vào (cá nhảy lẹ vớt ngay). Trụng rau. Múc nước lẩu + cá + rau vào tô, ăn với bún. Chấm nước mắm ớt." }
+    ]
+  },
+
+  /* ============================================
+     TRÁNG MIỆNG - CHÈ
+     ============================================ */
+
+  {
+    id: 50,
+    title: "Chè Ba Màu",
+    subtitle: "3 lớp đậu, thạch và nước cốt dừa",
+    category: "Tráng miệng",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Đỗ Thị Tuyết · Sài Gòn",
+    note: "Mỗi lớp phải khô se vừa, không loãng để khi xếp ly không bị trộn nhau.",
+    groups: [
+      {
+        name: "Đậu đỏ (lớp dưới)",
+        items: [
+          { name: "Đậu đỏ", qty: 0.15, unit: "kg" },
+          { name: "Đường", qty: 80, unit: "gr" },
+          { name: "Muối", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Đậu xanh cà (lớp giữa)",
+        items: [
+          { name: "Đậu xanh đã cà vỏ", qty: 0.15, unit: "kg" },
+          { name: "Đường", qty: 80, unit: "gr" },
+          { name: "Muối", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Thạch lá dứa (lớp trên)",
+        items: [
+          { name: "Bột thạch agar", qty: 10, unit: "gr" },
+          { name: "Nước lá dứa (xay lọc)", qty: 0.3, unit: "lít" },
+          { name: "Đường", qty: 50, unit: "gr" },
+        ]
+      },
+      {
+        name: "Nước cốt dừa rưới",
+        items: [
+          { name: "Nước cốt dừa đặc", qty: 0.3, unit: "lít" },
+          { name: "Đường", qty: 50, unit: "gr" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Bột năng (pha 2 ms nước)", qty: 1, unit: "mc" },
+          { name: "Lá dứa", qty: 2, unit: "lá" },
+        ]
+      },
+      {
+        name: "Ăn kèm",
+        items: [
+          { name: "Đá bào", qty: 0.5, unit: "kg" },
+          { name: "Đậu phộng rang giã", qty: 50, unit: "gr", note: "tùy chọn" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Nấu đậu đỏ", time: "~1.5 giờ", content: "Đậu đỏ ngâm 4 giờ. Hầm với 0.5 lít nước 1-1.5 giờ đến mềm nhừ. Thêm đường + muối, đun nhỏ lửa 10 phút cho đường thấm. Để nguội." },
+      { title: "Nấu đậu xanh cà", time: "~40 phút", content: "Đậu xanh ngâm 2 giờ. Hấp 30 phút đến chín bở. Cho vào nồi nhỏ với đường + muối + 100 ml nước, đảo trên lửa nhỏ đến đường tan và đậu se lại. Để nguội." },
+      { title: "Làm thạch lá dứa", time: "~10 phút", content: "Lá dứa rửa sạch, xay với 0.4 lít nước, lọc lấy nước cốt 0.3 lít. Đun nước lá dứa với bột thạch + đường khuấy tan. Đun sôi 2 phút. Đổ ra khay phẳng, để nguội đông lại. Cắt hạt lựu 0.5cm." },
+      { title: "Nấu nước cốt dừa", time: "~5 phút", content: "Đun nước cốt dừa + đường + muối + lá dứa. Khi sôi cho bột năng pha nước vào khuấy đều cho sánh. Để nguội." },
+      { title: "Trình bày", content: "Cho từng lớp vào ly cao trong suốt theo thứ tự: đậu đỏ dưới → đậu xanh giữa → thạch lá dứa trên." },
+      { title: "Rưới nước cốt dừa", content: "Rưới nước cốt dừa sánh đặc lên trên." },
+      { title: "Thêm đá", content: "Cho đá bào lên trên cùng. Rắc đậu phộng rang (nếu thích)." },
+      { title: "Ăn", content: "Dùng muỗng dài quậy nhẹ để 3 lớp hòa quyện, ăn lạnh giải nhiệt mùa hè." }
+    ]
+  },
+
+  {
+    id: 51,
+    title: "Chè Bưởi",
+    subtitle: "vỏ bưởi giòn dai, nước cốt dừa thơm",
+    category: "Tráng miệng",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Hồ Thị Tâm · Bến Tre",
+    note: "Vỏ bưởi phải ngâm muối + bóp kỹ để hết đắng. Bí quyết là phơi 1 nắng nhẹ trước khi nấu.",
+    groups: [
+      {
+        name: "Vỏ bưởi",
+        items: [
+          { name: "Vỏ bưởi xanh (lấy phần cùi trắng)", qty: 0.3, unit: "kg" },
+          { name: "Muối hột (ngâm)", qty: 3, unit: "ms" },
+          { name: "Phèn chua", qty: 1, unit: "mc", note: "tùy chọn, giúp vỏ giòn" },
+          { name: "Bột năng (áo vỏ bưởi)", qty: 0.15, unit: "kg" },
+          { name: "Đường (ngào)", qty: 0.2, unit: "kg" },
+          { name: "Nước lọc", qty: 0.2, unit: "lít" },
+        ]
+      },
+      {
+        name: "Đậu xanh cà",
+        items: [
+          { name: "Đậu xanh đã cà vỏ", qty: 0.1, unit: "kg" },
+          { name: "Đường", qty: 50, unit: "gr" },
+          { name: "Muối", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Nước chè và nước cốt dừa",
+        items: [
+          { name: "Đường", qty: 0.15, unit: "kg" },
+          { name: "Nước lọc", qty: 1, unit: "lít" },
+          { name: "Lá dứa", qty: 3, unit: "lá" },
+          { name: "Bột năng (làm sánh nước chè)", qty: 2, unit: "ms" },
+          { name: "Nước cốt dừa đặc", qty: 0.3, unit: "lít" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Đậu phộng rang giã", qty: 50, unit: "gr" },
+          { name: "Mè rang", qty: 1, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế vỏ bưởi", content: "Gọt sạch lớp xanh ngoài, chỉ lấy phần cùi trắng. Cắt hạt lựu 1cm. Bóp với muối hột 3 lần, mỗi lần xả nước cho hết vị đắng. Có thể phơi 1 nắng nhẹ cho ráo." },
+      { title: "Luộc vỏ bưởi", time: "~5 phút", content: "Đun nước sôi với phèn chua (nếu dùng), thả vỏ bưởi vào luộc 5 phút. Vớt ra ngâm nước đá 10 phút cho giòn." },
+      { title: "Áo bột năng", content: "Vắt vỏ bưởi cho ráo nước. Lăn qua bột năng cho áo đều từng miếng." },
+      { title: "Trụng vỏ bưởi", time: "~1 phút", content: "Đun nước sôi, thả vỏ bưởi đã áo bột vào trụng 1 phút đến khi nổi lên và áo bột chuyển trong. Vớt ngay ra nước đá." },
+      { title: "Ngào đường", time: "~15 phút", content: "Đun 0.2 lít nước với 0.2 kg đường tan. Cho vỏ bưởi đã trụng vào ngào lửa nhỏ 10-15 phút cho ngấm vị ngọt. Vớt ra để nguội." },
+      { title: "Nấu đậu xanh", time: "~30 phút", content: "Đậu xanh hấp chín. Cho vào nồi nhỏ với đường + muối + 100 ml nước, đảo cho đường tan và se lại." },
+      { title: "Nấu nước chè", time: "~10 phút", content: "Đun 1 lít nước với 0.15 kg đường + lá dứa. Khi sôi, đổ bột năng pha nước vào khuấy đều cho nước chè sánh trong." },
+      { title: "Trộn vỏ bưởi và đậu", time: "~2 phút", content: "Cho vỏ bưởi ngào + đậu xanh vào nồi nước chè. Đun nhỏ lửa 2 phút." },
+      { title: "Nấu nước cốt dừa", time: "~3 phút", content: "Đun nước cốt dừa + 1 ms đường + muối + 1 mc bột năng pha nước. Khuấy đến sánh nhẹ." },
+      { title: "Trình bày", content: "Múc chè ra ly hoặc chén. Rưới nước cốt dừa lên. Rắc đậu phộng rang giã + mè rang. Ăn nóng hoặc lạnh đều ngon." }
+    ]
+  },
+
+  {
+    id: 52,
+    title: "Bánh Flan",
+    subtitle: "bánh flan caramel mịn như nhung",
+    category: "Tráng miệng",
+    servings: 8,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Phan Thị Hà · Quận 1, Sài Gòn",
+    note: "Hấp lửa nhỏ và đậy nắp có khe hở để bánh không bị rỗ. Đặc sản Sài Gòn ăn với cà phê đen đậm.",
+    groups: [
+      {
+        name: "Lớp caramel",
+        items: [
+          { name: "Đường", qty: 100, unit: "gr" },
+          { name: "Nước lọc", qty: 2, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 0.5, unit: "mc", note: "giúp đường không kết tinh" },
+        ]
+      },
+      {
+        name: "Lớp bánh",
+        items: [
+          { name: "Sữa tươi không đường", qty: 0.5, unit: "lít" },
+          { name: "Sữa đặc có đường", qty: 0.2, unit: "lít" },
+          { name: "Trứng gà", qty: 6, unit: "quả" },
+          { name: "Lòng đỏ trứng thêm", qty: 2, unit: "cái" },
+          { name: "Đường", qty: 50, unit: "gr" },
+          { name: "Vani", qty: 1, unit: "mc" },
+          { name: "Muối", qty: null, unit: "1 nhúm" },
+        ]
+      },
+      {
+        name: "Trang trí ăn kèm",
+        items: [
+          { name: "Cà phê đen pha đậm", qty: null, unit: "rưới khi ăn (tùy)" },
+          { name: "Đá bào", qty: 0.3, unit: "kg" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Làm caramel", time: "~5 phút", content: "Cho đường + 2 ms nước + nước cốt chanh vào nồi nhỏ. Đun lửa vừa, KHÔNG khuấy. Lắc nồi nhẹ. Khi đường chuyển vàng cánh gián, tắt bếp ngay (đường tiếp tục đậm thêm do nhiệt dư)." },
+      { title: "Đổ caramel vào khuôn", content: "Chia caramel vào 8-10 khuôn nhỏ (hoặc 1 khuôn lớn). Lắc cho caramel láng đều đáy. Để nguội cứng lại." },
+      { title: "Đun sữa", time: "~5 phút", content: "Đun sữa tươi + sữa đặc + đường + muối + vani trên lửa nhỏ đến khi đường tan và sữa hơi ấm (~50°C, không sôi). Tắt bếp, để nguội bớt." },
+      { title: "Đánh trứng", content: "Đập trứng + lòng đỏ vào tô, đánh nhẹ tay không tạo bọt. Lọc qua rây 2 lần để hỗn hợp mịn." },
+      { title: "Trộn sữa và trứng", content: "Đổ từ từ sữa ấm vào trứng vừa đánh nhẹ tay, không khuấy mạnh kẻo tạo bọt. Lọc lại qua rây mịn lần nữa để loại bỏ bọt và vụn trứng." },
+      { title: "Đổ vào khuôn", content: "Chia hỗn hợp trứng sữa vào các khuôn đã có caramel. Dùng muỗng vớt bỏ bọt nổi trên mặt cho bánh nhẵn mịn." },
+      { title: "Hấp cách thủy", time: "~30 phút", content: "Đặt khuôn vào nồi hấp có nước nóng ngập 1/3 chiều cao khuôn. Đậy nắp có gài khe hở (kê đũa cho hơi thoát). Hấp lửa nhỏ 25-30 phút." },
+      { title: "Kiểm tra chín", content: "Dùng tăm xiên vào giữa, rút ra khô là chín. Hoặc lắc nhẹ khuôn, mặt bánh không lay là chín hoàn toàn." },
+      { title: "Để nguội và ướp lạnh", time: "~4 giờ tủ lạnh", content: "Lấy khuôn ra, để nguội. Ướp tủ lạnh 4 giờ để bánh săn chắc, vị thơm đậm hơn." },
+      { title: "Lật bánh", content: "Dùng dao mỏng lách viền bánh. Úp đĩa lên khuôn, lật ngược nhanh tay để bánh rơi ra cùng caramel chảy láng đẹp mắt." },
+      { title: "Trình bày", content: "Bày bánh flan ra ly hoặc dĩa. Cho đá bào xung quanh. Rưới chút cà phê đen đậm lên trên (tùy thích, đặc Sài Gòn)." }
+    ]
+  },
+
+  /* ============================================
+     BÁNH TRÁNG
+     ============================================ */
+
+  {
+    id: 53,
+    title: "Bánh Tráng Nướng Đà Lạt",
+    subtitle: "pizza Việt Nam - bánh tráng giòn rụm",
+    category: "Bánh tráng",
+    servings: 2,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Cao Thị Lệ · Đà Lạt, Lâm Đồng",
+    note: "Nướng trên bếp than hoa hoặc chảo gang lửa nhỏ để bánh tráng giòn không cháy.",
+    groups: [
+      {
+        name: "Nguyên liệu nướng",
+        items: [
+          { name: "Bánh tráng (loại mỏng để nướng)", qty: 6, unit: "cái" },
+          { name: "Trứng cút", qty: 12, unit: "quả" },
+          { name: "Pa tê gan", qty: 50, unit: "gr" },
+          { name: "Mỡ hành (dầu + hành lá)", qty: 4, unit: "ms" },
+          { name: "Tôm khô (rang giòn)", qty: 30, unit: "gr" },
+          { name: "Khô bò xé sợi", qty: 30, unit: "gr" },
+          { name: "Hành lá thái nhỏ", qty: 50, unit: "gr" },
+          { name: "Tép sấy", qty: 20, unit: "gr" },
+          { name: "Phô mai sợi (tùy chọn)", qty: 50, unit: "gr" },
+        ]
+      },
+      {
+        name: "Sốt và gia vị",
+        items: [
+          { name: "Tương ớt", qty: 2, unit: "ms" },
+          { name: "Tương đen", qty: 1, unit: "ms" },
+          { name: "Bơ thực vật (phết bánh)", qty: 30, unit: "gr" },
+          { name: "Sa tế", qty: 1, unit: "ms" },
+          { name: "Mayonnaise", qty: 2, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Chuẩn bị bếp", content: "Đốt than hoa hoặc dùng chảo gang đặt lên bếp gas lửa nhỏ. Đợi đủ nóng đều." },
+      { title: "Đặt bánh tráng", content: "Đặt 1 cái bánh tráng lên vỉ nướng hoặc chảo. Để 10 giây cho bánh nóng đều, hơi khô." },
+      { title: "Đập trứng cút", content: "Đập 2 quả trứng cút vào giữa bánh tráng. Dùng đũa dàn trứng đều khắp mặt bánh." },
+      { title: "Phết pa tê và mỡ hành", content: "Phết 1 mc pa tê + 1 ms mỡ hành rải đều trên trứng." },
+      { title: "Rải topping", content: "Rắc tôm khô + khô bò + hành lá + tép sấy đều trên mặt." },
+      { title: "Nướng giòn", time: "~3-4 phút", content: "Nướng tiếp lửa vừa-nhỏ 3-4 phút cho mặt dưới bánh tráng chuyển vàng giòn. Có thể phết thêm chút bơ phía dưới cho thơm." },
+      { title: "Cho phô mai (nếu có)", content: "Rắc phô mai sợi lên trên, đậy nắp 30 giây cho chảy." },
+      { title: "Cắt và phục vụ", content: "Lấy bánh ra, dùng kéo cắt thành 4-6 miếng. Phết tương ớt + tương đen + mayonnaise theo khẩu vị. Ăn ngay khi nóng giòn." }
+    ]
+  },
+
+  {
+    id: 54,
+    title: "Bánh Tráng Trộn Sài Gòn",
+    subtitle: "bánh tráng trộn xoài, khô bò, trứng cút",
+    category: "Bánh tráng",
+    servings: 3,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Trần Thị Loan · Quận 4, Sài Gòn",
+    note: "Bánh tráng phải cắt sợi vừa, không quá mỏng kẻo nát khi trộn. Xoài xanh giòn chua mới ngon.",
+    groups: [
+      {
+        name: "Bánh tráng và rau",
+        items: [
+          { name: "Bánh tráng (cắt sợi 1cm)", qty: 0.2, unit: "kg" },
+          { name: "Xoài xanh bào sợi", qty: 0.2, unit: "kg" },
+          { name: "Rau răm thái nhỏ", qty: 50, unit: "gr" },
+          { name: "Húng quế thái nhỏ", qty: 30, unit: "gr" },
+        ]
+      },
+      {
+        name: "Topping",
+        items: [
+          { name: "Trứng cút luộc bóc vỏ", qty: 10, unit: "quả" },
+          { name: "Khô bò xé sợi", qty: 80, unit: "gr" },
+          { name: "Khô mực xé sợi", qty: 50, unit: "gr" },
+          { name: "Tôm khô (rang giòn)", qty: 30, unit: "gr" },
+          { name: "Đậu phộng rang giã", qty: 50, unit: "gr" },
+          { name: "Hành phi vàng giòn", qty: 30, unit: "gr" },
+          { name: "Mỡ hành", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Sốt trộn",
+        items: [
+          { name: "Nước tắc (quất)", qty: 3, unit: "ms" },
+          { name: "Sa tế tôm", qty: 1, unit: "ms" },
+          { name: "Dầu hành phi", qty: 2, unit: "ms" },
+          { name: "Muối tôm Tây Ninh", qty: 1, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "ms" },
+          { name: "Nước mắm", qty: 1, unit: "mc" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Chuẩn bị bánh tráng", content: "Bánh tráng dùng kéo cắt thành sợi 1cm dài 5-6cm. Để hộp kín tránh ẩm." },
+      { title: "Sơ chế xoài", content: "Xoài xanh gọt vỏ, bào sợi dài. Để ráo trong rổ." },
+      { title: "Pha sốt trộn", content: "Trong tô lớn, hòa nước tắc + sa tế + dầu hành phi + muối tôm + đường + nước mắm. Khuấy tan." },
+      { title: "Trộn bánh tráng", content: "Cho bánh tráng vào tô sốt. Dùng đũa đảo nhẹ tay cho bánh thấm đều sốt mà không nát. Để 2-3 phút cho bánh mềm dẻo." },
+      { title: "Thêm xoài và rau", content: "Cho xoài bào sợi + rau răm + húng quế vào tô. Đảo nhẹ tay." },
+      { title: "Thêm topping khô", content: "Rải khô bò + khô mực + tôm khô lên trên. Trộn đều nhẹ tay." },
+      { title: "Hoàn thiện", content: "Cuối cùng thêm trứng cút bóc vỏ + đậu phộng giã + hành phi + mỡ hành. Đảo nhẹ lần cuối." },
+      { title: "Phục vụ", content: "Múc ra dĩa hoặc ăn ngay trong tô. Ăn liền khi bánh tráng còn dẻo, chưa thấm sốt quá nát." }
+    ]
+  },
+
+  {
+    id: 55,
+    title: "Bánh Tráng Cuốn Thịt Heo",
+    subtitle: "thịt heo luộc cuốn rau sống bánh tráng",
+    category: "Bánh tráng",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Lê Thị Hồng · Đà Nẵng",
+    note: "Thịt heo phải có cả nạc và mỡ (ba chỉ hoặc giò) thái lát đôi mỏng để ăn không ngán.",
+    groups: [
+      {
+        name: "Thịt heo luộc",
+        items: [
+          { name: "Thịt ba chỉ (hoặc giò heo)", qty: 0.5, unit: "kg" },
+          { name: "Thịt nạc mông", qty: 0.3, unit: "kg" },
+          { name: "Nước luộc", qty: 2, unit: "lít" },
+          { name: "Gừng đập dập", qty: 50, unit: "gr" },
+          { name: "Hành tím đập dập", qty: 50, unit: "gr" },
+          { name: "Muối", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Bánh tráng và rau",
+        items: [
+          { name: "Bánh tráng (loại dày dùng cuốn)", qty: 20, unit: "cái" },
+          { name: "Bánh ướt (tùy thích)", qty: 0.3, unit: "kg" },
+          { name: "Xà lách lá xanh", qty: 0.3, unit: "kg" },
+          { name: "Rau thơm, húng quế, kinh giới", qty: 0.15, unit: "kg" },
+          { name: "Diếp cá", qty: 0.05, unit: "kg" },
+          { name: "Hẹ tươi", qty: 50, unit: "gr" },
+          { name: "Dưa leo thái sợi", qty: 0.2, unit: "kg" },
+          { name: "Chuối xanh thái lát", qty: 0.1, unit: "kg" },
+          { name: "Khế chua thái lát", qty: 0.1, unit: "kg" },
+        ]
+      },
+      {
+        name: "Mắm nêm Đà Nẵng",
+        items: [
+          { name: "Mắm nêm cá cơm", qty: 4, unit: "ms" },
+          { name: "Thơm (dứa) xay nhuyễn", qty: 3, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 1, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Ớt xay", qty: 1, unit: "ms" },
+          { name: "Sả băm", qty: 1, unit: "ms" },
+          { name: "Dầu ăn phi sả", qty: 1, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Luộc thịt", time: "~30 phút", content: "Đun 2 lít nước với gừng + hành tím + muối. Cho thịt ba chỉ + nạc mông vào luộc 25-30 phút đến chín. Vớt ra ngâm nước đá cho thịt săn." },
+      { title: "Thái thịt", content: "Thái thịt thành lát đôi (1 lát nạc kèm 1 lát mỡ) mỏng 2-3mm. Bày ra dĩa lớn." },
+      { title: "Pha mắm nêm", content: "Phi sả với 1 ms dầu thơm. Cho thơm xay vào xào 1 phút. Thêm mắm nêm + đường + nước (nếu cần loãng). Đun nhỏ 3 phút. Tắt bếp, thêm tỏi ớt xay + chanh." },
+      { title: "Chuẩn bị rau", content: "Rửa sạch xà lách, rau thơm, diếp cá, hẹ để ráo. Dưa leo, chuối xanh, khế chua thái lát mỏng." },
+      { title: "Bày bàn", content: "Bày bánh tráng (có thể nhúng nước trước khi ăn), bánh ướt, thịt thái, rau sống, mắm nêm xung quanh." },
+      { title: "Cách cuốn", content: "Nhúng nhanh bánh tráng vào nước ấm cho mềm. Đặt 1 lá xà lách + ít rau thơm + 2-3 lát thịt + dưa leo + chuối + khế + 1 cọng hẹ." },
+      { title: "Cuộn chặt", content: "Gập 2 mép bánh tráng, cuộn lại từ phía gần. Cuộn chặt vừa." },
+      { title: "Chấm và ăn", content: "Chấm cuốn vào chén mắm nêm. Vị mặn thơm của mắm + ngọt béo thịt + chua khế + the rau tạo thành món đặc Đà Nẵng." }
+    ]
+  },
+
+  /* ============================================
+     MÓN PHỤ ĂN KÈM
+     ============================================ */
+
+  {
+    id: 56,
+    title: "Cà Pháo Mắm Tôm",
+    subtitle: "cà pháo muối chấm mắm tôm",
+    category: "Món mặn",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Nguyễn Thị Bình · Hà Nội",
+    note: "Cà pháo phải muối xổi 2-3 ngày cho vừa chua giòn. Mắm tôm pha với chanh, đường, ớt tạo vị cân bằng.",
+    groups: [
+      {
+        name: "Cà pháo muối xổi",
+        items: [
+          { name: "Cà pháo trắng (chọn quả nhỏ, đồng đều)", qty: 0.5, unit: "kg" },
+          { name: "Muối hột", qty: 50, unit: "gr" },
+          { name: "Đường", qty: 30, unit: "gr" },
+          { name: "Nước sôi để nguội", qty: 1, unit: "lít" },
+          { name: "Tỏi đập dập", qty: 50, unit: "gr" },
+          { name: "Ớt hiểm nguyên trái", qty: 10, unit: "trái" },
+          { name: "Riềng thái lát", qty: 30, unit: "gr", note: "tùy chọn cho thơm" },
+        ]
+      },
+      {
+        name: "Mắm tôm pha",
+        items: [
+          { name: "Mắm tôm Bắc loại ngon", qty: 4, unit: "ms" },
+          { name: "Đường trắng", qty: 2, unit: "ms" },
+          { name: "Nước cốt chanh tươi", qty: 3, unit: "ms" },
+          { name: "Rượu trắng (cho thơm)", qty: 1, unit: "mc" },
+          { name: "Mỡ phi hành tím", qty: 1, unit: "ms" },
+          { name: "Ớt tươi băm nhuyễn", qty: 1, unit: "ms" },
+          { name: "Tỏi băm nhuyễn", qty: 1, unit: "ms" },
+        ]
+      },
+      {
+        name: "Ăn kèm",
+        items: [
+          { name: "Cơm trắng hoặc bún", qty: null, unit: "vừa đủ" },
+          { name: "Đậu phụ rán", qty: 0.3, unit: "kg", note: "đặc bún đậu mắm tôm" },
+          { name: "Rau kinh giới, tía tô, húng láng", qty: 0.1, unit: "kg" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế cà pháo", content: "Rửa sạch cà pháo, cắt bỏ cuống. Khía 2-3 đường nhẹ trên thân cà (không cắt đôi). Ngâm cà vào nước muối loãng 30 phút." },
+      { title: "Pha nước muối", content: "Đun nước sôi để nguội + muối hột + đường. Khuấy tan, để nguội hoàn toàn." },
+      { title: "Muối cà", time: "~2-3 ngày", content: "Vớt cà ra hũ thủy tinh hoặc lọ sành. Thêm tỏi đập dập + ớt nguyên trái + riềng thái lát. Đổ nước muối ngập cà. Đè vật nặng cho cà ngập hoàn toàn. Đậy nắp, để nơi thoáng 2-3 ngày." },
+      { title: "Kiểm tra cà", content: "Sau 2-3 ngày, cà chuyển màu hơi vàng, vị chua giòn là vừa ăn. Đậy nắp cất tủ lạnh dùng dần (được 1-2 tuần)." },
+      { title: "Pha mắm tôm", content: "Cho mắm tôm vào chén. Thêm đường + rượu trắng + mỡ hành. Đánh nổi bằng đũa cho lên bọt trắng. Vắt chanh từ từ, đánh tiếp đến khi mắm tôm đặc lại có màu hồng nhạt nổi bọt." },
+      { title: "Hoàn thiện mắm tôm", content: "Thêm ớt + tỏi băm vào. Đánh đều. Nếm cho vị mặn ngọt cay chua hài hòa." },
+      { title: "Phục vụ", content: "Bày cà pháo muối ra dĩa. Chén mắm tôm pha riêng. Ăn kèm cơm trắng hoặc bún + đậu phụ rán + rau kinh giới. Cắn cà giòn chấm mắm tôm." }
+    ]
+  },
+
+  /* ============================================
+     MÓN CHÁO
+     ============================================ */
+
+  {
+    id: 57,
+    title: "Cháo Gà Ác",
+    subtitle: "cháo gà ác bổ dưỡng hầm nguyên con",
+    category: "Cháo",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Trần Thị Sương · Quận 10, Sài Gòn",
+    note: "Gà ác bổ máu, hầm với hạt sen và táo tàu cho người ốm. Cháo phải nhuyễn mịn như sữa.",
+    groups: [
+      {
+        name: "Gà ác và thảo dược",
+        items: [
+          { name: "Gà ác (làm sạch)", qty: 2, unit: "con", note: "~0.5 kg/con" },
+          { name: "Hạt sen tươi (hoặc khô ngâm)", qty: 0.15, unit: "kg" },
+          { name: "Táo tàu đỏ", qty: 50, unit: "gr" },
+          { name: "Kỷ tử", qty: 30, unit: "gr" },
+          { name: "Gừng tươi đập dập", qty: 50, unit: "gr" },
+          { name: "Nấm đông cô khô (ngâm nở)", qty: 30, unit: "gr" },
+          { name: "Hành tím đập dập", qty: 50, unit: "gr" },
+        ]
+      },
+      {
+        name: "Cháo",
+        items: [
+          { name: "Gạo tẻ", qty: 0.2, unit: "kg" },
+          { name: "Gạo nếp", qty: 50, unit: "gr", note: "tăng độ dẻo" },
+          { name: "Nước", qty: 3, unit: "lít" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Nước mắm", qty: 2, unit: "ms" },
+          { name: "Hạt nêm", qty: 1, unit: "ms" },
+          { name: "Bột ngọt", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Ăn kèm",
+        items: [
+          { name: "Hành lá thái nhỏ", qty: 50, unit: "gr" },
+          { name: "Ngò rí thái nhỏ", qty: 30, unit: "gr" },
+          { name: "Gừng non thái sợi", qty: 30, unit: "gr" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+          { name: "Hành phi", qty: 2, unit: "ms" },
+          { name: "Quẩy (giò cháo quẩy) cắt khúc", qty: 0.1, unit: "kg" },
+          { name: "Chanh, ớt", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế gà ác", content: "Gà ác rửa sạch với muối + chanh, để ráo. Nhét vào bụng: gừng đập dập + táo tàu + 1 muỗng nhỏ kỷ tử + 1 nhúm hạt sen." },
+      { title: "Vo gạo và rang", time: "~5 phút", content: "Trộn gạo tẻ + gạo nếp, vo sạch để ráo. Rang gạo trên chảo khô lửa nhỏ 3-5 phút cho hạt gạo đục lại và thơm. Bí quyết giúp cháo thơm hơn." },
+      { title: "Hầm gà", time: "~30 phút", content: "Đun 3 lít nước sôi với hành tím đập dập + nhúm muối. Cho gà ác vào, đun sôi rồi hớt bọt. Hầm nhỏ lửa 30 phút." },
+      { title: "Nấu cháo", time: "~45 phút", content: "Cho gạo đã rang vào nồi gà đang hầm. Khuấy đều. Hạ lửa nhỏ, ninh thêm 45 phút đến khi gạo nhuyễn nở bung và cháo sánh." },
+      { title: "Thêm thảo dược", time: "~15 phút", content: "Cho phần hạt sen + táo tàu + nấm đông cô còn lại vào nồi cháo. Ninh thêm 15 phút." },
+      { title: "Vớt gà", content: "Vớt gà ác ra dĩa. Lọc lấy thảo dược bên trong gà cho vào nồi cháo." },
+      { title: "Nêm cháo", content: "Nêm cháo với nước mắm + hạt nêm + bột ngọt. Nếm vừa miệng, hơi nhạt vì sẽ chấm thêm khi ăn." },
+      { title: "Thêm kỷ tử", content: "Tắt bếp, rắc kỷ tử lên mặt cháo cho ngấm vài phút." },
+      { title: "Trình bày", content: "Múc cháo ra tô. Đặt nguyên con gà ác bên cạnh hoặc xé thịt lên cháo. Rắc hành lá + ngò + gừng sợi + tiêu + hành phi. Ăn kèm quẩy và chấm muối tiêu chanh." }
+    ]
+  },
+
+  {
+    id: 58,
+    title: "Cháo Lòng",
+    subtitle: "cháo lòng heo huyết và đủ loại nội tạng",
+    category: "Cháo",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Đỗ Thị Vinh · Tuy Hòa, Phú Yên",
+    note: "Lòng phải sơ chế kỹ với muối + giấm + gừng để khử mùi. Cháo lòng miền Trung dùng huyết tươi đông.",
+    groups: [
+      {
+        name: "Lòng heo",
+        items: [
+          { name: "Lòng non heo", qty: 0.3, unit: "kg" },
+          { name: "Dạ dày", qty: 0.2, unit: "kg" },
+          { name: "Gan heo", qty: 0.2, unit: "kg" },
+          { name: "Tim heo", qty: 0.15, unit: "kg" },
+          { name: "Cật (thận) heo", qty: 0.15, unit: "kg" },
+          { name: "Huyết heo (cắt miếng)", qty: 0.3, unit: "kg" },
+          { name: "Dồi trường (tùy chọn)", qty: 0.2, unit: "kg" },
+        ]
+      },
+      {
+        name: "Sơ chế lòng",
+        items: [
+          { name: "Muối hột", qty: 3, unit: "ms" },
+          { name: "Giấm trắng", qty: 4, unit: "ms" },
+          { name: "Rượu trắng", qty: 3, unit: "ms" },
+          { name: "Gừng đập dập", qty: 100, unit: "gr" },
+          { name: "Nước vo gạo", qty: 1, unit: "lít" },
+        ]
+      },
+      {
+        name: "Cháo",
+        items: [
+          { name: "Gạo tẻ", qty: 0.2, unit: "kg" },
+          { name: "Gạo nếp", qty: 50, unit: "gr" },
+          { name: "Xương heo (lấy nước dùng)", qty: 0.5, unit: "kg" },
+          { name: "Nước", qty: 3, unit: "lít" },
+          { name: "Hành tím nướng", qty: 50, unit: "gr" },
+          { name: "Nước mắm", qty: 3, unit: "ms" },
+          { name: "Hạt nêm", qty: 1, unit: "ms" },
+          { name: "Muối", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Ăn kèm",
+        items: [
+          { name: "Giá đỗ", qty: 0.2, unit: "kg" },
+          { name: "Rau đắng, ngò gai, hành lá", qty: 0.15, unit: "kg" },
+          { name: "Hành tây thái mỏng", qty: 0.1, unit: "kg" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+          { name: "Ớt sa tế, chanh", qty: null, unit: "vừa đủ" },
+          { name: "Quẩy (giò cháo quẩy)", qty: 0.1, unit: "kg" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế lòng kỹ", time: "~20 phút", content: "Lòng non bóp với muối + giấm + nước vo gạo nhiều lần cho hết nhớt và mùi. Dạ dày lộn trái cạo sạch màng. Tim cật bổ đôi loại gân trắng. Gan ngâm sữa tươi 10 phút (tùy chọn) khử mùi tanh." },
+      { title: "Luộc lòng", time: "~15-25 phút", content: "Đun nước sôi với gừng đập dập + rượu trắng + muối. Trụng từng loại lòng vào: gan 8 phút, tim 10 phút, cật 5 phút, dạ dày 20 phút, lòng non 15 phút. Vớt ra ngâm nước lạnh để săn." },
+      { title: "Nấu huyết", time: "~10 phút", content: "Cắt huyết miếng vuông 2cm. Trụng nhẹ trong nước sôi 5-7 phút để huyết se mặt. Vớt ra để riêng." },
+      { title: "Vo gạo và hầm xương", time: "~1 giờ", content: "Trụng xương heo qua nước sôi, rửa sạch. Cho vào 3 lít nước với hành tím nướng + muối. Hầm 1 giờ. Gạo vo sạch để ráo." },
+      { title: "Nấu cháo", time: "~45 phút", content: "Cho gạo đã vo vào nồi nước dùng xương. Ninh nhỏ lửa 45 phút đến khi cháo nhuyễn." },
+      { title: "Nêm cháo", content: "Thêm nước mắm + hạt nêm. Nếm vừa miệng, hơi nhạt vì topping đậm." },
+      { title: "Thái lòng", content: "Thái lòng non thành khoanh 2cm. Dạ dày thái lát mỏng. Gan thái lát mỏng. Tim cật thái lát. Bày ra dĩa lớn." },
+      { title: "Múc tô", content: "Múc cháo vào tô. Xếp lòng các loại + huyết + dồi trường lên trên. Rắc hành tây + hành lá + ngò gai + rau đắng + tiêu + sa tế." },
+      { title: "Phục vụ", content: "Ăn nóng cùng giá đỗ trụng và quẩy. Vắt thêm chanh, ăn cay càng ngon." }
+    ]
+  },
+
+  {
+    id: 59,
+    title: "Cháo Cá Lóc",
+    subtitle: "cháo cá lóc miền Tây rau đắng",
+    category: "Cháo",
+    servings: 4,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Phạm Thị Lượm · Sóc Trăng",
+    note: "Cá lóc đồng nguyên con cho ngọt. Cháo phải có vị thanh, ăn với rau đắng tươi mới chuẩn miền Tây.",
+    groups: [
+      {
+        name: "Cá lóc",
+        items: [
+          { name: "Cá lóc đồng (nguyên con)", qty: 1, unit: "kg" },
+          { name: "Gừng đập dập", qty: 50, unit: "gr" },
+          { name: "Hành tím đập dập", qty: 50, unit: "gr" },
+          { name: "Muối + chanh khử tanh", qty: null, unit: "vừa đủ" },
+        ]
+      },
+      {
+        name: "Cá ướp xào",
+        items: [
+          { name: "Thịt cá lóc đã lóc xương", qty: null, unit: "tự nhiên" },
+          { name: "Hành tím băm", qty: 1, unit: "ms" },
+          { name: "Tỏi băm", qty: 1, unit: "ms" },
+          { name: "Nước mắm", qty: 1, unit: "ms" },
+          { name: "Tiêu", qty: 1, unit: "mc" },
+          { name: "Đường", qty: 1, unit: "mc" },
+          { name: "Bột nghệ", qty: 0.5, unit: "mc" },
+          { name: "Dầu ăn", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Cháo",
+        items: [
+          { name: "Gạo tẻ", qty: 0.2, unit: "kg" },
+          { name: "Gạo nếp", qty: 30, unit: "gr" },
+          { name: "Nước luộc cá", qty: 2.5, unit: "lít" },
+          { name: "Nấm rơm", qty: 0.15, unit: "kg", note: "tùy chọn" },
+          { name: "Nước mắm", qty: 3, unit: "ms" },
+          { name: "Hạt nêm", qty: 1, unit: "ms" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Bột ngọt", qty: 1, unit: "mc" },
+        ]
+      },
+      {
+        name: "Ăn kèm",
+        items: [
+          { name: "Rau đắng đất tươi", qty: 0.2, unit: "kg" },
+          { name: "Hành lá thái nhỏ", qty: 50, unit: "gr" },
+          { name: "Ngò rí, ngò gai", qty: 30, unit: "gr" },
+          { name: "Gừng sợi", qty: 30, unit: "gr" },
+          { name: "Tiêu xay", qty: 1, unit: "mc" },
+          { name: "Hành phi", qty: 2, unit: "ms" },
+          { name: "Chanh, ớt hiểm, nước mắm chấm", qty: null, unit: "vừa đủ" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế cá", content: "Cá lóc làm sạch, đánh vảy. Chà xát muối + chanh khử tanh kỹ. Để ráo." },
+      { title: "Luộc cá", time: "~15 phút", content: "Đun 2.5 lít nước với gừng + hành tím đập dập + muối. Cho cá lóc nguyên con vào luộc 12-15 phút đến chín. Vớt cá ra để nguội." },
+      { title: "Lóc thịt cá", content: "Khi cá nguội, lóc thịt khỏi xương. Cá lóc thịt trắng, gỡ thành miếng nhỏ. Giữ lại xương cá để nấu nước dùng." },
+      { title: "Lọc nước dùng", content: "Cho xương cá lại vào nồi nước luộc cá, ninh thêm 15 phút cho ngọt. Lọc lấy nước dùng trong." },
+      { title: "Vo gạo và rang", content: "Gạo tẻ + gạo nếp vo sạch. Rang trên chảo khô 3 phút cho thơm." },
+      { title: "Nấu cháo", time: "~45 phút", content: "Cho gạo đã rang vào nồi nước dùng cá. Đun sôi rồi hạ lửa nhỏ, ninh 45 phút đến khi cháo nhuyễn mịn." },
+      { title: "Xào cá lóc", time: "~3 phút", content: "Phi hành tỏi với 2 ms dầu thơm. Cho thịt cá đã gỡ vào + bột nghệ + nước mắm + đường + tiêu. Xào nhẹ tay cho cá vàng đều, không nát." },
+      { title: "Thêm nấm và cá", content: "Cho nấm rơm vào nồi cháo nấu 5 phút. Sau đó cho cá xào vào, đảo nhẹ. Nêm nước mắm + hạt nêm + muối + bột ngọt vừa miệng." },
+      { title: "Trình bày", content: "Múc cháo ra tô. Rắc hành lá + ngò rí + ngò gai + gừng sợi + tiêu + hành phi. Ăn kèm rau đắng đất tươi (cho vào nồi cháo nóng tự chín). Vắt chanh, thêm ớt theo khẩu vị." }
+    ]
+  },
+
+  /* ============================================
+     LẨU TƯƠI SỐNG ĐẶC SẮC
+     ============================================ */
+
+  {
+    id: 60,
+    title: "Bò Nhúng Dấm",
+    subtitle: "thịt bò tươi nhúng nước dấm chua thanh",
+    category: "Lẩu",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Ông Nguyễn Văn Phúc · Quận 5, Sài Gòn",
+    note: "Thịt bò phải tươi và thái lát thật mỏng (1-2mm). Nước dấm dịu vị, không chua gắt. Cuốn bánh tráng với rau sống, chấm mắm nêm.",
+    groups: [
+      {
+        name: "Thịt bò",
+        items: [
+          { name: "Thịt bò thăn (hoặc nạc lưng) thái lát mỏng 1-2mm", qty: 0.8, unit: "kg" },
+          { name: "Mỡ heo thái lát mỏng (xen kẽ)", qty: 0.1, unit: "kg", note: "tùy chọn cho béo" },
+          { name: "Tỏi băm + sả băm + tiêu (ướp nhẹ)", qty: 1, unit: "ms", note: "mỗi loại" },
+        ]
+      },
+      {
+        name: "Nước lẩu dấm",
+        items: [
+          { name: "Nước dừa tươi", qty: 2, unit: "lít" },
+          { name: "Giấm gạo (hoặc giấm trắng)", qty: 200, unit: "ml" },
+          { name: "Đường", qty: 80, unit: "gr" },
+          { name: "Muối", qty: 1, unit: "ms" },
+          { name: "Sả đập dập", qty: 4, unit: "cây" },
+          { name: "Hành tây cắt múi", qty: 0.2, unit: "kg" },
+          { name: "Hành tím nướng", qty: 50, unit: "gr" },
+          { name: "Gừng đập dập", qty: 30, unit: "gr" },
+        ]
+      },
+      {
+        name: "Rau cuốn (đa dạng)",
+        items: [
+          { name: "Bánh tráng cuốn (loại mềm)", qty: 30, unit: "cái" },
+          { name: "Xà lách lá xanh", qty: 0.3, unit: "kg" },
+          { name: "Rau thơm các loại (húng quế, kinh giới, ngò gai)", qty: 0.15, unit: "kg" },
+          { name: "Diếp cá", qty: 0.05, unit: "kg" },
+          { name: "Hẹ tươi", qty: 50, unit: "gr" },
+          { name: "Khế chua thái lát mỏng", qty: 0.1, unit: "kg" },
+          { name: "Chuối xanh thái lát mỏng (chần qua nước chanh)", qty: 0.1, unit: "kg" },
+          { name: "Dưa leo thái sợi", qty: 0.2, unit: "kg" },
+          { name: "Dứa (thơm) thái lát mỏng", qty: 0.15, unit: "kg" },
+          { name: "Bún tươi", qty: 0.5, unit: "kg" },
+        ]
+      },
+      {
+        name: "Nước chấm mắm nêm thơm",
+        items: [
+          { name: "Mắm nêm cá cơm", qty: 4, unit: "ms" },
+          { name: "Dứa (thơm) xay nhuyễn", qty: 3, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Sả băm", qty: 1, unit: "ms" },
+          { name: "Tỏi xay", qty: 1, unit: "ms" },
+          { name: "Ớt xay", qty: 1, unit: "ms" },
+          { name: "Nước cốt chanh", qty: 1, unit: "ms" },
+          { name: "Dầu ăn phi sả", qty: 1, unit: "ms" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế thịt bò", time: "~10 phút", content: "Thịt bò chọn loại tươi mới, đông tủ lạnh 30 phút trước khi thái để dễ thái lát mỏng 1-2mm. Bày thịt thành cuộn nhỏ ra dĩa lớn. Rắc nhẹ tiêu + tỏi băm trang trí." },
+      { title: "Nấu nước lẩu dấm", time: "~15 phút", content: "Đun 2 lít nước dừa tươi với sả + hành tím nướng + gừng đập dập. Thêm muối + đường, đun sôi 10 phút." },
+      { title: "Thêm dấm", content: "Từ từ thêm giấm gạo vào nồi, nếm để có vị chua nhẹ thanh, không gắt. Có thể điều chỉnh thêm đường hoặc giấm tùy khẩu vị. Cho hành tây cắt múi vào." },
+      { title: "Pha mắm nêm", content: "Phi sả với 1 ms dầu thơm. Cho dứa xay vào xào 1 phút. Thêm mắm nêm + đường + nước (nếu cần loãng). Đun nhỏ 3 phút. Tắt bếp, thêm tỏi ớt xay + chanh." },
+      { title: "Chuẩn bị rau cuốn", content: "Rửa sạch tất cả rau sống, để ráo. Thái khế, chuối xanh, dưa leo, dứa thành lát mỏng. Bún tươi gỡ rời. Xếp tất cả ra dĩa lớn." },
+      { title: "Chuyển nồi ra bàn", content: "Đổ nước dấm sôi ra nồi lẩu điện hoặc bếp gas mini. Đun sôi nhẹ trên bàn ăn." },
+      { title: "Cách ăn", content: "Gắp 2-3 lát thịt bò bằng đũa, nhúng vào nồi nước dấm sôi 5-10 giây cho thịt vừa chín tới (không quá chín kẻo dai). Đặt thịt lên bánh tráng đã nhúng nước." },
+      { title: "Cuốn và chấm", content: "Trên bánh tráng đặt: xà lách → rau thơm → khế + chuối + dứa → 2-3 lát thịt bò vừa nhúng → ít bún. Cuộn lại, chấm mắm nêm thơm. Vừa nhúng vừa cuốn, ăn liên tục từng cuốn nóng hổi." }
+    ]
+  },
+
+  {
+    id: 61,
+    title: "Lẩu Hải Sản",
+    subtitle: "lẩu tôm cua mực sò tươi sống",
+    category: "Lẩu",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Cô Lý Thị Thanh · Vũng Tàu",
+    note: "Hải sản phải tươi sống, mỗi loại trụng đúng thời gian: nghêu mở miệng vớt ngay, tôm mực 1-2 phút. Nước lẩu thanh ngọt từ xương heo + hải sản.",
+    groups: [
+      {
+        name: "Hải sản tươi sống",
+        items: [
+          { name: "Tôm sú tươi (lột vỏ chừa đuôi và đầu)", qty: 0.6, unit: "kg" },
+          { name: "Cua biển nhỏ (cắt đôi)", qty: 0.5, unit: "kg" },
+          { name: "Mực ống tươi (cắt khoanh)", qty: 0.4, unit: "kg" },
+          { name: "Mực lá (cắt miếng)", qty: 0.3, unit: "kg", note: "tùy chọn" },
+          { name: "Nghêu (ngâm sạch cát)", qty: 0.5, unit: "kg" },
+          { name: "Sò huyết (ngâm sạch)", qty: 0.5, unit: "kg" },
+          { name: "Cá phi lê (cá basa, cá hồi cắt khúc)", qty: 0.4, unit: "kg" },
+          { name: "Bạch tuộc nhỏ", qty: 0.3, unit: "kg", note: "tùy chọn" },
+        ]
+      },
+      {
+        name: "Nước lẩu",
+        items: [
+          { name: "Xương ống heo", qty: 1, unit: "kg" },
+          { name: "Nước", qty: 4, unit: "lít" },
+          { name: "Hành tây nướng", qty: 0.2, unit: "kg" },
+          { name: "Củ cải trắng", qty: 0.3, unit: "kg" },
+          { name: "Sả đập dập", qty: 4, unit: "cây" },
+          { name: "Gừng đập dập", qty: 50, unit: "gr" },
+          { name: "Hành tím nướng", qty: 50, unit: "gr" },
+          { name: "Cà chua cắt múi", qty: 0.3, unit: "kg" },
+          { name: "Dứa (thơm) cắt miếng", qty: 0.2, unit: "kg" },
+          { name: "Sa tế tôm", qty: 2, unit: "ms" },
+          { name: "Nước mắm", qty: 4, unit: "ms" },
+          { name: "Đường", qty: 2, unit: "ms" },
+          { name: "Hạt nêm", qty: 1, unit: "ms" },
+          { name: "Muối", qty: 1, unit: "mc" },
+          { name: "Nước cốt chanh hoặc me", qty: 2, unit: "ms" },
+          { name: "Dầu điều màu", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Rau và sợi",
+        items: [
+          { name: "Bún tươi hoặc miến", qty: 1, unit: "kg" },
+          { name: "Cải thảo cắt khúc", qty: 0.3, unit: "kg" },
+          { name: "Rau muống chẻ", qty: 0.2, unit: "kg" },
+          { name: "Nấm kim châm", qty: 0.2, unit: "kg" },
+          { name: "Nấm rơm", qty: 0.15, unit: "kg" },
+          { name: "Nấm bào ngư", qty: 0.15, unit: "kg" },
+          { name: "Đậu hũ non cắt khúc", qty: 0.3, unit: "kg" },
+          { name: "Hành lá, ngò gai, ngò om", qty: 50, unit: "gr" },
+        ]
+      },
+      {
+        name: "Nước chấm",
+        items: [
+          { name: "Muối tiêu chanh", qty: null, unit: "vừa đủ" },
+          { name: "Nước mắm + tỏi ớt", qty: null, unit: "vừa đủ" },
+          { name: "Mù tạt + nước tương", qty: null, unit: "ăn cá sống tùy chọn" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Hầm nước dùng xương", time: "~2 giờ", content: "Trụng xương heo qua nước sôi, rửa sạch. Cho vào 4 lít nước với hành tây nướng + củ cải trắng + hành tím nướng + muối. Hầm nhỏ lửa 2 giờ. Lọc lấy nước trong." },
+      { title: "Sơ chế hải sản", time: "~15 phút", content: "Tôm rút chỉ đen (để vỏ và đầu). Cua chặt đôi, đập càng. Mực làm sạch cắt khoanh. Nghêu, sò ngâm nước muối + ớt 2 giờ cho nhả cát. Cá phi lê cắt khúc 3cm." },
+      { title: "Bày hải sản", content: "Xếp tôm, cua, mực, nghêu, sò, cá ra các dĩa riêng, trang trí đẹp mắt với rau thơm xung quanh." },
+      { title: "Xào cà chua + dứa", time: "~3 phút", content: "Phi 2 ms dầu điều màu thơm. Cho cà chua + dứa vào xào mềm. Để riêng." },
+      { title: "Nấu nước lẩu", content: "Đổ nước dùng xương vào nồi lẩu. Thêm sả đập dập + gừng + cà chua dứa xào + sa tế. Đun sôi." },
+      { title: "Nêm nước lẩu", content: "Thêm nước mắm + đường + hạt nêm. Cuối cùng thêm nước cốt chanh hoặc me cho vị chua nhẹ. Nếm vừa miệng — vị chua cay mặn ngọt cân bằng." },
+      { title: "Chuẩn bị rau", content: "Cải thảo, rau muống, nấm các loại rửa sạch xếp dĩa. Đậu hũ non cắt khúc xếp riêng." },
+      { title: "Bày bàn lẩu", content: "Chuyển nồi nước lẩu sôi ra bàn. Bày dĩa hải sản, dĩa rau, bún, các chén nước chấm xung quanh." },
+      { title: "Cách ăn", content: "Thả lần lượt: cua + ngao + sò trước (lâu chín). Sau đó cá + tôm + mực. Cuối cùng thả rau và nấm. Múc ra tô ăn cùng bún. Mỗi loại hải sản chấm chén khác nhau cho phù hợp." }
+    ]
+  },
+
+  {
+    id: 62,
+    title: "Lẩu Cua Đồng",
+    subtitle: "cua đồng giã, đậu phụ, cà chua",
+    category: "Lẩu",
+    servings: 6,
+    source: "Đặc sắc · Sưu tầm",
+    author: "Bà Đặng Thị Thoa · Hải Phòng",
+    note: "Cua đồng giã nhuyễn lọc lấy nước, để riêu nổi thành tảng đặc trưng. Vị thanh ngọt tự nhiên, không cần nhiều bột ngọt.",
+    groups: [
+      {
+        name: "Cua đồng",
+        items: [
+          { name: "Cua đồng tươi sống", qty: 1.5, unit: "kg" },
+          { name: "Nước lọc", qty: 3, unit: "lít" },
+          { name: "Muối hột (ngâm cua)", qty: 2, unit: "ms" },
+        ]
+      },
+      {
+        name: "Gia vị nước lẩu",
+        items: [
+          { name: "Cà chua cắt múi cau", qty: 0.5, unit: "kg" },
+          { name: "Hành tím phi", qty: 2, unit: "ms" },
+          { name: "Tỏi phi", qty: 1, unit: "ms" },
+          { name: "Mắm tôm Bắc", qty: 1, unit: "ms" },
+          { name: "Nước mắm", qty: 3, unit: "ms" },
+          { name: "Đường", qty: 1, unit: "ms" },
+          { name: "Bột nêm", qty: 1, unit: "mc" },
+          { name: "Dấm bỗng (hoặc me)", qty: 2, unit: "ms" },
+          { name: "Dầu điều màu", qty: 2, unit: "ms" },
+          { name: "Gạch cua chưng (lấy từ mai cua)", qty: null, unit: "tự nhiên" },
+        ]
+      },
+      {
+        name: "Topping",
+        items: [
+          { name: "Đậu phụ rán vàng", qty: 0.5, unit: "kg" },
+          { name: "Thịt bò thái lát mỏng (nhúng)", qty: 0.4, unit: "kg" },
+          { name: "Tôm sú tươi", qty: 0.3, unit: "kg" },
+          { name: "Chả cá riêu cua viên", qty: 0.3, unit: "kg" },
+          { name: "Giò sống nắm viên", qty: 0.2, unit: "kg" },
+          { name: "Trứng vịt lộn (tùy chọn)", qty: 4, unit: "quả" },
+        ]
+      },
+      {
+        name: "Rau ăn kèm",
+        items: [
+          { name: "Rau muống chẻ", qty: 0.3, unit: "kg" },
+          { name: "Hoa chuối (bắp chuối) thái sợi", qty: 0.2, unit: "kg" },
+          { name: "Kinh giới, tía tô, mùi tàu", qty: 0.15, unit: "kg" },
+          { name: "Giá đỗ", qty: 0.15, unit: "kg" },
+          { name: "Bún sợi nhỏ", qty: 0.8, unit: "kg" },
+        ]
+      }
+    ],
+    steps: [
+      { title: "Sơ chế cua đồng", time: "~15 phút", content: "Cua đồng ngâm với muối hột + nước 30 phút cho nhả bùn. Rửa sạch nhiều lần. Gỡ mai cua, lấy gạch để riêng. Phần thân và yếm cua giã hoặc xay nhuyễn." },
+      { title: "Lọc nước cua", content: "Hòa cua xay với 3 lít nước. Bóp đều cho ra hết nước cốt. Lọc qua rây dày 2 lần, bỏ xác, giữ nước cua." },
+      { title: "Chưng gạch cua", time: "~3 phút", content: "Phi 1 ms hành tím với 2 ms dầu, cho gạch cua vào chưng với 1 mc nước mắm cho thơm và lên màu đỏ cam." },
+      { title: "Nấu nước riêu", time: "~15 phút", content: "Đun nước cua lọc lửa nhỏ liu riu (KHÔNG khuấy) cho riêu cua đóng tảng nổi lên mặt. Khi sôi, vớt riêu ra dĩa riêng nhẹ tay." },
+      { title: "Xào cà chua", time: "~5 phút", content: "Phi hành tỏi với dầu điều màu. Cho cà chua múi cau vào xào mềm cho ra màu đỏ. Đổ vào nồi nước riêu." },
+      { title: "Nêm nước lẩu", content: "Thêm mắm tôm + nước mắm + đường + bột nêm + dấm bỗng. Nếm vừa miệng — vị chua thanh, ngọt cua, mặn vừa." },
+      { title: "Sơ chế topping", content: "Đậu phụ rán vàng các mặt cắt vuông. Thịt bò thái lát mỏng bày dĩa. Tôm rút chỉ. Chả cá viên, giò sống vo viên nhỏ. Trứng vịt lộn luộc chín." },
+      { title: "Chuẩn bị rau", content: "Rau muống chẻ ngâm nước đá cho giòn. Hoa chuối thái sợi ngâm chanh. Rau gia vị rửa sạch xếp dĩa lớn." },
+      { title: "Bày bàn lẩu", content: "Chuyển nồi nước riêu cua + cà chua ra bàn. Đặt riêu cua + gạch cua chưng lên trên. Bày topping, rau, bún xung quanh." },
+      { title: "Cách ăn", content: "Thả đậu phụ + chả cá viên + giò sống vào nồi lẩu trước. Khi muốn ăn thì nhúng bò + tôm + trứng vịt lộn (cắt đôi). Trụng rau (rau muống chẻ, hoa chuối) trong nồi. Múc ra tô có bún, ăn nóng." }
+    ]
   }
 ];
 
 </script>
 <script>
-  console.log('%c[Sổ Công Thức] v2026.05.22-sidebar ✓', 'background:#b14a2a;color:#f4ede1;padding:4px 10px;border-radius:4px;font-weight:bold');
+  console.log('%c[Sổ Công Thức] v2026.05.22-62recipes ✓', 'background:#b14a2a;color:#f4ede1;padding:4px 10px;border-radius:4px;font-weight:bold');
 
   // ========== STATE ==========
   // activeCategory: 'all' | 'favorites'
@@ -2025,6 +5235,54 @@ const RECIPES = [
   function saveFavorites() {
     try { localStorage.setItem(FAV_KEY, JSON.stringify([...favorites])); }
     catch(e) { console.warn('Không lưu được favorites:', e); }
+  }
+
+  // Selected for shopping list (lưu vào localStorage)
+  const SELECT_KEY = 'congthuc_selected_v1';
+  let selectedRecipes = new Set();
+  let inShoppingMode = false; // true khi đang xem modal danh sách đi chợ
+  try {
+    const raw = localStorage.getItem(SELECT_KEY);
+    if (raw) selectedRecipes = new Set(JSON.parse(raw));
+  } catch(e) { console.warn('Không đọc được selected:', e); }
+
+  function saveSelected() {
+    try { localStorage.setItem(SELECT_KEY, JSON.stringify([...selectedRecipes])); }
+    catch(e) { console.warn('Không lưu được selected:', e); }
+  }
+
+  function toggleSelect(id, ev) {
+    if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+    if (selectedRecipes.has(id)) selectedRecipes.delete(id);
+    else selectedRecipes.add(id);
+    saveSelected();
+    // Cập nhật trạng thái nút + card mà không re-render hết
+    document.querySelectorAll(`[data-select-id="${id}"]`).forEach(el => {
+      el.classList.toggle('active', selectedRecipes.has(id));
+    });
+    document.querySelectorAll(`.recipe-card[data-id="${id}"]`).forEach(card => {
+      card.classList.toggle('selected', selectedRecipes.has(id));
+    });
+    updateShoppingBar();
+  }
+
+  function clearSelected() {
+    selectedRecipes.clear();
+    saveSelected();
+    document.querySelectorAll('.select-btn.active').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.recipe-card.selected').forEach(el => el.classList.remove('selected'));
+    updateShoppingBar();
+  }
+
+  function updateShoppingBar() {
+    const bar = document.getElementById('shoppingBar');
+    const count = selectedRecipes.size;
+    if (count > 0) {
+      bar.classList.add('show');
+      document.getElementById('shoppingBarCount').textContent = count;
+    } else {
+      bar.classList.remove('show');
+    }
   }
 
   function toggleFavorite(id, ev) {
@@ -2054,9 +5312,163 @@ const RECIPES = [
   }
 
   function printRecipe() {
-    if (!currentRecipe) return;
-    // Đảm bảo cả 2 panels hiện ra khi in (CSS @print đã handle, nhưng để chắc)
+    if (!currentRecipe && !inShoppingMode) return;
     window.print();
+  }
+
+  // ========== SHOPPING LIST (TỔNG HỢP ĐI CHỢ) ==========
+  function stripParenthetical(s) {
+    return String(s || '').replace(/\s*\([^)]*\)/g, '').replace(/\s+/g, ' ').trim();
+  }
+
+  function formatNumber(qty) {
+    let display;
+    if (qty >= 100) display = Math.round(qty).toString();
+    else if (qty >= 10) display = (Math.round(qty * 10) / 10).toString();
+    else if (qty >= 1) display = (Math.round(qty * 100) / 100).toString();
+    else display = formatFraction(qty);
+    display = display.replace(/\.?0+$/, '');
+    if (display === '' || display === '-') display = '0';
+    return display;
+  }
+
+  function buildShoppingList() {
+    // Gom nguyên liệu theo (tên đã strip ngoặc + đơn vị)
+    // Lưu giữ: qty cộng dồn (cùng đơn vị), có "vừa đủ" (qty null) không, nguồn từ món nào
+    const map = new Map();
+    const usedRecipes = [];
+
+    [...selectedRecipes].forEach(id => {
+      const r = RECIPES.find(x => x.id === id);
+      if (!r) return;
+      usedRecipes.push(r);
+      r.groups.forEach(g => {
+        g.items.forEach(item => {
+          if (!item.name) return;
+          const cleanName = stripParenthetical(item.name);
+          if (!cleanName) return;
+          const nameKey = cleanName.toLowerCase();
+          const unitKey = (item.unit || '').toLowerCase();
+          const key = nameKey + '||' + unitKey;
+          if (!map.has(key)) {
+            map.set(key, {
+              name: cleanName,
+              unit: item.unit,
+              qty: 0,
+              hasQty: false,
+              hasOpen: false,
+              sources: new Set()
+            });
+          }
+          const entry = map.get(key);
+          entry.sources.add(r.title);
+          if (item.qty === null || item.qty === undefined) {
+            entry.hasOpen = true;
+          } else {
+            entry.hasQty = true;
+            entry.qty += Number(item.qty) || 0;
+          }
+        });
+      });
+    });
+
+    // Merge các entry CÙNG tên gốc nhưng KHÁC đơn vị: gộp các đơn vị lại 1 dòng
+    const byName = new Map();
+    map.forEach(entry => {
+      const k = entry.name.toLowerCase();
+      if (!byName.has(k)) byName.set(k, { name: entry.name, units: [], sources: new Set() });
+      const merged = byName.get(k);
+      entry.sources.forEach(s => merged.sources.add(s));
+      merged.units.push({
+        qty: entry.qty,
+        unit: entry.unit,
+        hasQty: entry.hasQty,
+        hasOpen: entry.hasOpen
+      });
+    });
+
+    // Sort theo tên (vi locale)
+    const items = [...byName.values()].sort((a, b) =>
+      a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' })
+    );
+
+    return { items, recipes: usedRecipes };
+  }
+
+  function formatShoppingQty(units) {
+    // units: [{qty, unit, hasQty, hasOpen}, ...]
+    const parts = [];
+    units.forEach(u => {
+      if (u.hasQty && u.qty > 0) {
+        parts.push(`${formatNumber(u.qty)} ${u.unit}`);
+      } else if (u.hasOpen) {
+        // "vừa đủ" hoặc "nêm vừa ăn"
+        parts.push(u.unit || 'vừa đủ');
+      }
+    });
+    return parts.length > 0 ? parts.join(' · ') : '—';
+  }
+
+  function openShoppingList() {
+    if (selectedRecipes.size === 0) return;
+    inShoppingMode = true;
+    currentRecipe = null;
+    const list = buildShoppingList();
+    const content = document.getElementById('modalContent');
+
+    content.innerHTML = `
+      <div class="modal-sticky-bar">
+        <button class="icon-btn" onclick="closeModal()" aria-label="Đóng" title="Đóng">←</button>
+        <h3 class="modal-sticky-title">Danh sách đi chợ</h3>
+        <div class="modal-actions">
+          <button class="icon-btn" onclick="printRecipe()" aria-label="In danh sách" title="In danh sách">⎙</button>
+        </div>
+      </div>
+
+      <header class="recipe-header">
+        <div class="recipe-num">DANH SÁCH ĐI CHỢ · ${list.recipes.length} MÓN</div>
+        <h2 class="recipe-title">Nguyên liệu tổng hợp</h2>
+        <div class="recipe-subtitle">cho ${list.items.length} mục cần mua</div>
+      </header>
+
+      <div class="recipe-content">
+        <div class="shopping-summary">
+          <div class="shopping-summary-label">Món đã chọn</div>
+          <ul>
+            ${list.recipes.map(r => `<li>${r.title}${r.subtitle ? ` <em style="color:var(--ink-faded);">— ${r.subtitle}</em>` : ''}${r.author ? ` <span style="color:var(--terracotta);font-size:12px;">· ${authorShortName(r.author)}</span>` : ''}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="tab-panel active" data-panel="ingredients">
+          <h2 class="print-only-title">Cần mua</h2>
+          <ul class="ingredient-list">
+            ${list.items.map(item => `
+              <li class="ingredient">
+                <span class="ingredient-name">
+                  ${item.name}
+                  <span class="shopping-source-list">${[...item.sources].join(' · ')}</span>
+                </span>
+                <span class="ingredient-qty">${formatShoppingQty(item.units)}</span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+
+        <button class="clear-selection-btn" onclick="if(confirm('Bỏ chọn tất cả ${selectedRecipes.size} món?')) { clearSelected(); closeModal(); }">
+          Bỏ chọn tất cả
+        </button>
+      </div>
+    `;
+
+    document.getElementById('modalBackdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    const scrollEl = document.getElementById('modalContent');
+    scrollEl.scrollTop = 0;
+    scrollEl.classList.remove('scrolled');
+    scrollEl.onscroll = () => {
+      scrollEl.classList.toggle('scrolled', scrollEl.scrollTop > 80);
+    };
   }
 
   // ========== UTILITIES ==========
@@ -2203,14 +5615,23 @@ const RECIPES = [
   }
 
   // ========== RENDER GRID (grouped by category) ==========
+  function authorShortName(author) {
+    if (!author) return '';
+    // Lấy phần trước dấu · (chỉ tên, không kèm địa danh)
+    return author.split('·')[0].trim();
+  }
+
   function renderCard(r) {
     const isFav = favorites.has(r.id);
+    const isSel = selectedRecipes.has(r.id);
     return `
-      <div class="recipe-card" data-id="${r.id}" tabindex="0" role="button">
+      <div class="recipe-card ${isSel ? 'selected' : ''}" data-id="${r.id}" tabindex="0" role="button">
+        <button class="select-btn ${isSel ? 'active' : ''}" data-select-id="${r.id}" aria-label="${isSel ? 'Bỏ chọn' : 'Chọn vào danh sách đi chợ'}" title="${isSel ? 'Bỏ chọn' : 'Chọn vào danh sách đi chợ'}"></button>
         <button class="fav-btn ${isFav ? 'active' : ''}" data-fav-id="${r.id}" aria-label="${isFav ? 'Bỏ lưu' : 'Lưu món'}" title="${isFav ? 'Bỏ lưu' : 'Lưu món'}"></button>
         <div class="recipe-card-num">№ ${String(r.id).padStart(2, '0')}</div>
         <h3 class="recipe-card-title">${r.title}</h3>
         ${r.subtitle ? `<div class="recipe-card-sub">${r.subtitle}</div>` : ''}
+        ${r.author ? `<div class="recipe-card-author">${authorShortName(r.author)}</div>` : ''}
         <div class="recipe-card-meta">
           <span><strong>${r.servings}</strong> người</span>
           <span>${r.category}</span>
@@ -2258,11 +5679,11 @@ const RECIPES = [
   function bindCardEvents(grid) {
     grid.querySelectorAll('.recipe-card').forEach(card => {
       card.addEventListener('click', e => {
-        if (e.target.closest('.fav-btn')) return;
+        if (e.target.closest('.fav-btn') || e.target.closest('.select-btn')) return;
         openModal(parseInt(card.dataset.id));
       });
       card.addEventListener('keydown', e => {
-        if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('.fav-btn')) {
+        if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('.fav-btn') && !e.target.closest('.select-btn')) {
           e.preventDefault();
           openModal(parseInt(card.dataset.id));
         }
@@ -2270,6 +5691,9 @@ const RECIPES = [
     });
     grid.querySelectorAll('.fav-btn').forEach(btn => {
       btn.addEventListener('click', e => toggleFavorite(parseInt(btn.dataset.favId), e));
+    });
+    grid.querySelectorAll('.select-btn').forEach(btn => {
+      btn.addEventListener('click', e => toggleSelect(parseInt(btn.dataset.selectId), e));
     });
   }
 
@@ -2288,6 +5712,7 @@ const RECIPES = [
     document.getElementById('modalBackdrop').classList.remove('open');
     document.body.style.overflow = '';
     currentRecipe = null;
+    inShoppingMode = false;
   }
 
   function adjustServings(delta) {
@@ -2388,6 +5813,7 @@ const RECIPES = [
         <div class="recipe-num">№ ${String(r.id).padStart(2, '0')} · ${r.category}</div>
         <h2 class="recipe-title">${r.title}</h2>
         ${r.subtitle ? `<div class="recipe-subtitle">${r.subtitle}</div>` : ''}
+        ${r.author ? `<div class="recipe-author">Tác giả · ${r.author}</div>` : ''}
         <div class="recipe-meta">
           <span>Nguồn · ${r.source}</span>
           <span>${r.groups.length} phần nguyên liệu</span>
@@ -2449,7 +5875,9 @@ const RECIPES = [
   });
 
   // ========== INIT ==========
+  document.getElementById('recipeCount').textContent = RECIPES.length + ' món';
   renderGrid();
+  updateShoppingBar();
 </script>
 </body>
 </html>
