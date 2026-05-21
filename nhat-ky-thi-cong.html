@@ -65,6 +65,48 @@
     border-color: #fecaca;
   }
   .toolbar input[type="file"] { display: none; }
+  .toolbar select, .toolbar input[type="date"], .toolbar input.proj-name-input {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    padding: 9px 10px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    border-radius: 8px;
+    color: #0f172a;
+    min-width: 0;
+  }
+  .toolbar select { min-width: 180px; max-width: 280px; font-weight: 600; }
+  .toolbar-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1 1 100%;
+    align-items: center;
+  }
+  .tool-label {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    color: #475569;
+    font-weight: 600;
+    padding: 0 2px;
+  }
+  .project-line {
+    text-align: center;
+    font-weight: bold;
+    font-style: italic;
+    margin: 0 0 10px 0;
+    font-size: 14pt;
+  }
+  .project-line input {
+    display: inline-block;
+    width: auto;
+    min-width: 220px;
+    max-width: 80%;
+    text-align: center;
+    font-weight: bold;
+    font-style: italic;
+    border-bottom-style: dotted;
+  }
 
   /* ==== TRANG A4 ==== */
   .page {
@@ -249,23 +291,44 @@
 
 <div class="toolbar">
   <h1>📋 Nhật ký thi công hàng ngày</h1>
-  <button class="primary" onclick="window.print()">🖨️ In / Lưu PDF</button>
-  <button onclick="toggleEdit()" id="editBtn">✏️ Sửa hạng mục</button>
-  <button onclick="saveData()">💾 Lưu</button>
-  <label class="file-label" for="importFile">📂 Tải file</label>
-  <input type="file" id="importFile" accept=".json" onchange="importData(event)">
-  <button onclick="exportData()">📤 Xuất file</button>
-  <button class="danger" onclick="resetQty()">🔄 Reset số liệu</button>
+  <div class="toolbar-row">
+    <span class="tool-label">📒 Cuốn:</span>
+    <select id="projectSelect" onchange="onProjectChange(event)"></select>
+    <button onclick="newProject()">+ Cuốn mới</button>
+    <button onclick="renameProject()">✏️ Đổi tên</button>
+    <button onclick="setStartPage()">📄 Trang bắt đầu</button>
+    <button class="danger" onclick="endProject()">🏁 Kết thúc</button>
+  </div>
+  <div class="toolbar-row">
+    <span class="tool-label">📅 Ngày:</span>
+    <input type="date" id="datePicker" onchange="onDatePickerChange(event)">
+    <button onclick="prevDay()">◀ Hôm trước</button>
+    <button onclick="nextDay()">Hôm sau ▶</button>
+    <button onclick="todayDay()">Hôm nay</button>
+    <button onclick="listEntries()">📚 Danh sách ngày</button>
+  </div>
+  <div class="toolbar-row">
+    <button class="primary" onclick="window.print()">🖨️ In / Lưu PDF</button>
+    <button onclick="toggleEdit()" id="editBtn">✏️ Sửa hạng mục</button>
+    <button onclick="saveData()">💾 Lưu</button>
+    <label class="file-label" for="importFile">📂 Tải file</label>
+    <input type="file" id="importFile" accept=".json" onchange="importData(event)">
+    <button onclick="exportData()">📤 Xuất cuốn</button>
+    <button onclick="fetchLocalTemperature(true)" id="tempBtn">🌡️ Cập nhật nhiệt độ</button>
+    <button class="danger" onclick="resetQty()">🔄 Reset khối lượng</button>
+  </div>
 </div>
 
 <div class="page" id="page">
 
   <h1 class="title">Nhật ký thi công hàng ngày</h1>
 
+  <div class="project-line">Công trình: <input type="text" id="projectName" readonly></div>
+
   <div class="date-line">
-    Ngày <input type="text" class="inline-input" id="day" style="width:30px;text-align:center"> 
-    tháng <input type="text" class="inline-input" id="month" style="width:30px;text-align:center"> 
-    năm <input type="text" class="inline-input" id="year" style="width:50px;text-align:center">
+    Ngày <input type="text" class="inline-input" id="day" style="width:30px;text-align:center" readonly>
+    tháng <input type="text" class="inline-input" id="month" style="width:30px;text-align:center" readonly>
+    năm <input type="text" class="inline-input" id="year" style="width:50px;text-align:center" readonly>
   </div>
 
   <div class="section-num">1. Tình hình thời tiết:</div>
@@ -349,7 +412,7 @@
     </div>
   </div>
 
-  <div class="page-num">trang <input type="text" class="inline-input" id="pagenum" value="7" style="width:30px;text-align:center"></div>
+  <div class="page-num">trang <input type="text" class="inline-input" id="pagenum" style="width:36px;text-align:center" readonly></div>
 </div>
 
 <script>
@@ -372,62 +435,241 @@ const DEFAULT_ITEMS = [
 const DEFAULT_SIGN_A = "Ông Võ Thanh Quang";
 const DEFAULT_SIGN_B = "Ông Trần Hữu Lưu";
 
-const STORAGE_KEY = "nktc_lavipco_v1";
+const STORAGE_KEY = "nktc_lavipco_v2";
+const OLD_STORAGE_KEY = "nktc_lavipco_v1";
 
 // ====== STATE ======
-let items = [];
+// appState.projects: id -> { id, name, createdAt, endedAt, items, rep_a, rep_b, entries: { 'YYYY-MM-DD' -> entry } }
+// entry: { date, day, month, year, w_morning, w_afternoon, t_morning, t_afternoon, workers, workers_other, equipment, env, safe, note_a, note_b, rep_a, rep_b, pagenum, items: [...] }
+let appState = { projects: {}, currentProjectId: null, currentDate: null };
+let items = []; // reference to current entry's items, used by renderTable
 
-function loadFromStorage() {
+// ====== HELPERS ======
+function todayISO() {
+  const t = new Date();
+  return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+}
+function isoToParts(iso) {
+  const [y, m, d] = String(iso).split('-').map(s => parseInt(s, 10));
+  return { y, m, d };
+}
+function shiftISO(iso, days) {
+  const { y, m, d } = isoToParts(iso);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + days);
+  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+}
+function generateId() {
+  return 'p_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+function getProject() { return appState.projects[appState.currentProjectId] || null; }
+function getEntry() {
+  const p = getProject();
+  return p ? (p.entries[appState.currentDate] || null) : null;
+}
+
+// ====== QUẢN LÝ CUỐN ======
+function createProject(name, startDate, startPage) {
+  const id = generateId();
+  appState.projects[id] = {
+    id,
+    name: name || ('Công trình ' + (Object.keys(appState.projects).length + 1)),
+    createdAt: new Date().toISOString(),
+    endedAt: null,
+    startDate: startDate || todayISO(),
+    startPage: Number(startPage) > 0 ? Number(startPage) : 1,
+    items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)),
+    rep_a: DEFAULT_SIGN_A,
+    rep_b: DEFAULT_SIGN_B,
+    entries: {}
+  };
+  return id;
+}
+
+function ensureProjectMeta(p) {
+  if (!p) return;
+  if (!Number(p.startPage) || Number(p.startPage) < 1) p.startPage = 1;
+  if (!p.startDate) {
+    const dates = Object.keys(p.entries || {}).sort();
+    p.startDate = dates[0] || todayISO();
+  }
+}
+
+function computePagenum(p, dateISO) {
+  if (!p) return '';
+  const startPage = Number(p.startPage) || 1;
+  const startDate = p.startDate || dateISO;
+  const all = new Set(Object.keys(p.entries || {}));
+  all.add(dateISO);
+  const relevant = [...all].filter(d => d >= startDate).sort();
+  const idx = relevant.indexOf(dateISO);
+  return Math.max(1, startPage + (idx >= 0 ? idx : 0));
+}
+
+function ensureEntry(dateISO) {
+  const p = getProject();
+  if (!p) return null;
+  if (!p.entries[dateISO]) {
+    const { y, m, d } = isoToParts(dateISO);
+    p.entries[dateISO] = {
+      date: dateISO,
+      day: d, month: m, year: y,
+      w_morning: 'Bình thường',
+      w_afternoon: 'Bình thường',
+      t_morning: '24°C-33°C',
+      t_afternoon: '24°C-33°C',
+      workers: '07',
+      workers_other: '',
+      equipment: '',
+      env: 'Bình thường',
+      safe: 'Bình thường',
+      note_a: '',
+      note_b: '',
+      pagenum: '7',
+      rep_a: p.rep_a,
+      rep_b: p.rep_b,
+      items: JSON.parse(JSON.stringify(p.items)),
+      _isNew: true
+    };
+  }
+  return p.entries[dateISO];
+}
+
+function syncItemsStructureToProject() {
+  const p = getProject();
+  if (!p) return;
+  // template lưu qty mặc định = 0 (mỗi ngày tự nhập)
+  p.items = items.map(it => it.group !== undefined
+    ? { group: it.group }
+    : { name: it.name, unit: it.unit, qty: 0 });
+}
+
+// ====== LƯU TRỮ ======
+function persist() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); }
+  catch (e) { console.warn(e); }
+}
+
+function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      const data = JSON.parse(raw);
-      items = data.items || JSON.parse(JSON.stringify(DEFAULT_ITEMS));
-      applyData(data);
-      return true;
+      const d = JSON.parse(raw);
+      if (d && d.projects) {
+        appState = d;
+        Object.values(appState.projects).forEach(ensureProjectMeta);
+        return;
+      }
     }
   } catch(e) { console.warn(e); }
-  items = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
-  return false;
+  migrateFromV1();
 }
 
-function applyData(d) {
-  if (d.day !== undefined) document.getElementById('day').value = d.day;
-  if (d.month !== undefined) document.getElementById('month').value = d.month;
-  if (d.year !== undefined) document.getElementById('year').value = d.year;
-  if (d.w_morning !== undefined) document.getElementById('w_morning').value = d.w_morning;
-  if (d.w_afternoon !== undefined) document.getElementById('w_afternoon').value = d.w_afternoon;
-  if (d.t_morning !== undefined) document.getElementById('t_morning').value = d.t_morning;
-  if (d.t_afternoon !== undefined) document.getElementById('t_afternoon').value = d.t_afternoon;
-  if (d.workers !== undefined) document.getElementById('workers').value = d.workers;
-  if (d.workers_other !== undefined) document.getElementById('workers_other').value = d.workers_other;
-  if (d.equipment !== undefined) document.getElementById('equipment').value = d.equipment;
-  if (d.env) {
-    const r = document.querySelector(`input[name="env"][value="${d.env}"]`);
-    if (r) r.checked = true;
-  }
-  if (d.safe) {
-    const r = document.querySelector(`input[name="safe"][value="${d.safe}"]`);
-    if (r) r.checked = true;
-  }
-  if (d.note_a !== undefined) document.getElementById('note_a').value = d.note_a;
-  if (d.note_b !== undefined) document.getElementById('note_b').value = d.note_b;
-  document.getElementById('rep_a').value = d.rep_a || DEFAULT_SIGN_A;
-  document.getElementById('rep_b').value = d.rep_b || DEFAULT_SIGN_B;
-  if (d.pagenum !== undefined) document.getElementById('pagenum').value = d.pagenum;
+function migrateFromV1() {
+  try {
+    const raw = localStorage.getItem(OLD_STORAGE_KEY);
+    if (!raw) return;
+    const v1 = JSON.parse(raw);
+    const y = parseInt(v1.year, 10), m = parseInt(v1.month, 10), d = parseInt(v1.day, 10);
+    const dateISO = (y && m && d)
+      ? `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+      : todayISO();
+    const startPage = parseInt(v1.pagenum, 10) || 1;
+    const pid = createProject('Công trình 1', dateISO, startPage);
+    const p = appState.projects[pid];
+    if (Array.isArray(v1.items)) p.items = JSON.parse(JSON.stringify(v1.items));
+    if (v1.rep_a) p.rep_a = v1.rep_a;
+    if (v1.rep_b) p.rep_b = v1.rep_b;
+
+    appState.currentProjectId = pid;
+    appState.currentDate = dateISO;
+    const e = ensureEntry(dateISO);
+    ['w_morning','w_afternoon','t_morning','t_afternoon','workers','workers_other','equipment','env','safe','note_a','note_b','pagenum','rep_a','rep_b'].forEach(k => {
+      if (v1[k] !== undefined) e[k] = v1[k];
+    });
+    if (Array.isArray(v1.items)) e.items = JSON.parse(JSON.stringify(v1.items));
+    delete e._isNew;
+    persist();
+  } catch(err) { console.warn('Migration failed', err); }
 }
 
-function setTodayDate() {
-  const day = document.getElementById('day');
-  const month = document.getElementById('month');
-  const year = document.getElementById('year');
-  // chỉ điền nếu chưa có
-  if (!day.value || !month.value || !year.value) {
-    const t = new Date();
-    day.value = t.getDate();
-    month.value = t.getMonth() + 1;
-    year.value = t.getFullYear();
-  }
+// ====== RENDER FORM ======
+function refreshProjectSelect() {
+  const sel = document.getElementById('projectSelect');
+  sel.innerHTML = '';
+  const ids = Object.keys(appState.projects).sort((a, b) =>
+    (appState.projects[a].createdAt || '').localeCompare(appState.projects[b].createdAt || ''));
+  ids.forEach(id => {
+    const p = appState.projects[id];
+    const opt = document.createElement('option');
+    opt.value = id;
+    const count = Object.keys(p.entries).length;
+    opt.textContent = (p.endedAt ? '🏁 ' : '') + p.name + ` (${count} ngày)`;
+    sel.appendChild(opt);
+  });
+  sel.value = appState.currentProjectId || '';
+}
+
+function refreshDatePicker() {
+  const dp = document.getElementById('datePicker');
+  dp.value = appState.currentDate || '';
+  const p = getProject();
+  if (p && p.startDate) dp.min = p.startDate;
+  else dp.removeAttribute('min');
+}
+
+function renderForm() {
+  const p = getProject();
+  const e = getEntry();
+  if (!p || !e) return;
+  document.getElementById('projectName').value = p.name;
+  document.getElementById('day').value = e.day;
+  document.getElementById('month').value = e.month;
+  document.getElementById('year').value = e.year;
+  document.getElementById('w_morning').value = e.w_morning;
+  document.getElementById('w_afternoon').value = e.w_afternoon;
+  document.getElementById('t_morning').value = e.t_morning;
+  document.getElementById('t_afternoon').value = e.t_afternoon;
+  document.getElementById('workers').value = e.workers;
+  document.getElementById('workers_other').value = e.workers_other;
+  document.getElementById('equipment').value = e.equipment;
+  const envR = document.querySelector(`input[name="env"][value="${e.env}"]`);
+  if (envR) envR.checked = true;
+  const safeR = document.querySelector(`input[name="safe"][value="${e.safe}"]`);
+  if (safeR) safeR.checked = true;
+  document.getElementById('note_a').value = e.note_a;
+  document.getElementById('note_b').value = e.note_b;
+  document.getElementById('rep_a').value = e.rep_a;
+  document.getElementById('rep_b').value = e.rep_b;
+  // Số trang tự tính theo thứ tự ngày trong cuốn
+  const pn = computePagenum(p, appState.currentDate);
+  e.pagenum = pn;
+  document.getElementById('pagenum').value = pn;
+  items = e.items;
+  renderTable();
+}
+
+function collectForm() {
+  const p = getProject();
+  const e = getEntry();
+  if (!p || !e) return;
+  e.w_morning = document.getElementById('w_morning').value;
+  e.w_afternoon = document.getElementById('w_afternoon').value;
+  e.t_morning = document.getElementById('t_morning').value;
+  e.t_afternoon = document.getElementById('t_afternoon').value;
+  e.workers = document.getElementById('workers').value;
+  e.workers_other = document.getElementById('workers_other').value;
+  e.equipment = document.getElementById('equipment').value;
+  e.env = document.querySelector('input[name="env"]:checked')?.value;
+  e.safe = document.querySelector('input[name="safe"]:checked')?.value;
+  e.note_a = document.getElementById('note_a').value;
+  e.note_b = document.getElementById('note_b').value;
+  e.rep_a = document.getElementById('rep_a').value;
+  e.rep_b = document.getElementById('rep_b').value;
+  // pagenum không lấy từ form (readonly, tự tính trong renderForm)
+  // chữ ký mặc định ở cấp cuốn (sticky)
+  p.rep_a = e.rep_a;
+  p.rep_b = e.rep_b;
 }
 
 // ====== RENDER BẢNG ======
@@ -474,7 +716,7 @@ function renderTable() {
       const f = e.target.dataset.field;
       if (isNaN(i) || !f) return;
       if (f === 'qty') items[i].qty = e.target.value === '' ? '' : Number(e.target.value);
-      else items[i][f] = e.target.value;
+      else { items[i][f] = e.target.value; syncItemsStructureToProject(); }
     });
   });
 }
@@ -486,15 +728,19 @@ function escapeHtml(s) {
 
 function addRow() {
   const isGroup = confirm("OK = Thêm nhóm (I, II...)\nCancel = Thêm hạng mục thường");
-  if (isGroup) items.push({ group: "III - Nhóm mới" });
+  if (isGroup) items.push({ group: "Nhóm mới" });
   else items.push({ name: "Hạng mục mới", unit: "trạm", qty: 0 });
+  syncItemsStructureToProject();
   renderTable();
+  persist();
 }
 
 function delRow(idx) {
   if (!confirm("Xóa dòng này?")) return;
   items.splice(idx, 1);
+  syncItemsStructureToProject();
   renderTable();
+  persist();
 }
 
 function toggleEdit() {
@@ -504,46 +750,21 @@ function toggleEdit() {
 }
 
 // ====== LƯU / TẢI ======
-function collectData() {
-  return {
-    day: document.getElementById('day').value,
-    month: document.getElementById('month').value,
-    year: document.getElementById('year').value,
-    w_morning: document.getElementById('w_morning').value,
-    w_afternoon: document.getElementById('w_afternoon').value,
-    t_morning: document.getElementById('t_morning').value,
-    t_afternoon: document.getElementById('t_afternoon').value,
-    workers: document.getElementById('workers').value,
-    workers_other: document.getElementById('workers_other').value,
-    equipment: document.getElementById('equipment').value,
-    env: document.querySelector('input[name="env"]:checked')?.value,
-    safe: document.querySelector('input[name="safe"]:checked')?.value,
-    note_a: document.getElementById('note_a').value,
-    note_b: document.getElementById('note_b').value,
-    rep_a: document.getElementById('rep_a').value,
-    rep_b: document.getElementById('rep_b').value,
-    pagenum: document.getElementById('pagenum').value,
-    items: items,
-  };
-}
-
 function saveData() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(collectData()));
-    flash("Đã lưu vào điện thoại ✓");
-  } catch(e) {
-    alert("Lỗi lưu: " + e.message);
-  }
+  collectForm();
+  persist();
+  flash("Đã lưu ✓");
 }
 
 function exportData() {
-  const data = collectData();
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const p = getProject();
+  if (!p) return;
+  const blob = new Blob([JSON.stringify(p, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const d = `${data.day || 'X'}-${data.month || 'X'}-${data.year || ''}`;
+  const safe = p.name.replace(/[^a-zA-Z0-9-_À-ỹ]+/g, '_');
   a.href = url;
-  a.download = `nhat-ky-thi-cong-${d}.json`;
+  a.download = `nhat-ky-${safe}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -555,10 +776,50 @@ function importData(e) {
   reader.onload = ev => {
     try {
       const data = JSON.parse(ev.target.result);
-      items = data.items || items;
-      renderTable();
-      applyData(data);
-      flash("Đã tải file ✓");
+      collectForm();
+      if (data && data.projects) {
+        // file appState đầy đủ → gộp các cuốn
+        Object.values(data.projects).forEach(p => {
+          const newId = generateId();
+          p.id = newId;
+          appState.projects[newId] = p;
+          ensureProjectMeta(p);
+        });
+        flash(`Đã tải ${Object.keys(data.projects).length} cuốn ✓`);
+      } else if (data && data.entries) {
+        // file 1 cuốn
+        const newId = generateId();
+        data.id = newId;
+        if (!data.name) data.name = 'Cuốn nhập';
+        appState.projects[newId] = data;
+        ensureProjectMeta(data);
+        appState.currentProjectId = newId;
+        const dates = Object.keys(data.entries).sort();
+        appState.currentDate = dates[dates.length - 1] || todayISO();
+        ensureEntry(appState.currentDate);
+        flash("Đã tải cuốn ✓");
+      } else if (data && (data.w_morning !== undefined || Array.isArray(data.items))) {
+        // file v1 cũ → thêm vào cuốn hiện tại như 1 ngày
+        const y = parseInt(data.year, 10), m = parseInt(data.month, 10), d = parseInt(data.day, 10);
+        const dateISO = (y && m && d)
+          ? `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+          : todayISO();
+        appState.currentDate = dateISO;
+        const ent = ensureEntry(dateISO);
+        ['w_morning','w_afternoon','t_morning','t_afternoon','workers','workers_other','equipment','env','safe','note_a','note_b','pagenum','rep_a','rep_b'].forEach(k => {
+          if (data[k] !== undefined) ent[k] = data[k];
+        });
+        if (Array.isArray(data.items)) ent.items = JSON.parse(JSON.stringify(data.items));
+        delete ent._isNew;
+        flash("Đã nhập ngày vào cuốn hiện tại ✓");
+      } else {
+        alert("File không nhận dạng được.");
+        return;
+      }
+      refreshProjectSelect();
+      refreshDatePicker();
+      renderForm();
+      persist();
     } catch(err) {
       alert("File không hợp lệ: " + err.message);
     }
@@ -568,9 +829,175 @@ function importData(e) {
 }
 
 function resetQty() {
-  if (!confirm("Đặt lại toàn bộ khối lượng về 0?")) return;
+  if (!confirm("Đặt lại khối lượng của NGÀY hiện tại về 0?")) return;
   items.forEach(it => { if (!it.group) it.qty = 0; });
   renderTable();
+  collectForm();
+  persist();
+}
+
+// ====== ĐIỀU HƯỚNG CUỐN / NGÀY ======
+function onProjectChange(ev) {
+  clearTimeout(window._sv);
+  collectForm();
+  persist();
+  appState.currentProjectId = ev.target.value;
+  ensureEntry(appState.currentDate);
+  refreshDatePicker();
+  renderForm();
+  persist();
+}
+
+function onDatePickerChange(ev) {
+  changeDate(ev.target.value);
+}
+
+function prevDay() {
+  const cand = shiftISO(appState.currentDate, -1);
+  const p = getProject();
+  if (p && p.startDate && cand < p.startDate) {
+    flash('Đã ở ngày bắt đầu của cuốn');
+    return;
+  }
+  changeDate(cand);
+}
+function nextDay() { changeDate(shiftISO(appState.currentDate, +1)); }
+function todayDay() {
+  const t = todayISO();
+  const p = getProject();
+  if (p && p.startDate && t < p.startDate) {
+    flash('Hôm nay trước ngày bắt đầu cuốn');
+    return;
+  }
+  changeDate(t);
+}
+
+function changeDate(dateISO) {
+  if (!dateISO) return;
+  clearTimeout(window._sv);
+  collectForm();
+  persist();
+  appState.currentDate = dateISO;
+  const e = ensureEntry(dateISO);
+  const isNewFreshEntry = e && e._isNew;
+  if (e) delete e._isNew;
+  refreshDatePicker();
+  renderForm();
+  refreshProjectSelect(); // cập nhật số ngày trong dropdown
+  persist();
+  if (isNewFreshEntry && dateISO === todayISO()) {
+    fetchLocalTemperature(false);
+  }
+}
+
+function newProject() {
+  const defaultName = 'Công trình ' + (Object.keys(appState.projects).length + 1);
+  const name = prompt('Tên cuốn nhật ký (công trình mới):', defaultName);
+  if (name === null) return;
+  const trimmedName = (name.trim() || defaultName);
+
+  const sdRaw = prompt('📅 Ngày bắt đầu cuốn (YYYY-MM-DD):\nĐây sẽ là trang đầu tiên.', todayISO());
+  if (sdRaw === null) return;
+  const startDate = sdRaw.trim() || todayISO();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
+    alert('Định dạng ngày không đúng. Hãy dùng dạng YYYY-MM-DD (ví dụ ' + todayISO() + ').');
+    return;
+  }
+  const { y, m, d } = isoToParts(startDate);
+  const check = new Date(y, m - 1, d);
+  if (check.getFullYear() !== y || (check.getMonth() + 1) !== m || check.getDate() !== d) {
+    alert('Ngày không hợp lệ.');
+    return;
+  }
+
+  const spRaw = prompt('📄 Số trang của ngày đầu tiên:', '1');
+  if (spRaw === null) return;
+  const startPage = parseInt(spRaw, 10);
+  if (!(startPage >= 1)) {
+    alert('Số trang phải là số nguyên dương.');
+    return;
+  }
+
+  collectForm();
+  persist();
+  const id = createProject(trimmedName, startDate, startPage);
+  appState.currentProjectId = id;
+  appState.currentDate = startDate;
+  const e = ensureEntry(appState.currentDate);
+  const isFresh = e && e._isNew;
+  if (e) delete e._isNew;
+  refreshProjectSelect();
+  refreshDatePicker();
+  renderForm();
+  persist();
+  if (isFresh && appState.currentDate === todayISO()) fetchLocalTemperature(false);
+}
+
+function setStartPage() {
+  const p = getProject();
+  if (!p) return;
+  const cur = Number(p.startPage) || 1;
+  const str = prompt(`Số trang của ngày đầu cuốn "${p.name}" (${p.startDate}):`, String(cur));
+  if (str === null) return;
+  const n = parseInt(str, 10);
+  if (!(n >= 1)) { alert('Số trang phải là số nguyên dương.'); return; }
+  p.startPage = n;
+  renderForm();
+  persist();
+  flash('Đã cập nhật trang bắt đầu ✓');
+}
+
+function renameProject() {
+  const p = getProject();
+  if (!p) return;
+  const name = prompt('Đổi tên cuốn:', p.name);
+  if (!name) return;
+  p.name = name.trim();
+  document.getElementById('projectName').value = p.name;
+  refreshProjectSelect();
+  persist();
+}
+
+function endProject() {
+  const p = getProject();
+  if (!p) return;
+  const count = Object.keys(p.entries).length;
+  if (!confirm(`Kết thúc và XÓA cuốn "${p.name}" (${count} ngày)?\nTất cả dữ liệu cuốn này sẽ mất.`)) return;
+  if (!confirm('Bạn chắc chắn? Hành động này không thể hoàn tác.')) return;
+  delete appState.projects[p.id];
+  const remaining = Object.keys(appState.projects);
+  if (remaining.length === 0) {
+    const id = createProject('Công trình 1');
+    appState.currentProjectId = id;
+  } else {
+    appState.currentProjectId = remaining[0];
+  }
+  appState.currentDate = todayISO();
+  const e = ensureEntry(appState.currentDate);
+  if (e) delete e._isNew;
+  refreshProjectSelect();
+  refreshDatePicker();
+  renderForm();
+  persist();
+}
+
+function listEntries() {
+  const p = getProject();
+  if (!p) return;
+  const dates = Object.keys(p.entries).sort().reverse();
+  if (!dates.length) { alert('Cuốn này chưa có ngày nào.'); return; }
+  const lines = dates.map((d, i) => {
+    const e = p.entries[d];
+    const totalQty = (e.items || []).reduce((s, it) => s + (it.group ? 0 : Number(it.qty) || 0), 0);
+    const pn = computePagenum(p, d);
+    return `${i+1}. ${d}  · tr.${pn}  ·  ${totalQty} ${(e.items||[]).find(x=>!x.group)?.unit || ''}`;
+  });
+  const pick = prompt(
+    `📚 ${p.name} — ${dates.length} ngày (bắt đầu ${p.startDate}, trang ${p.startPage})\n\n${lines.join('\n')}\n\nNhập STT để mở (hoặc bỏ qua):`
+  );
+  if (!pick) return;
+  const idx = parseInt(pick, 10) - 1;
+  if (idx >= 0 && idx < dates.length) changeDate(dates[idx]);
 }
 
 function flash(msg) {
@@ -581,15 +1008,121 @@ function flash(msg) {
   setTimeout(() => d.remove(), 1500);
 }
 
-// ====== KHỞI ĐỘNG ======
-loadFromStorage();
-setTodayDate();
-renderTable();
+// ====== TỰ ĐỘNG LẤY NHIỆT ĐỘ ĐỊA PHƯƠNG ======
+async function fetchLocalTemperature(manual = false) {
+  const btn = document.getElementById('tempBtn');
+  if (!navigator.geolocation) {
+    if (manual) alert("Trình duyệt không hỗ trợ định vị.");
+    return;
+  }
+  if (btn) btn.textContent = '⏳ Đang lấy nhiệt độ...';
 
-// auto-save khi đổi
-document.addEventListener('input', () => {
+  try {
+    const pos = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        timeout: 10000,
+        maximumAge: 3600000,
+        enableHighAccuracy: false
+      });
+    });
+
+    const { latitude, longitude } = pos.coords;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weather_code&timezone=auto&forecast_days=1`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data.hourly || !data.hourly.temperature_2m) throw new Error("Dữ liệu không hợp lệ");
+
+    const temps = data.hourly.temperature_2m;
+    const codes = data.hourly.weather_code || [];
+    const times = data.hourly.time;
+
+    const morningTemps = [], afternoonTemps = [];
+    const morningCodes = [], afternoonCodes = [];
+    times.forEach((t, i) => {
+      const hour = parseInt(t.substring(11, 13), 10);
+      if (hour >= 6 && hour <= 11) { morningTemps.push(temps[i]); morningCodes.push(codes[i]); }
+      else if (hour >= 12 && hour <= 17) { afternoonTemps.push(temps[i]); afternoonCodes.push(codes[i]); }
+    });
+
+    if (morningTemps.length) {
+      const mn = Math.round(Math.min(...morningTemps));
+      const mx = Math.round(Math.max(...morningTemps));
+      document.getElementById('t_morning').value = `${mn}°C-${mx}°C`;
+      document.getElementById('w_morning').value = describeWeather(morningCodes);
+    }
+    if (afternoonTemps.length) {
+      const mn = Math.round(Math.min(...afternoonTemps));
+      const mx = Math.round(Math.max(...afternoonTemps));
+      document.getElementById('t_afternoon').value = `${mn}°C-${mx}°C`;
+      document.getElementById('w_afternoon').value = describeWeather(afternoonCodes);
+    }
+
+    collectForm();
+    persist();
+    if (btn) btn.textContent = '🌡️ Cập nhật nhiệt độ';
+    if (manual) flash("Đã cập nhật nhiệt độ ✓");
+  } catch (e) {
+    console.warn("Không thể lấy nhiệt độ:", e);
+    if (btn) btn.textContent = '🌡️ Cập nhật nhiệt độ';
+    if (manual) alert("Không lấy được nhiệt độ: " + (e.message || e));
+  }
+}
+
+// chuyển mã thời tiết WMO thành mô tả tiếng Việt; chọn mã phổ biến nhất
+function describeWeather(codes) {
+  if (!codes || !codes.length) return 'Bình thường';
+  const counts = {};
+  codes.forEach(c => { if (c != null) counts[c] = (counts[c] || 0) + 1; });
+  const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+  if (!top) return 'Bình thường';
+  const code = parseInt(top[0], 10);
+  // WMO Weather interpretation codes
+  if (code === 0) return 'Nắng';
+  if (code <= 2) return 'Ít mây';
+  if (code === 3) return 'Nhiều mây';
+  if (code === 45 || code === 48) return 'Sương mù';
+  if (code >= 51 && code <= 57) return 'Mưa phùn';
+  if (code >= 61 && code <= 65) return 'Mưa';
+  if (code >= 66 && code <= 67) return 'Mưa lạnh';
+  if (code >= 71 && code <= 77) return 'Tuyết';
+  if (code >= 80 && code <= 82) return 'Mưa rào';
+  if (code >= 85 && code <= 86) return 'Mưa tuyết';
+  if (code >= 95) return 'Giông';
+  return 'Bình thường';
+}
+
+// ====== KHỞI ĐỘNG ======
+loadState();
+if (Object.keys(appState.projects).length === 0) {
+  appState.currentProjectId = createProject('Công trình 1');
+}
+if (!appState.currentProjectId || !appState.projects[appState.currentProjectId]) {
+  appState.currentProjectId = Object.keys(appState.projects)[0];
+}
+if (!appState.currentDate) appState.currentDate = todayISO();
+const _initEntry = ensureEntry(appState.currentDate);
+const _initIsFresh = _initEntry && _initEntry._isNew;
+if (_initEntry) delete _initEntry._isNew;
+
+refreshProjectSelect();
+refreshDatePicker();
+renderForm();
+persist();
+
+// auto-fetch nhiệt độ cho ngày mới (chỉ hôm nay)
+if (_initIsFresh && appState.currentDate === todayISO()) {
+  fetchLocalTemperature(false);
+}
+
+// auto-save khi đổi (không kích hoạt khi đổi select cuốn/ngày — đã xử lý riêng)
+document.addEventListener('input', (ev) => {
+  if (ev.target && (ev.target.id === 'projectSelect' || ev.target.id === 'datePicker' || ev.target.id === 'importFile')) return;
   clearTimeout(window._sv);
-  window._sv = setTimeout(saveData, 800);
+  window._sv = setTimeout(() => {
+    collectForm();
+    persist();
+  }, 800);
 });
 </script>
 </body>
