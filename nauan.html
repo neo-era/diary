@@ -6407,7 +6407,7 @@ const RECIPES = [
 
 </script>
 <script>
-  console.log('%c[Sổ Công Thức] v2026.05.26-84recipes+timer ✓', 'background:#b14a2a;color:#f4ede1;padding:4px 10px;border-radius:4px;font-weight:bold');
+  console.log('%c[Sổ Công Thức] v2026.05.26-84recipes+timer-loop ✓', 'background:#b14a2a;color:#f4ede1;padding:4px 10px;border-radius:4px;font-weight:bold');
 
   // ========== STATE ==========
   // activeCategory: 'all' | 'favorites'
@@ -7015,12 +7015,14 @@ const RECIPES = [
   function clearAllTimers() {
     activeTimerIntervals.forEach(id => clearInterval(id));
     activeTimerIntervals.clear();
+    if (typeof timerAlarm !== 'undefined') timerAlarm.stop();
   }
 
   function toggleStepTimer(chipEl) {
     const step = chipEl.closest('.step');
     const panel = step.querySelector('.step-timer');
     if (!panel) return;
+    stopTimerAlarm();
     const willOpen = !panel.classList.contains('open');
     panel.classList.toggle('open');
     chipEl.classList.toggle('active', willOpen);
@@ -7028,6 +7030,7 @@ const RECIPES = [
 
   function startStepTimer(btn) {
     const panel = btn.closest('.step-timer');
+    stopTimerAlarm();
     if (panel.dataset.state === 'running') return;
     let remaining = parseInt(panel.dataset.remaining, 10);
     if (!remaining || remaining <= 0) {
@@ -7057,6 +7060,7 @@ const RECIPES = [
 
   function pauseStepTimer(btn) {
     const panel = btn.closest('.step-timer');
+    stopTimerAlarm();
     if (panel.dataset.state !== 'running') return;
     const id = parseInt(panel.dataset.intervalId, 10);
     clearInterval(id);
@@ -7067,6 +7071,7 @@ const RECIPES = [
 
   function resetStepTimer(btn) {
     const panel = btn.closest('.step-timer');
+    stopTimerAlarm();
     const id = parseInt(panel.dataset.intervalId, 10);
     if (id) {
       clearInterval(id);
@@ -7081,6 +7086,7 @@ const RECIPES = [
 
   function addStepTime(btn, delta) {
     const panel = btn.closest('.step-timer');
+    stopTimerAlarm();
     let remaining = parseInt(panel.dataset.remaining, 10) || 0;
     let duration = parseInt(panel.dataset.duration, 10) || 0;
     remaining = Math.max(0, remaining + delta);
@@ -7094,29 +7100,66 @@ const RECIPES = [
     panel.querySelector('.step-timer-display').textContent = formatTime(remaining);
   }
 
+  // Chuông báo + rung liên tục cho đến khi gọi stop()
+  const timerAlarm = {
+    ctx: null,
+    intervalId: null,
+    canVibrate: typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function',
+    start() {
+      this.stop();
+      try {
+        const Ctor = window.AudioContext || window.webkitAudioContext;
+        if (Ctor) {
+          this.ctx = new Ctor();
+          const playOne = () => {
+            if (!this.ctx) return;
+            const o = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            o.connect(g); g.connect(this.ctx.destination);
+            o.type = 'sine';
+            o.frequency.value = 880;
+            g.gain.setValueAtTime(0.0001, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.25, this.ctx.currentTime + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.35);
+            o.start();
+            o.stop(this.ctx.currentTime + 0.4);
+          };
+          playOne();
+          this.intervalId = setInterval(() => {
+            playOne();
+            if (this.canVibrate) {
+              try { navigator.vibrate([300, 200, 300]); } catch (e) {}
+            }
+          }, 800);
+        }
+        // rung lần đầu ngay khi bắt đầu
+        if (this.canVibrate) {
+          try { navigator.vibrate([300, 200, 300]); } catch (e) {}
+        }
+      } catch (e) { /* trình duyệt chưa cho phép audio - bỏ qua */ }
+    },
+    stop() {
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+      }
+      if (this.ctx) {
+        try { this.ctx.close(); } catch (e) {}
+        this.ctx = null;
+      }
+      if (this.canVibrate) {
+        try { navigator.vibrate(0); } catch (e) {}
+      }
+    }
+  };
+
   function playTimerBeep() {
-    try {
-      const Ctor = window.AudioContext || window.webkitAudioContext;
-      if (!Ctor) return;
-      const ctx = new Ctor();
-      let count = 0;
-      const beep = () => {
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.type = 'sine';
-        o.frequency.value = 880;
-        g.gain.setValueAtTime(0.0001, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
-        o.start();
-        o.stop(ctx.currentTime + 0.4);
-        count++;
-        if (count < 4) setTimeout(beep, 450);
-        else setTimeout(() => ctx.close(), 600);
-      };
-      beep();
-    } catch (e) { /* trình duyệt chưa cho phép audio - bỏ qua */ }
+    timerAlarm.start();
+  }
+
+  function stopTimerAlarm() {
+    timerAlarm.stop();
+    document.querySelectorAll('.step-timer.done').forEach(p => p.classList.remove('done'));
   }
 
   function renderSteps(r) {
