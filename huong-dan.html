@@ -159,12 +159,14 @@
     <li><a href="#start">Bắt đầu sử dụng</a></li>
     <li><a href="#toolbar">Thanh công cụ</a></li>
     <li><a href="#new-book">Tạo cuốn nhật ký mới</a></li>
+    <li><a href="#templates">Chọn mẫu quyển</a></li>
+    <li><a href="#book-info">Thông tin quyển (bìa, văn bản, cán bộ)</a></li>
     <li><a href="#daily">Ghi nhật ký hàng ngày</a></li>
     <li><a href="#navigation">Chuyển ngày và xem lịch sử</a></li>
     <li><a href="#items">Sửa danh sách hạng mục</a></li>
     <li><a href="#weather">Tự động lấy nhiệt độ</a></li>
     <li><a href="#forecast">Dự báo thời tiết những ngày tới</a></li>
-    <li><a href="#print-single">In hoặc lưu PDF từng ngày</a></li>
+    <li><a href="#print-single">Xuất PDF</a></li>
     <li><a href="#backup">Sao lưu / Khôi phục dữ liệu</a></li>
     <li><a href="#end">Kết thúc cuốn nhật ký (xuất Word + PDF)</a></li>
     <li><a href="#tips">Mẹo và xử lý sự cố</a></li>
@@ -182,7 +184,7 @@
 </div>
 
 <h2 id="toolbar">2. Thanh công cụ</h2>
-<p>Thanh trên cùng chia làm <strong>3 hàng</strong>:</p>
+<p>Thanh trên cùng chia làm <strong>4 hàng</strong>:</p>
 
 <table class="steps">
   <tr><th style="width:120px;">Hàng 1 — Cuốn</th><td>
@@ -190,16 +192,21 @@
     <span class="btn">+ Cuốn mới</span> ·
     <span class="btn">✏️ Đổi tên</span> ·
     <span class="btn">📄 Trang bắt đầu</span> ·
+    <span class="btn">📕 Thông tin quyển</span> ·
     <span class="btn danger">🏁 Kết thúc</span>
   </td></tr>
-  <tr><th>Hàng 2 — Ngày</th><td>
+  <tr><th>Hàng 2 — Mẫu</th><td>
+    <span class="btn">🧩 Mẫu:</span> chọn mẫu quyển cho cuốn đang mở (xem <a href="#templates">mục 4</a>)
+  </td></tr>
+  <tr><th>Hàng 3 — Ngày</th><td>
     <span class="btn">📅 Ngày:</span> chọn ngày để xem/sửa ·
     <span class="btn">◀ Hôm trước</span> · <span class="btn">Hôm sau ▶</span> ·
     <span class="btn">Hôm nay</span> ·
     <span class="btn">📚 Danh sách ngày</span>
   </td></tr>
-  <tr><th>Hàng 3 — Thao tác</th><td>
-    <span class="btn primary">🖨️ In / Lưu PDF</span> (in/PDF ngày hiện tại) ·
+  <tr><th>Hàng 4 — Thao tác</th><td>
+    <span class="btn primary">📄 Xuất PDF ngày này</span> ·
+    <span class="btn">📕 Xuất PDF cả cuốn</span> ·
     <span class="btn">✏️ Sửa hạng mục</span> ·
     <span class="btn">💾 Lưu</span> ·
     <span class="btn">📂 Tải file</span> ·
@@ -211,8 +218,9 @@
 </table>
 
 <h2 id="new-book">3. Tạo cuốn nhật ký mới</h2>
-<p>Khi mở công trình mới, bấm <span class="btn">+ Cuốn mới</span> và làm 3 bước:</p>
+<p>Khi mở công trình mới, bấm <span class="btn">+ Cuốn mới</span> và làm 4 bước:</p>
 <ol>
+  <li><strong>Chọn mẫu quyển:</strong> gõ số thứ tự của mẫu (xem <a href="#templates">mục 4</a>). Mặc định là mẫu mới nhất.</li>
   <li><strong>Tên công trình:</strong> ví dụ <em>"Đường Lê Lợi - Q1 - 2026"</em>. Sau này có thể đổi qua nút <span class="btn">✏️ Đổi tên</span>.</li>
   <li><strong>Ngày bắt đầu:</strong> điền theo định dạng <code>YYYY-MM-DD</code> (ví dụ <code>2026-05-21</code>). Đây sẽ là <strong>trang đầu tiên</strong> của cuốn.</li>
   <li><strong>Số trang bắt đầu:</strong> mặc định <code>1</code>. Nếu cuốn này nối tiếp cuốn cũ (ví dụ cuốn cũ kết thúc ở trang 7), nhập <code>8</code>.</li>
@@ -221,7 +229,56 @@
   <strong>Mẹo:</strong> Mỗi cuốn được lưu độc lập. Bạn có thể có nhiều cuốn cùng lúc cho nhiều công trình khác nhau — chỉ cần chuyển bằng dropdown <span class="btn">📒 Cuốn</span>.
 </div>
 
-<h2 id="daily">4. Ghi nhật ký hàng ngày</h2>
+<h2 id="templates">4. Chọn mẫu quyển</h2>
+<p>Phần mềm có sẵn <strong>2 mẫu quyển</strong>. Mỗi cuốn dùng 1 mẫu, chọn bằng dropdown <span class="btn">🧩 Mẫu</span>:</p>
+
+<table class="steps">
+  <tr><th style="width:190px;">Mẫu cũ<br>— 1 cột khối lượng</th><td>
+    Trang nhật ký như phiên bản trước: bảng 4 cột <em>STT · Công tác · Đơn vị tính · Khối lượng thực hiện</em>.
+    Không có trang bìa. <strong>Các cuốn đã tạo từ trước đều tự nhận mẫu này</strong> — số liệu cũ giữ nguyên.
+  </td></tr>
+  <tr><th>Mẫu Quận 8<br>— 3 phường</th><td>
+    Theo quyển nhật ký mẫu của gói thầu Quận 8: bảng <strong>9 cột</strong> — khối lượng tách riêng
+    <em>Khối lượng thực hiện</em> và <em>Khối lượng nghiệm thu</em>, mỗi nhóm 3 phường.
+    Có sẵn <strong>38 hạng mục</strong> chia 2 nhóm <em>Tủ thường</em> / <em>Tủ kết nối</em>, ô bằng 0 in ra dấu <code>-</code>.
+    Kèm <a href="#book-info">trang bìa, trang liệt kê văn bản và trang danh sách cán bộ</a>.
+  </td></tr>
+</table>
+
+<p><strong>Đổi mẫu cho cuốn đang mở:</strong> chọn mẫu khác ở dropdown <span class="btn">🧩 Mẫu</span>. Phần mềm hỏi 2 câu:</p>
+<ol>
+  <li>Xác nhận đổi mẫu (số cột khối lượng sẽ đổi theo).</li>
+  <li>Có nạp lại danh sách hạng mục mặc định của mẫu mới cho ngày đang mở không —
+    chọn <strong>OK</strong> nếu muốn dùng đúng danh sách chuẩn, chọn <strong>Cancel</strong> nếu muốn giữ hạng mục đang có.</li>
+</ol>
+
+<div class="callout">
+  <strong>Đổi tên phường / địa bàn:</strong> bấm <span class="btn">✏️ Sửa hạng mục</span> rồi sửa trực tiếp
+  tên phường trên đầu bảng. Tên mới áp dụng cho <em>mọi ngày</em> của cuốn.
+</div>
+
+<h2 id="book-info">5. Thông tin quyển (bìa, văn bản, cán bộ)</h2>
+<p>Chỉ dùng cho mẫu có trang bìa (mẫu Quận 8). Bấm <span class="btn">📕 Thông tin quyển</span> để mở bảng nhập gồm 5 phần:</p>
+<ol>
+  <li><strong>Loại bìa</strong> — quyển <em>vận hành</em> hay <em>bảo dưỡng</em>, và có in kèm <em>BÌA TỔNG</em> hay không.</li>
+  <li><strong>Bìa quyển</strong> — dự toán mua sắm, gói thầu, địa điểm, công tác, địa bàn, Bên A / Bên B,
+    đại diện liên danh, đại diện 2 bên kèm chức vụ, số trang, quyển số.</li>
+  <li><strong>Bìa tổng</strong> — đơn vị + chức danh + người ký của 2 bên, nơi ký.</li>
+  <li><strong>Trang 1 — Liệt kê các văn bản liên quan</strong> — thêm/xóa từng dòng
+    (văn bản số ngày, cơ quan phát hành, ngày nhận, tóm tắt nội dung).</li>
+  <li><strong>Trang 2 — Danh sách cán bộ kỹ thuật, giám sát</strong> — thêm/xóa từng người, chọn thuộc Bên A hay Bên B.</li>
+</ol>
+<div class="callout warn">
+  <strong>Nhớ bấm <span class="btn primary">💾 Lưu thông tin quyển</span></strong> trước khi đóng — phần này
+  <em>không</em> tự lưu như form nhật ký hàng ngày.
+</div>
+<p>Các trang này <strong>không hiện trên màn hình chính</strong>. Chúng chỉ được ghép vào đầu file
+khi bấm <span class="btn danger">🏁 Kết thúc</span>, theo thứ tự:
+BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký.</p>
+<p>Chỗ ghi <em>“Công tác: … tháng {MM} năm {YYYY}”</em> sẽ tự thay bằng tháng/năm của
+<strong>ngày bắt đầu cuốn</strong> khi xuất file.</p>
+
+<h2 id="daily">6. Ghi nhật ký hàng ngày</h2>
 <p>Khi mở cuốn, bạn sẽ thấy form nhật ký với các mục:</p>
 <ul>
   <li><strong>Tên công trình</strong> — tự điền từ tên cuốn, không sửa được trên form (đổi qua nút Đổi tên).</li>
@@ -232,12 +289,14 @@
   <li><strong>4–5. Vệ sinh & An toàn</strong> — chọn Tốt / Bình thường / Kém.</li>
   <li><strong>6–7. Ghi chú</strong> — nhận xét của giám sát A, đề xuất của B.</li>
   <li><strong>Chữ ký</strong> — họ tên đại diện bên A và B (dùng chung cho các ngày trong cuốn, sửa lần đầu là xong).</li>
+  <li><strong>Ngày nghỉ</strong> — ô tích ngay dưới dòng ngày tháng. Khi bật, các ô khối lượng bị khóa và
+    khi in/xuất file thì bảng để trống (vẫn còn đủ tên hạng mục) — giống trang "ngày nghỉ" trong quyển mẫu.</li>
 </ul>
 <div class="callout">
   ✅ Dữ liệu <strong>tự động lưu</strong> sau mỗi lần gõ phím — không lo mất.
 </div>
 
-<h2 id="navigation">5. Chuyển ngày và xem lịch sử</h2>
+<h2 id="navigation">7. Chuyển ngày và xem lịch sử</h2>
 <table class="steps">
   <tr><th>Thao tác</th><th>Cách làm</th></tr>
   <tr><td>Xem ngày khác</td><td>Chọn ngày trong ô <span class="btn">📅 Ngày</span></td></tr>
@@ -250,7 +309,7 @@
   <strong>Lưu ý số trang:</strong> Số trang ở cuối form là <strong>tự động</strong>, không sửa tay. Cách tính: ngày bắt đầu = trang <code>startPage</code>, ngày tiếp theo trong cuốn = trang <code>startPage+1</code>, v.v. Nếu cần đổi trang đầu, dùng nút <span class="btn">📄 Trang bắt đầu</span>.
 </div>
 
-<h2 id="items">6. Sửa danh sách hạng mục</h2>
+<h2 id="items">8. Sửa danh sách hạng mục</h2>
 <p>Bảng công việc đi kèm sẵn danh sách mặc định. Để thay đổi:</p>
 <ol>
   <li>Bấm <span class="btn">✏️ Sửa hạng mục</span> để vào chế độ chỉnh sửa.</li>
@@ -266,9 +325,15 @@
 <div class="callout">
   Khi sửa <strong>tên</strong> hoặc <strong>đơn vị</strong>, thay đổi áp dụng cho cả ngày hiện tại và các ngày mới sẽ tạo sau. Sửa <strong>khối lượng</strong> chỉ áp dụng cho ngày đang xem (mỗi ngày có khối lượng riêng).
 </div>
+<div class="callout">
+  <strong>Riêng mẫu Quận 8:</strong> ngày mới tạo sẽ <em>kế thừa khối lượng của ngày bạn đang mở</em>
+  (quyển mẫu lặp lại y hệt bộ số mỗi ngày), nên không phải nhập lại 38 × 6 ô. Muốn ngày mới trống,
+  bấm <span class="btn danger">🔄 Reset khối lượng</span> sau khi tạo.
+  Ở chế độ sửa, đầu bảng còn cho sửa <strong>tên 3 phường</strong>.
+</div>
 <p>Nút <span class="btn danger">🔄 Reset khối lượng</span> sẽ đặt toàn bộ khối lượng của <em>ngày hiện tại</em> về 0 (không ảnh hưởng ngày khác).</p>
 
-<h2 id="weather">7. Tự động lấy nhiệt độ</h2>
+<h2 id="weather">9. Tự động lấy nhiệt độ</h2>
 <p>Khi tạo nhật ký mới cho hôm nay, phần mềm <strong>tự động</strong> hỏi quyền vị trí và lấy nhiệt độ + tình hình thời tiết từ Open-Meteo:</p>
 <ul>
   <li><strong>Sáng</strong>: nhiệt độ min–max khoảng 6h–11h</li>
@@ -280,7 +345,7 @@
   Cần <strong>kết nối Internet</strong> và <strong>cho phép vị trí</strong> khi trình duyệt hỏi. Nếu mở bằng cách kéo file vào trình duyệt (<code>file://</code>), một số trình duyệt sẽ chặn — nên đặt file trên web host hoặc dùng localhost.
 </div>
 
-<h2 id="forecast">8. Dự báo thời tiết những ngày tới</h2>
+<h2 id="forecast">10. Dự báo thời tiết những ngày tới</h2>
 <p>Bấm <span class="btn">🔮 Dự báo thời tiết</span> để mở cửa sổ dự báo:</p>
 <ol>
   <li>Nhập <strong>Số ngày</strong> muốn xem (mặc định <code>7</code>, tối đa <code>16</code>).</li>
@@ -303,24 +368,36 @@
   Open-Meteo cung cấp dữ liệu tối đa 16 ngày. Càng xa hôm nay thì độ chính xác càng giảm — tốt nhất xem 3-7 ngày tới.
 </div>
 
-<h2 id="print-single">9. In hoặc lưu PDF từng ngày</h2>
-<ol>
-  <li>Mở ngày bạn muốn in.</li>
-  <li>Bấm <span class="btn primary">🖨️ In / Lưu PDF</span>.</li>
-  <li>Trong cửa sổ in của trình duyệt:
-    <ul>
-      <li>Chọn máy in để in giấy A4 thật, <em>hoặc</em></li>
-      <li>Chọn <strong>"Save as PDF"</strong> để lưu file PDF của riêng ngày đó.</li>
-    </ul>
-  </li>
-</ol>
+<h2 id="print-single">11. Xuất PDF</h2>
+<p>Phần mềm <strong>tự dựng file PDF</strong> (thư viện jsPDF), không đi qua hộp thoại in của trình duyệt nữa —
+nhờ vậy khổ giấy và lề luôn đúng, không phụ thuộc thiết lập máy in của từng máy.</p>
+<table class="steps">
+  <tr><th style="width:190px;"><span class="btn primary">📄 Xuất PDF ngày này</span></th><td>
+    Tải về PDF của <strong>riêng ngày đang mở</strong>.
+  </td></tr>
+  <tr><th><span class="btn">📕 Xuất PDF cả cuốn</span></th><td>
+    Tải về PDF <strong>toàn bộ cuốn</strong> (kèm trang bìa nếu mẫu có) mà <em>không</em> xóa cuốn —
+    khác với <span class="btn danger">🏁 Kết thúc</span>.
+  </td></tr>
+</table>
 <div class="callout">
-  Thanh công cụ tự ẩn khi in — bản in chỉ có tờ A4 đúng định dạng.
+  <strong>Định dạng file PDF:</strong> A4 dọc, <strong>lề 2cm</strong> cả 4 phía.
+  Với mẫu Quận 8, <strong>mỗi ngày chiếm đúng 2 trang</strong>: trang 1 là mục 1–3 và hạng mục 1–23,
+  trang 2 lặp lại dòng tiêu đề bảng rồi đến hạng mục 24–38 và mục 4–7 + chữ ký — đúng như quyển mẫu.
+  Dòng <em>“Công trình: …”</em> chỉ hiện trên màn hình để bạn biết đang sửa cuốn nào, <strong>không in ra file</strong>.
+</div>
+<div class="callout">
+  <strong>Tên file</strong> đặt theo dạng <code>NKTC - &lt;địa bàn&gt; - T&lt;tháng&gt;-&lt;năm&gt;</code>, ví dụ
+  <code>NKTC - Phường Chánh Hưng, Phường Phú Định, Phường Bình Đông - T07-2026.pdf</code>.
+  File PDF của một ngày có thêm hậu tố <code> - ngay 01</code>. Mẫu không có địa bàn thì dùng tên cuốn.
+</div>
+<div class="callout warn">
+  Cần <strong>Internet</strong> khi xuất PDF vì thư viện jsPDF tải từ CDN.
 </div>
 
-<h2 id="backup">10. Sao lưu / Khôi phục dữ liệu</h2>
+<h2 id="backup">12. Sao lưu / Khôi phục dữ liệu</h2>
 <h3>Sao lưu</h3>
-<p>Bấm <span class="btn">📤 Xuất cuốn</span> để tải về file <code>nhat-ky-&lt;tên cuốn&gt;.json</code>. File này chứa <strong>toàn bộ ngày</strong> của cuốn hiện tại — gửi qua email, lưu USB, hoặc upload đám mây để dự phòng.</p>
+<p>Bấm <span class="btn">📤 Xuất cuốn</span> để tải về file <code>NKTC - &lt;địa bàn&gt; - T&lt;tháng&gt;-&lt;năm&gt;.json</code>. File này chứa <strong>toàn bộ ngày</strong> của cuốn hiện tại — gửi qua email, lưu USB, hoặc upload đám mây để dự phòng.</p>
 <h3>Khôi phục</h3>
 <p>Bấm <span class="btn">📂 Tải file</span> và chọn file JSON đã xuất. Phần mềm tự nhận diện 3 dạng:</p>
 <ul>
@@ -332,15 +409,17 @@
   <strong>Khuyến nghị:</strong> Xuất file sao lưu mỗi tuần hoặc sau mỗi 5–10 ngày ghi.
 </div>
 
-<h2 id="end">11. Kết thúc cuốn nhật ký</h2>
+<h2 id="end">13. Kết thúc cuốn nhật ký</h2>
 <p>Khi công trình hoàn thành, bấm <span class="btn danger">🏁 Kết thúc</span>. Phần mềm sẽ:</p>
 <ol>
   <li>Hỏi xác nhận 2 lần.</li>
   <li>Tự động <strong>tải về 2 file</strong>:
     <ul>
-      <li><code>nhat-ky-&lt;tên cuốn&gt;.doc</code> — mở được bằng Microsoft Word / LibreOffice, có thể chỉnh sửa.</li>
-      <li><code>nhat-ky-&lt;tên cuốn&gt;.pdf</code> — file PDF nhiều trang A4, mỗi ngày 1 trang, không sửa được, dùng để lưu trữ/in.</li>
+      <li><code>NKTC - &lt;địa bàn&gt; - T&lt;tháng&gt;-&lt;năm&gt;.doc</code> — mở được bằng Microsoft Word / LibreOffice, có thể chỉnh sửa.</li>
+      <li><code>NKTC - &lt;địa bàn&gt; - T&lt;tháng&gt;-&lt;năm&gt;.pdf</code> — file PDF nhiều trang A4, không sửa được, dùng để lưu trữ/in.</li>
     </ul>
+    Với mẫu có trang bìa (Quận 8), file gồm đủ: <strong>BÌA TỔNG → bìa quyển → trang liệt kê văn bản →
+    trang danh sách cán bộ → từng ngày nhật ký (mỗi ngày 2 trang)</strong>.
   </li>
   <li>Sau khi tải xong, <strong>xóa cuốn khỏi phần mềm</strong> để giải phóng không gian.</li>
 </ol>
@@ -351,7 +430,7 @@
   Cần <strong>Internet</strong> lúc bấm Kết thúc vì cần tải thư viện tạo PDF. Nếu mất mạng, phần mềm sẽ báo lỗi và hỏi có muốn xóa cuốn không — chọn <strong>Cancel</strong> để giữ lại cuốn và thử lại sau.
 </div>
 
-<h2 id="tips">12. Mẹo và xử lý sự cố</h2>
+<h2 id="tips">14. Mẹo và xử lý sự cố</h2>
 
 <h3>Phần mềm không nhớ dữ liệu sau khi đóng trình duyệt?</h3>
 <ul>

@@ -12,6 +12,7 @@ App nhật ký thi công hàng ngày (tiếng Việt) cho công ty chiếu sáng
 diary/
 ├── index.html       # Toàn bộ app (HTML + CSS + JS inline)
 ├── huong-dan.html   # Hướng dẫn người dùng (tiếng Việt)
+├── NKTC-Gói thầu 2026-2029-Quận 8 (A.TÀI) đã cập nhật.xlsx   # Quyển mẫu gốc, nguồn của TEMPLATES.q8
 └── CLAUDE.md        # File này
 ```
 
@@ -31,6 +32,9 @@ appState = {
       id, name, createdAt, endedAt,
       startDate,   // 'YYYY-MM-DD', ngày = trang đầu tiên
       startPage,   // số trang của ngày bắt đầu (sticky base cho computePagenum)
+      templateId,  // 'lavipco' | 'q8' — khóa vào TEMPLATES
+      zones,       // ['Phường Chánh Hưng', ...] — chỉ mẫu có địa bàn; sửa được ở edit-mode
+      book,        // chỉ mẫu hasBook: dữ liệu bìa + Tr1 + Tr2 (xem Q8_BOOK_DEFAULT)
       items,       // template hạng mục, đồng bộ từ entry hiện tại (qua syncItemsStructureToProject)
       rep_a, rep_b,// chữ ký mặc định, sticky từ entry mới nhất
       entries: {
@@ -40,6 +44,7 @@ appState = {
           workers, workers_other, equipment,
           env, safe, note_a, note_b,
           rep_a, rep_b, pagenum,
+          restDay,// true = ngày nghỉ, bảng khối lượng in ra để trống
           items   // bản sao đầy đủ tại thời điểm tạo entry; sau đó qty edit độc lập theo entry
         }
       }
@@ -50,7 +55,40 @@ appState = {
 }
 ```
 
+Item có **2 dạng khối lượng** tùy mẫu:
+- mẫu 1 cột → `{ name, unit, qty }`
+- mẫu nhiều địa bàn → `{ name, unit, q: { th0, th1, th2, nt0, nt1, nt2 } }`
+
+Luôn truy cập qua `getQ(it, key)` / `setQ(it, key, v)` với `key` lấy từ `qtyKeys(project)` — đừng đọc `it.qty` trực tiếp ở code mới.
+
 Khóa cũ `nktc_lavipco_v1` được auto-migrate sang v2 trong `migrateFromV1()` — giữ lại cho đến khi user manually clear.
+
+Schema v2 **chỉ thêm field, không đổi field cũ** ⇒ dữ liệu localStorage đang có vẫn đọc được. Back-fill (`templateId`, `zones`, `book`) nằm hết trong `ensureProjectMeta(p)` — đây là chỗ duy nhất cần sửa khi thêm field cấp cuốn.
+
+## Mẫu quyển (`TEMPLATES`)
+
+Registry ở đầu `<script>`. Mỗi mẫu mô tả layout trang ngày + có/không phần bìa:
+
+| Mẫu | Cột khối lượng | Trang bìa | Ghi chú |
+|---|---|---|---|
+| `lavipco` | 1 cột (`qty`) | không | Mẫu gốc, mọi cuốn cũ tự nhận mẫu này |
+| `q8` | 2 nhóm × 3 phường = 6 cột (`th0..nt2`) | có | Dựng theo file `.xlsx` trong repo |
+
+Field của template: `zones`, `colGroups[{label, prefix}]`, `itemsHeader`, `hasBook`, `zeroAsDash` (0 → `-` khi xuất), `keepQty` (ngày mới kế thừa khối lượng thay vì về 0), `continuousNumbering` (STT chạy liên tục qua các nhóm), `splitAfter`, `items`, `book`, `sign`.
+
+**`splitAfter`** quyết định 1 ngày chiếm mấy trang: `null` = 1 trang · số = 2 trang, cắt sau hạng mục đó · mảng `[13, 26]` = 3 trang. `entryPageCount()`, số trang liên tục và dòng "Sổ này gồm … trang" đều tự suy ra từ nó. Hiện là **23** — đúng chỗ ngắt trang của file Excel gốc.
+
+Helper dùng chung: `tplOf(p)`, `zonesOf(p)`, `qtyKeys(p)`, `getQ/setQ`, `blankQ(p)`, `makeItem(p, name, unit)`, `deepCopy`.
+
+**Thêm mẫu mới** = thêm 1 entry vào `TEMPLATES`; `renderTableHead()`, `buildWorkTableHTML()`, `newProject()`, `onTemplateChange()` đều tự sinh theo descriptor, không cần sửa.
+
+## Modal "Thông tin quyển" (`#bookModal`)
+
+Chỉ bật khi `tplOf(p).hasBook`. Chứa 5 phần: loại bìa · bìa quyển · bìa tổng · Tr1 (liệt kê văn bản) · Tr2 (danh sách cán bộ). Ghi vào `p.book`.
+
+- **Không** dùng auto-save debounce — handler `input` bỏ qua mọi thứ trong `#bookModal`; lưu bằng nút `saveBook()`.
+- `collectBookForm()` phải được gọi trước mỗi lần re-render bảng động (`addDocRow`/`delDocRow`/`addStaffRow`/`delStaffRow`) để không mất chữ đang gõ.
+- Chuỗi `{MM}` / `{YYYY}` trong `congTacVH`/`congTacBD` được thay bằng tháng/năm của `p.startDate` lúc xuất (`bookCongTac`).
 
 ## Nguyên tắc thiết kế cần biết
 
@@ -59,7 +97,7 @@ Khóa cũ `nktc_lavipco_v1` được auto-migrate sang v2 trong `migrateFromV1()
 - **Date picker giới hạn `min=startDate`** để không tạo entry trước ngày bắt đầu cuốn (sẽ làm lệch số trang).
 - **`_isNew` flag** trên entry: dùng nội bộ để biết entry vừa tạo lần đầu → trigger auto-fetch nhiệt độ nếu ngày là hôm nay. Phải `delete` trước khi `persist()` để không leak vào localStorage.
 - **`items` global var** là tham chiếu tới `currentEntry.items`. `renderTable()` đọc từ đây. `syncItemsStructureToProject()` đẩy thay đổi name/unit/group/add/del sang `project.items` (template) nhưng KHÔNG đẩy qty (qty là số liệu hàng ngày).
-- **Auto-save debounce 800ms** trên `input` event của document, có filter để bỏ qua `#projectSelect`, `#datePicker`, `#importFile` (3 control này có handler riêng).
+- **Auto-save debounce 800ms** trên `input` event của document, có filter để bỏ qua `#projectSelect`, `#templateSelect`, `#datePicker`, `#importFile`, `#forecastDays` và **mọi thứ trong `#bookModal`** (đều có handler riêng).
 - **Chuyển cuốn/ngày** luôn `clearTimeout(window._sv)` rồi `collectForm()` trước khi switch — không thì debounce sẽ ghi đè entry mới bằng form cũ.
 
 ## Kết thúc cuốn
@@ -69,6 +107,49 @@ Khóa cũ `nktc_lavipco_v1` được auto-migrate sang v2 trong `migrateFromV1()
 2. `collectForm()` + `persist()` để save form hiện tại
 3. `exportBookAsWord(p)` — sync, blob `application/msword` + UTF-8 BOM + namespace MS Office, đuôi `.doc`
 4. `await exportBookAsPDF(p)` — render mỗi entry vào container ẩn `position:absolute; left:-99999px`, dùng html2pdf với `pagebreak: { mode: ['css','legacy'] }` và CSS `.page { page-break-after: always }`
+
+Cả 2 đường xuất đều bắt đầu bằng `buildBookPagesHTML(p)` (rỗng với mẫu không có bìa) rồi mới đến các entry. Thứ tự trang: BÌA TỔNG → bìa quyển → Tr1 → Tr2 → từng ngày. Sửa layout trang ngày thì sửa `workTheadHTML()` / `workRowsHTML()` / `buildEntryHTML()` — dùng chung cho cả Word lẫn PDF.
+
+Dòng `Công trình: …` **chỉ có trên màn hình**, không đưa vào `buildEntryHTML`.
+
+## Cỡ chữ khi xuất
+
+`EXPORT_CSS` dùng **đúng số pt ghi trong ô Excel** (bìa 28/25/18/13pt · Tr1 16/14/13pt · Tr2 15/12pt · trang ngày 16/13pt, riêng bảng khối lượng 9,5pt cho vừa 9 cột). Nội dung có thể cao hơn 1 khổ A4 — bước tự thu nhỏ trong `renderPagesToPDF` sẽ co đều cả trang, nhờ vậy **tỉ lệ** giữa tiêu đề / tiêu mục / bảng vẫn giống quyển mẫu.
+
+Đừng đổi các số pt này để "cho vừa trang" — cứ để bước thu nhỏ lo. Nếu cần chữ to hơn thì giảm số hạng mục mỗi trang (`splitAfter`) chứ không tăng pt.
+
+### Giới hạn vật lý đã đo
+
+38 hạng mục × 6 cột **không thể vừa 2 trang A4 ở cỡ ≥ 11pt**. Chiều cao nội dung 1 ngày ở cỡ 12pt là 329mm (trang 1) + 336mm (trang 2); Excel gốc nhét vừa nhờ lề 7mm/0mm (cao 290mm, rộng 189mm) và vẫn phải in ở 88% ⇒ chỉ đạt 10,6pt. Với lề 1,5cm/2cm của app (cao 267mm, rộng 170mm) thì trần là ~9,4pt. Muốn ≥ 11pt phải chuyển sang 3 trang/ngày (`splitAfter: [13, 26]`).
+
+## Xuất PDF & tên file
+
+- `renderPagesToPDF(pagesHTML, filename)` là chỗ duy nhất gọi html2pdf/jsPDF. 3 nút dùng nó: `exportDayAsPDF()`, `exportBookPDFOnly()`, `exportBookAsPDF()` (trong `endProject`).
+
+### 3 cái bẫy của html2pdf đã trả giá — đừng lặp lại
+
+1. **Phần tử truyền vào `.from()` không được `position:absolute`.** `toContainer()` clone nó vào một container `height:auto`; clone absolute ⇒ container cao 0 ⇒ **PDF ra 1 trang trắng**. Khung ẩn ngoài màn hình phải là phần tử *cha*, từng trang nằm trong luồng bình thường.
+2. **Không render nhiều trang trong 1 lần.** Canvas cao quá ~65535px là trình duyệt bỏ cuộc ⇒ cũng trắng. Render **từng `.page`** rồi ghép bằng `worker.get('pdf').then(pdf => pdf.addPage()).from(next).toContainer().toCanvas().toPdf()`. Kèm theo: `<style>` chứa `EXPORT_CSS` phải nằm **bên trong** mỗi wrapper vì html2pdf chỉ clone đúng phần tử được truyền vào.
+3. **Không đặt `html2canvas.windowWidth`.** html2canvas lấy vùng cắt `x` từ bounds của phần tử **gốc** nhưng dựng iframe clone theo `windowWidth`; ép giá trị khác bề rộng cửa sổ thật làm 2 hệ tọa độ lệch nhau ⇒ ảnh **mất phần bên trái** (cửa sổ 1920px lệch ~563px).
+
+Vì bỏ `windowWidth`, `EXPORT_CSS` phải tự ghi rõ `width`/`padding`/`font-size` cho `.page`, `.title`, `table th/td` — nếu không, cửa sổ hẹp hơn 820px sẽ để style mobile lọt vào bản PDF.
+
+### Ép mỗi `.page` vừa trọn 1 khổ A4
+
+`toPdf` cắt canvas theo chiều cao trang: `.page` cao hơn 297mm sẽ bị **cắt ngang giữa một dòng bảng** và mất lề dưới 2cm. Nên `renderPagesToPDF` làm 2 việc:
+
+- wrapper cố định `210mm × PAGE_H_PX; overflow:hidden` ⇒ html2pdf không bao giờ cắt được đôi.
+
+  **`PAGE_H_PX` không phải 297mm.** html2canvas dựng `canvas.h = floor(ceil(bounds.h) × scale)`, còn `toPdf` cắt mỗi `o = floor(canvas.w × 297/210)` px. Với 297mm: `ceil(1122.52) = 1123` → `canvas.h = 2246 > o = 2245` → **dư 1 pixel ⇒ đẻ ra một trang trắng sau mỗi trang thật**. Vì vậy phải tính ngược:
+  ```js
+  const CANVAS_W  = Math.floor(Math.ceil(210 * PX_PER_MM) * PDF_SCALE);
+  const PAGE_H_PX = Math.floor(Math.floor(CANVAS_W * 297 / 210) / PDF_SCALE) - 0.5;  // 1121.5px ≈ 296.73mm
+  ```
+  Đổi `PDF_SCALE` thì `PAGE_H_PX` tự tính lại (đã thử scale 1 / 1.5 / 2 / 3 / 4 đều ra đúng 1 trang). Cái giá là ảnh hụt đáy 0.25mm ⇒ lề dưới thực tế 20.25mm.
+- vòng lặp đo `getBoundingClientRect().height`, nếu quá 297mm thì nới `width`/`min-height`/`padding` lên `1/k` rồi `transform: scale(k)` — chữ nhỏ đi đều, **lề vẫn đúng 2cm**. Hội tụ sau 1 vòng, có `console.info` báo phần trăm đã thu.
+
+Muốn khỏi phải thu nhỏ thì giảm `splitAfter` hoặc bóp thêm `.page.compact` trong `EXPORT_CSS` (class `compact` chỉ gắn cho mẫu có `splitAfter`).
+- Tên file: `bookFileBase(p, dateISO)` → `NKTC - <địa bàn> - T<MM>-<YYYY>`. Địa bàn = `zonesOf(p).join(', ')`, mẫu không có zones thì lấy `p.name`. Dùng cho cả `.pdf`, `.doc` và `.json`.
 5. Nếu xuất file lỗi, hỏi user có vẫn muốn xóa cuốn không
 6. Xóa project, switch sang cuốn còn lại (hoặc tạo "Công trình 1" nếu hết)
 
@@ -76,7 +157,10 @@ Khóa cũ `nktc_lavipco_v1` được auto-migrate sang v2 trong `migrateFromV1()
 
 - **Đừng tách file.** Single-file đơn giản hơn để mobile/offline dùng. Nếu cần thêm util lớn, cân nhắc inline trước.
 - **Đừng thêm framework.** Vanilla JS đủ dùng. Đừng React/Vue/build step.
-- **CSS in/print** rất quan trọng — mọi thay đổi UI phải test ở chế độ `window.print()` xem có vỡ A4 không.
+- **Không dùng `window.print()`** — PDF dựng bằng jsPDF (qua html2pdf) trong `renderPagesToPDF()`. Mọi thay đổi layout phải test bằng nút `📄 Xuất PDF ngày này`.
+- **Lề A4 = 2cm** cả 4 phía, đặt ở `padding: 20mm` của `.page` (cả CSS màn hình lẫn `EXPORT_CSS`); jsPDF dùng `margin: 0`. Riêng bản Word thì lề do `@page WordSection1 { margin: 2cm }` lo, nên `buildWordHTML` phải override `.page { padding: 0 }` để không cộng dồn thành 4cm.
+- **Media query mobile phải viết `@media screen and (max-width: 820px)`** — thiếu chữ `screen` thì style mobile đè lên bản in (A4 dọc chỉ ~794px CSS).
+- **Đừng viết thẻ đóng HTML nguyên văn trong chuỗi JS** (`buildWordHTML`) — dùng `<\/body>`. Live Server chèn script auto-reload vào thẻ đóng body đầu tiên nó thấy, nếu thẻ đó nằm trong `<script>` thì cả app vỡ.
 - **Vietnamese diacritics** ở mọi nơi (filename sanitize, escape, search). Đừng strip.
 - **Geolocation/CDN** chỉ work qua HTTPS hoặc localhost — nếu test bằng `file://`, các tính năng đó sẽ fail. Đó là expected, không phải bug.
 
@@ -90,6 +174,22 @@ Khóa cũ `nktc_lavipco_v1` được auto-migrate sang v2 trong `migrateFromV1()
 
 ## Test thủ công khi đổi code
 
+**Không hồi quy mẫu cũ (dữ liệu người dùng nằm trong localStorage):**
+- [ ] Mở app với localStorage sẵn có → cuốn cũ vẫn 4 cột, số liệu nguyên vẹn, `🧩 Mẫu` hiện "Mẫu cũ"
+- [ ] Kết thúc cuốn mẫu cũ → `.doc`/`.pdf` không có trang bìa, số không bị đổi thành `-`
+
+**Mẫu Q8:**
+- [ ] `+ Cuốn mới` → chọn mẫu 2 → 38 hạng mục, 2 nhóm, header 2 tầng, 6 cột số đúng tên 3 phường
+- [ ] Sửa hạng mục → đổi tên phường trên header → áp dụng mọi ngày
+- [ ] Tick "Ngày nghỉ" → ô số bị khóa; xuất PDF thấy bảng trống nhưng còn đủ tên hạng mục
+- [ ] `📕 Thông tin quyển` → sửa bìa, thêm/xóa văn bản + cán bộ → Lưu → reload còn nguyên
+- [ ] `📄 Xuất PDF ngày này` → mở PDF: **đúng 2 trang**, trang 1 hạng mục 1–23, trang 2 lặp header + 24–38 + mục 4–7 + chữ ký nằm ngang
+- [ ] Lề PDF đo được 2cm cả 4 phía, không còn dòng "Công trình:"
+- [ ] Tên file dạng `NKTC - Phường … - T07-2026.pdf`
+- [ ] Kết thúc → PDF theo thứ tự BÌA TỔNG → bìa quyển → Tr1 → Tr2 → từng ngày, đối chiếu file `.xlsx`
+- [ ] Đổi mẫu cuốn cũ → Q8, chọn "Nạp lại hạng mục" và chọn "Không" — cả 2 nhánh không lỗi JS
+
+**Chung:**
 - [ ] Tạo cuốn mới với ngày bắt đầu khác hôm nay → ngày đầu = trang `startPage`
 - [ ] Chuyển ngày bằng date picker, prev/next → pagenum tăng đúng
 - [ ] Sửa hạng mục, đổi tên item → ngày khác đã có không bị ảnh hưởng (item đã copy)

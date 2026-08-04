@@ -114,7 +114,7 @@
     width: 210mm;
     min-height: 297mm;
     margin: 14px auto;
-    padding: 18mm 18mm 16mm 22mm;
+    padding: 15mm 20mm;         /* lề A4: trên/dưới 1,5cm — trái/phải 2cm */
     box-shadow: 0 2px 14px rgba(0,0,0,0.12);
     font-size: 13pt;
     line-height: 1.35;
@@ -226,6 +226,30 @@
   }
   body.edit-mode .add-row-btn { display: inline-block; }
 
+  /* ==== BẢNG NHIỀU CỘT KHỐI LƯỢNG (mẫu nhiều địa bàn) ==== */
+  .table-wrap { overflow-x: auto; }
+  table.work.multi th, table.work.multi td { font-size: 10pt; padding: 2px 3px; }
+  table.work.multi td.stt { width: 9mm; }
+  table.work.multi td.qty { width: 11mm; }
+  table.work.multi td.unit { width: 14mm; }
+  table.work th.zone { font-size: 9.5pt; font-weight: normal; }
+  table.work th.zone .zone-input { font-size: 9.5pt; text-align: center; display: none; }
+  body.edit-mode table.work th.zone .zone-text { display: none; }
+  body.edit-mode table.work th.zone .zone-input { display: inline-block; }
+  table.work tbody.rest input[type="number"] { visibility: hidden; }
+
+  /* ==== Ô TÍCH NGÀY NGHỈ ==== */
+  .restday {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 8px 0;
+    font-style: italic;
+    color: #b45309;
+    cursor: pointer;
+  }
+  .restday input { width: 15px; height: 15px; margin: 0; }
+
   /* ==== CHECKBOX MỤC 4-5 ==== */
   .checks { margin: 4px 0 4px 0; padding-left: 6mm; display: flex; gap: 28px; flex-wrap: wrap; }
   .checks label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
@@ -247,7 +271,10 @@
   .page-num { text-align: center; margin-top: 18px; font-size: 11pt; color: #444; }
 
   /* ==== MOBILE ==== */
-  @media (max-width: 820px) {
+  /* PHẢI có `screen and` — khổ A4 dọc chỉ rộng ~794px CSS, nhỏ hơn 820px, nên nếu
+     thiếu thì toàn bộ style mobile sẽ đè lên bản in: chữ co lại còn 12–14px và
+     khối chữ ký bị xếp dọc thay vì nằm ngang. */
+  @media screen and (max-width: 820px) {
     .page {
       width: 100%;
       min-height: auto;
@@ -381,14 +408,99 @@
   }
   .forecast-status.error { color: #b91c1c; }
 
+  /* ==== MODAL THÔNG TIN QUYỂN ==== */
+  .book-section { margin-bottom: 22px; }
+  .book-section > h3 {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    color: #1e293b;
+    border-left: 3px solid var(--accent);
+    padding-left: 8px;
+  }
+  .book-grid { display: grid; grid-template-columns: 150px 1fr; gap: 8px 12px; align-items: start; }
+  .book-grid > label { font-size: 13px; color: #475569; padding-top: 8px; font-weight: 500; }
+  .book-grid input[type="text"], .book-grid textarea {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 7px 9px;
+    width: 100%;
+    background: #fff;
+  }
+  .book-grid textarea { min-height: 54px; }
+  .book-inline { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; font-size: 13px; color: #334155; }
+  .book-inline label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .book-inline input[type="radio"], .book-inline input[type="checkbox"] { width: 14px; height: 14px; margin: 0; }
+  table.book-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.book-table th, table.book-table td {
+    border: 1px solid #e2e8f0;
+    padding: 4px;
+    text-align: left;
+    vertical-align: top;
+  }
+  table.book-table th { background: #f1f5f9; font-size: 12px; color: #1e293b; text-align: center; }
+  table.book-table textarea, table.book-table input[type="text"], table.book-table select {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 4px 5px;
+    width: 100%;
+    background: #fff;
+  }
+  table.book-table textarea { min-height: 46px; resize: vertical; }
+  .book-mini-btn {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 12px;
+    padding: 5px 9px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #334155;
+  }
+  .book-mini-btn.del { color: #b91c1c; border-color: #fecaca; padding: 3px 7px; }
+  .book-actions {
+    position: sticky;
+    bottom: -26px;
+    background: #fff;
+    padding: 12px 0 4px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .book-actions button {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    cursor: pointer;
+    color: #0f172a;
+  }
+  .book-actions button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+
   /* ==== IN ==== */
   @media print {
     body { background: #fff; }
-    .toolbar, .add-row-btn, .row-del { display: none !important; }
+    .toolbar, .add-row-btn, .row-del, .restday { display: none !important; }
+    .table-wrap { overflow: visible !important; }
+    /* chốt lại bố cục bản in, không để media query nào khác đè */
+    .signatures { display: flex !important; flex-direction: row !important; gap: 10mm; }
+    .signatures .col { flex: 1; text-align: center; }
+    .page { font-size: 13pt; }
+    .title { font-size: 16pt; }
+    table th, table td { font-size: 13pt; padding: 5px 7px; }
+    table.work td { font-size: 12pt; }
+    table.work.multi th, table.work.multi td { font-size: 9.5pt; padding: 3px 4px; }
+    textarea { overflow: hidden; resize: none; border: none !important; }
     .page {
       box-shadow: none;
       margin: 0;
-      padding: 14mm 18mm 12mm 22mm;
+      padding: 15mm 20mm;
       width: 210mm;
       min-height: auto;
     }
@@ -413,7 +525,12 @@
     <button onclick="newProject()">+ Cuốn mới</button>
     <button onclick="renameProject()">✏️ Đổi tên</button>
     <button onclick="setStartPage()">📄 Trang bắt đầu</button>
+    <button onclick="openBook()" id="bookBtn">📕 Thông tin quyển</button>
     <button class="danger" onclick="endProject()">🏁 Kết thúc</button>
+  </div>
+  <div class="toolbar-row">
+    <span class="tool-label">🧩 Mẫu:</span>
+    <select id="templateSelect" onchange="onTemplateChange(event)"></select>
   </div>
   <div class="toolbar-row">
     <span class="tool-label">📅 Ngày:</span>
@@ -424,7 +541,8 @@
     <button onclick="listEntries()">📚 Danh sách ngày</button>
   </div>
   <div class="toolbar-row">
-    <button class="primary" onclick="window.print()">🖨️ In / Lưu PDF</button>
+    <button class="primary" onclick="exportDayAsPDF()">📄 Xuất PDF ngày này</button>
+    <button onclick="exportBookPDFOnly()">📕 Xuất PDF cả cuốn</button>
     <button onclick="toggleEdit()" id="editBtn">✏️ Sửa hạng mục</button>
     <button onclick="saveData()">💾 Lưu</button>
     <label class="file-label" for="importFile">📂 Tải file</label>
@@ -457,6 +575,133 @@
   </div>
 </div>
 
+<!-- ==== MODAL THÔNG TIN QUYỂN (bìa + văn bản + cán bộ) ==== -->
+<div class="modal" id="bookModal" aria-hidden="true">
+  <div class="modal-overlay" onclick="closeBook()"></div>
+  <div class="modal-body" role="dialog" aria-modal="true" style="max-width:920px">
+    <div class="modal-header">
+      <h2>📕 Thông tin quyển</h2>
+      <button class="modal-close" onclick="closeBook()" aria-label="Đóng">×</button>
+    </div>
+
+    <div class="book-section">
+      <h3>Loại bìa</h3>
+      <div class="book-inline">
+        <label><input type="radio" name="bk_coverType" value="vh"> Quyển vận hành</label>
+        <label><input type="radio" name="bk_coverType" value="bd"> Quyển bảo dưỡng</label>
+        <label style="margin-left:12px"><input type="checkbox" id="bk_showCoverTong"> In kèm BÌA TỔNG</label>
+      </div>
+    </div>
+
+    <div class="book-section">
+      <h3>Bìa quyển</h3>
+      <div class="book-grid">
+        <label for="bk_duToan">Dự toán mua sắm</label>
+        <textarea id="bk_duToan"></textarea>
+        <label for="bk_goiThau">Gói thầu</label>
+        <textarea id="bk_goiThau"></textarea>
+        <label for="bk_diaDiem">Địa điểm</label>
+        <textarea id="bk_diaDiem"></textarea>
+        <label for="bk_congTac">Công tác</label>
+        <textarea id="bk_congTac"></textarea>
+        <label for="bk_diaBan">Địa bàn</label>
+        <textarea id="bk_diaBan"></textarea>
+        <label for="bk_benA">Bên A</label>
+        <input type="text" id="bk_benA">
+        <label for="bk_benB">Bên B</label>
+        <input type="text" id="bk_benB">
+        <label for="bk_daiDienLienDanh">Đại diện liên danh</label>
+        <input type="text" id="bk_daiDienLienDanh">
+        <label for="bk_repAName">Đại diện bên A</label>
+        <input type="text" id="bk_repAName" placeholder="Họ và tên">
+        <label for="bk_repARole">— Chức vụ</label>
+        <input type="text" id="bk_repARole">
+        <label for="bk_repBName">Đại diện bên B</label>
+        <input type="text" id="bk_repBName" placeholder="Họ và tên">
+        <label for="bk_repBRole">— Chức vụ</label>
+        <input type="text" id="bk_repBRole">
+        <label for="bk_soTrang">Sổ gồm … trang<br><small style="font-weight:400;color:#94a3b8">bỏ trống = tự tính</small></label>
+        <input type="text" id="bk_soTrang">
+        <label for="bk_trangTu">Đánh số từ … đến …</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="bk_trangTu" style="width:50%">
+          <input type="text" id="bk_trangDen" style="width:50%">
+        </div>
+        <label for="bk_quyenSo">Quyển số / tổng số</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="bk_quyenSo" style="width:50%">
+          <input type="text" id="bk_tongSoQuyen" style="width:50%">
+        </div>
+      </div>
+    </div>
+
+    <div class="book-section">
+      <h3>Bìa tổng</h3>
+      <div class="book-grid">
+        <label for="bk_donViB">Đơn vị thi công</label>
+        <textarea id="bk_donViB"></textarea>
+        <label for="bk_chucDanhB">Chức danh ký (bên B)</label>
+        <textarea id="bk_chucDanhB"></textarea>
+        <label for="bk_nguoiKyB">Người ký (bên B)</label>
+        <input type="text" id="bk_nguoiKyB">
+        <label for="bk_donViA">Chủ đầu tư</label>
+        <textarea id="bk_donViA"></textarea>
+        <label for="bk_chucDanhA">Chức danh ký (bên A)</label>
+        <textarea id="bk_chucDanhA"></textarea>
+        <label for="bk_nguoiKyA">Người ký (bên A)</label>
+        <input type="text" id="bk_nguoiKyA">
+        <label for="bk_noiKy">Nơi ký</label>
+        <input type="text" id="bk_noiKy">
+      </div>
+    </div>
+
+    <div class="book-section">
+      <h3>Trang 1 — Liệt kê các văn bản liên quan</h3>
+      <table class="book-table">
+        <thead>
+          <tr>
+            <th style="width:26px">TT</th>
+            <th>Văn bản số ngày</th>
+            <th>Cơ quan phát hành</th>
+            <th style="width:82px">Ngày nhận</th>
+            <th>Tóm tắt nội dung</th>
+            <th style="width:28px"></th>
+          </tr>
+        </thead>
+        <tbody id="bk_docsBody"></tbody>
+      </table>
+      <button class="book-mini-btn" style="margin-top:8px" onclick="addDocRow()">+ Thêm văn bản</button>
+      <div class="book-grid" style="margin-top:10px">
+        <label for="bk_docsSignerB">Người ký trang 1</label>
+        <input type="text" id="bk_docsSignerB">
+      </div>
+    </div>
+
+    <div class="book-section">
+      <h3>Trang 2 — Danh sách cán bộ kỹ thuật, giám sát</h3>
+      <table class="book-table">
+        <thead>
+          <tr>
+            <th style="width:56px">Bên</th>
+            <th>Họ và tên</th>
+            <th>Chức danh</th>
+            <th>Nhiệm vụ</th>
+            <th style="width:110px">Ghi chú</th>
+            <th style="width:28px"></th>
+          </tr>
+        </thead>
+        <tbody id="bk_staffBody"></tbody>
+      </table>
+      <button class="book-mini-btn" style="margin-top:8px" onclick="addStaffRow()">+ Thêm cán bộ</button>
+    </div>
+
+    <div class="book-actions">
+      <button onclick="closeBook()">Đóng</button>
+      <button class="primary" onclick="saveBook()">💾 Lưu thông tin quyển</button>
+    </div>
+  </div>
+</div>
+
 <div class="page" id="page">
 
   <h1 class="title">Nhật ký thi công hàng ngày</h1>
@@ -468,6 +713,8 @@
     tháng <input type="text" class="inline-input" id="month" style="width:30px;text-align:center" readonly>
     năm <input type="text" class="inline-input" id="year" style="width:50px;text-align:center" readonly>
   </div>
+
+  <label class="restday"><input type="checkbox" id="restDay" onchange="onRestDayChange()"> Ngày nghỉ — để trống bảng khối lượng</label>
 
   <div class="section-num">1. Tình hình thời tiết:</div>
   <table class="weather">
@@ -504,19 +751,16 @@
   <div class="section-num">3. Tình hình diễn biến thi công, nghiệm thu công việc:</div>
   <div class="subsection">3.1. Diễn biến thi công, nghiệm thu công việc:</div>
 
-  <table class="work">
-    <thead>
-      <tr>
-        <th class="stt">STT</th>
-        <th>Công tác quản lý, vận hành</th>
-        <th class="unit">đơn vị tính</th>
-        <th class="qty">Khối lượng thực hiện</th>
-      </tr>
-    </thead>
-    <tbody id="workBody">
-      <!-- JS render -->
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table class="work" id="workTable">
+      <thead id="workHead">
+        <!-- JS render -->
+      </thead>
+      <tbody id="workBody">
+        <!-- JS render -->
+      </tbody>
+    </table>
+  </div>
   <button class="add-row-btn" onclick="addRow()">+ Thêm hạng mục</button>
 
   <div class="section-num">4. Công tác vệ sinh môi trường:</div>
@@ -574,6 +818,164 @@ const DEFAULT_ITEMS = [
 const DEFAULT_SIGN_A = "Ông Võ Thanh Quang";
 const DEFAULT_SIGN_B = "Ông Trần Hữu Lưu";
 
+// ====== MẪU QUẬN 8 (theo file Excel NKTC-Gói thầu 2026-2029-Quận 8) ======
+const Q8_DIA_BAN_LIST = "phường Xóm Chiếu, phường Khánh Hội, phường Vĩnh Hội, phường Bình Tây, "
+  + "phường Bình Tiên, phường Bình Phú, phường Phú Lâm, phường Tân Thuận, phường Phú Thuận, "
+  + "phường Tân Mỹ, phường Tân Hưng, phường Chánh Hưng, phường Phú Định, phường Bình Đông, "
+  + "xã Vĩnh Lộc, xã Tân Vĩnh Lộc, xã Bình Lợi, xã Tân Nhựt, xã Bình Chánh, xã Hưng Long, "
+  + "xã Bình Hưng, xã Bình Khánh, xã An Thới Đông, xã Cần Giờ, xã Nhà Bè, xã Hiệp Phước, xã Thạnh An.";
+
+// [tên hạng mục, Chánh Hưng, Phú Định, Bình Đông] — nghiệm thu mặc định bằng thực hiện
+const Q8_RAW = [
+  ["*", "Tủ thường"],
+  ["Duy trì trạm đèn < 500m", 0, 0, 1],
+  ["Duy trì trạm đèn < 500m (trong hẻm)", 0, 0, 0],
+  ["Duy trì trạm đèn < 500m (khu dân cư)", 0, 0, 0],
+  ["Duy trì trạm đèn < 500m ngoại thành", 0, 0, 0],
+  ["Duy trì trạm đèn 500m - 1000m", 0, 0, 0],
+  ["Duy trì trạm đèn 500m - 1000m (trong hẻm)", 0, 0, 0],
+  ["Duy trì trạm đèn 500m - 1000m (khu dân cư)", 0, 0, 0],
+  ["Duy trì trạm đèn 500m - 1000m ngoại thành", 0, 0, 0],
+  ["Duy trì trạm đèn 1000m - 1500m", 0, 0, 0],
+  ["Duy trì trạm đèn 1000m - 1500m (trong hẻm)", 0, 0, 0],
+  ["Duy trì trạm đèn 1000m - 1500m (khu dân cư)", 0, 0, 0],
+  ["Duy trì trạm đèn 1000m - 1500m ngoại thành", 0, 0, 0],
+  ["Duy trì trạm đèn 1500m - 3000m", 0, 0, 0],
+  ["Duy trì trạm đèn 1500m - 3000m (trong hẻm)", 0, 0, 0],
+  ["Duy trì trạm đèn 1500m - 3000m (khu dân cư)", 0, 0, 0],
+  ["Duy trì trạm đèn 1500m - 3000m ngoại thành", 0, 0, 0],
+  ["Duy trì trạm đèn > 3000m", 0, 0, 0],
+  ["Duy trì trạm đèn > 3000m (trong hẻm)", 0, 0, 0],
+  ["Duy trì trạm đèn > 3000m (khu dân cư)", 0, 0, 0],
+  ["Duy trì trạm đèn > 3000m ngoại thành", 0, 0, 0],
+  ["*", "Tủ kết nối"],
+  ["Duy trì trạm đèn < 500m - kết nối về trung tâm điều khiển", 58, 40, 21],
+  ["Duy trì trạm đèn < 500m (trong hẻm) - kết nối về trung tâm điều khiển", 9, 9, 7],
+  ["Duy trì trạm đèn < 500m (khu dân cư) - kết nối về trung tâm điều khiển", 5, 1, 1],
+  ["Duy trì trạm đèn < 500m (ngoại thành) - kết nối về trung tâm điều khiển", 0, 0, 0],
+  ["Duy trì trạm đèn 500m - 1000m - kết nối về trung tâm điều khiển", 25, 40, 22],
+  ["Duy trì trạm đèn 500m - 1000m (trong hẻm) - kết nối về trung tâm điều khiển", 5, 0, 0],
+  ["Duy trì trạm đèn 500m - 1000m (khu dân cư) - kết nối về trung tâm điều khiển", 3, 1, 8],
+  ["Duy trì trạm đèn 500m - 1000m (ngoại thành) - kết nối về trung tâm điều khiển", 0, 0, 0],
+  ["Duy trì trạm đèn 1000m - 1500m - kết nối về trung tâm điều khiển", 10, 12, 9],
+  ["Duy trì trạm đèn 1000m - 1500m (trong hẻm) - kết nối về trung tâm điều khiển", 0, 0, 0],
+  ["Duy trì trạm đèn 1000m - 1500m (khu dân cư) - kết nối về trung tâm điều khiển", 2, 0, 8],
+  ["Duy trì trạm đèn 1000m - 1500m (ngoại thành) - kết nối về trung tâm điều khiển", 0, 0, 0],
+  ["Duy trì trạm đèn 1500m - 3000m - kết nối về trung tâm điều khiển", 3, 7, 7],
+  ["Duy trì trạm đèn 1500m - 3000m (trong hẻm) - kết nối về trung tâm điều khiển", 0, 0, 0],
+  ["Duy trì trạm đèn 1500m - 3000m (khu dân cư) - kết nối về trung tâm điều khiển", 0, 0, 3],
+  ["Duy trì trạm đèn 1500m - 3000m (ngoại thành) - kết nối về trung tâm điều khiển", 0, 0, 0],
+  ["Duy trì trạm đèn > 3000m - kết nối về trung tâm điều khiển", 0, 0, 0],
+  ["Duy trì trạm đèn > 3000m ngoại thành - kết nối về trung tâm điều khiển", 0, 0, 0],
+];
+
+const Q8_ITEMS = Q8_RAW.map(r => r[0] === "*"
+  ? { group: r[1] }
+  : { name: r[0], unit: "trạm", q: { th0: r[1], th1: r[2], th2: r[3], nt0: r[1], nt1: r[2], nt2: r[3] } });
+
+const Q8_BOOK_DEFAULT = {
+  coverType: "vh",          // 'vh' = quyển vận hành | 'bd' = quyển bảo dưỡng
+  showCoverTong: true,
+  duToan: "Cung cấp dịch vụ sự nghiệp công Công tác Quản lý, bảo trì hệ thống chiếu sáng đô thị thuộc địa bàn " + Q8_DIA_BAN_LIST,
+  goiThau: "Phi tư vấn Công tác Quản lý, bảo trì hệ thống chiếu sáng đô thị thuộc địa bàn " + Q8_DIA_BAN_LIST,
+  diaDiem: Q8_DIA_BAN_LIST.charAt(0).toUpperCase() + Q8_DIA_BAN_LIST.slice(1),
+  congTacVH: "Quản lý, vận hành hệ thống chiếu sáng đô thị thực hiện tháng {MM} năm {YYYY}.",
+  congTacBD: "Bảo dưỡng hệ thống chiếu sáng đô thị thực hiện tháng {MM} năm {YYYY}.",
+  congTac: "",              // nếu người dùng nhập tay thì dùng giá trị này
+  diaBan: "Địa bàn: phường Chánh Hưng, phường Phú Định, phường Bình Đông - Thành phố Hồ Chí Minh.",
+  benA: "Trung tâm Quản lý Giao thông và Hạ tầng kỹ thuật TP.HCM",
+  benB: "Liên danh Chiếu sáng công cộng TP.HCM - Kỹ thuật Điện Phú Thọ",
+  daiDienLienDanh: "Công ty cổ phần Chiếu sáng công cộng TP.HCM",
+  repA: { name: "Ông Huỳnh Phước Hải", role: "Chuyên viên phụ trách địa bàn" },
+  repB: { name: "Ông Nguyễn Thành Nam", role: "Chỉ huy trưởng" },
+  // để trống 3 ô này thì tự tính theo số ngày đã ghi trong cuốn (xem bookPageRange)
+  soTrang: "", trangTu: "", trangDen: "", quyenSo: "", tongSoQuyen: "",
+  // BÌA TỔNG
+  donViB: "CÔNG TY CỔ PHẦN\nCHIẾU SÁNG CÔNG CỘNG TP.HCM",
+  chucDanhB: "TỔNG GIÁM ĐỐC",
+  nguoiKyB: "Huỳnh Trí Dũng",
+  donViA: "TRUNG TÂM QUẢN LÝ GIAO THÔNG VÀ\nHẠ TẦNG KỸ THUẬT TP.HCM",
+  chucDanhA: "KT. GIÁM ĐỐC\nPHÓ GIÁM ĐỐC",
+  nguoiKyA: "Lê Văn Tấn",
+  noiKy: "Tp. Hồ Chí Minh",
+  // Trang 1 — liệt kê văn bản
+  docs: [
+    { ref: "Hợp đồng điện tử số: HD2600157625_2606301841", issuer: "Trung tâm Quản lý Giao thông và Hạ tầng kỹ thuật TP. Hồ Chí Minh và Liên danh Chiếu sáng công cộng TP.HCM - Kỹ thuật Điện Phú Thọ", received: "01/7/2026", summary: "Hợp đồng về cung cấp dịch vụ sự nghiệp công" },
+    { ref: "Số 3881/TB-TTGTHTKT ngày 01/7/2026", issuer: "Trung tâm Quản lý Giao thông và Hạ tầng kỹ thuật TP. Hồ Chí Minh", received: "01/7/2026", summary: "Triển khai khởi công công tác Quản lý, bảo trì hệ thống chiếu sáng đô thị" },
+    { ref: "Số 712/CTCSCC-KHVT ngày 01/7/2026", issuer: "Công ty cổ phần Chiếu sáng công cộng TP.HCM", received: "01/7/2026", summary: "Quyết định cử nhân sự chủ chốt thi công gói thầu" },
+    { ref: "Số 4843/TTGTHTKT-CXCS1 ngày 23/7/2026", issuer: "Trung tâm Quản lý Giao thông và Hạ tầng kỹ thuật TP. Hồ Chí Minh", received: "23/7/2026", summary: "Giao khối lượng kế hoạch thực hiện Quý III năm 2026" },
+  ],
+  docsSignerB: "Nguyễn Thành Nam",
+  // Trang 2 — danh sách cán bộ
+  staff: [
+    { side: "B", name: "Ông Nguyễn Thành Nam", title: "Trưởng phòng KHVT", duty: "Chỉ huy trưởng", note: "" },
+    { side: "B", name: "Ông Phạm Tấn Việt", title: "", duty: "Phụ trách kỹ thuật thi công", note: "" },
+    { side: "A", name: "Ông Huỳnh Phước Hải", title: "Chuyên viên - P.QLCSCX", duty: "Chuyên viên phụ trách địa bàn", note: "" },
+  ]
+};
+
+// ====== REGISTRY MẪU QUYỂN ======
+const TEMPLATES = {
+  lavipco: {
+    id: "lavipco",
+    name: "Mẫu cũ — 1 cột khối lượng",
+    zones: null,
+    colGroups: [{ label: "Khối lượng thực hiện", prefix: null }],
+    itemsHeader: "Công tác quản lý, vận hành",
+    hasBook: false,
+    zeroAsDash: false,
+    continuousNumbering: false,  // STT đánh lại từ 1 sau mỗi dòng nhóm
+    splitAfter: null,            // null = 1 ngày gói gọn 1 trang
+    items: DEFAULT_ITEMS,
+    sign: { a: DEFAULT_SIGN_A, b: DEFAULT_SIGN_B }
+  },
+  q8: {
+    id: "q8",
+    name: "Mẫu Quận 8 — 3 phường (thực hiện / nghiệm thu)",
+    zones: ["Phường Chánh Hưng", "Phường Phú Định", "Phường Bình Đông"],
+    colGroups: [
+      { label: "Khối lượng thực hiện", prefix: "th" },
+      { label: "Khối lượng nghiệm thu", prefix: "nt" }
+    ],
+    itemsHeader: "Công tác quản lý vận hành",
+    hasBook: true,
+    zeroAsDash: true,
+    keepQty: true,               // ngày mới kế thừa khối lượng mặc định của cuốn
+    continuousNumbering: true,   // STT chạy liên tục 1→38 qua cả 2 nhóm (như file Excel)
+    splitAfter: 23,              // 1 ngày = 2 trang A4: trang 1 mục 1–23, trang 2 mục 24→hết
+    items: Q8_ITEMS,
+    book: Q8_BOOK_DEFAULT,
+    sign: { a: "Ông Huỳnh Phước Hải", b: "Ông Phạm Tấn Việt" }
+  }
+};
+
+function tplOf(p) { return (p && TEMPLATES[p.templateId]) || TEMPLATES.lavipco; }
+function zonesOf(p) {
+  const tpl = tplOf(p);
+  if (!tpl.zones) return null;
+  return (Array.isArray(p && p.zones) && p.zones.length) ? p.zones : tpl.zones;
+}
+// Danh sách key cột khối lượng: ['qty'] hoặc ['th0','th1','th2','nt0','nt1','nt2']
+function qtyKeys(p) {
+  const tpl = tplOf(p);
+  const zs = zonesOf(p);
+  return tpl.colGroups.flatMap(g => g.prefix ? zs.map((_, i) => g.prefix + i) : ['qty']);
+}
+function getQ(it, k) { return k === 'qty' ? it.qty : ((it.q || {})[k]); }
+function setQ(it, k, v) { if (k === 'qty') it.qty = v; else { if (!it.q) it.q = {}; it.q[k] = v; } }
+function blankQ(p) {
+  const o = {};
+  qtyKeys(p).forEach(k => { o[k] = 0; });
+  return o;
+}
+function makeItem(p, name, unit) {
+  const keys = qtyKeys(p);
+  return keys.length === 1 && keys[0] === 'qty'
+    ? { name, unit, qty: 0 }
+    : { name, unit, q: blankQ(p) };
+}
+function deepCopy(o) { return JSON.parse(JSON.stringify(o)); }
+
 const STORAGE_KEY = "nktc_lavipco_v2";
 const OLD_STORAGE_KEY = "nktc_lavipco_v1";
 
@@ -608,20 +1010,24 @@ function getEntry() {
 }
 
 // ====== QUẢN LÝ CUỐN ======
-function createProject(name, startDate, startPage) {
+function createProject(name, startDate, startPage, templateId) {
   const id = generateId();
-  appState.projects[id] = {
+  const tpl = TEMPLATES[templateId] || TEMPLATES.lavipco;
+  const p = {
     id,
     name: name || ('Công trình ' + (Object.keys(appState.projects).length + 1)),
     createdAt: new Date().toISOString(),
     endedAt: null,
     startDate: startDate || todayISO(),
     startPage: Number(startPage) > 0 ? Number(startPage) : 1,
-    items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)),
-    rep_a: DEFAULT_SIGN_A,
-    rep_b: DEFAULT_SIGN_B,
+    templateId: tpl.id,
+    items: deepCopy(tpl.items),
+    rep_a: tpl.sign.a,
+    rep_b: tpl.sign.b,
     entries: {}
   };
+  appState.projects[id] = p;
+  ensureProjectMeta(p);
   return id;
 }
 
@@ -632,8 +1038,27 @@ function ensureProjectMeta(p) {
     const dates = Object.keys(p.entries || {}).sort();
     p.startDate = dates[0] || todayISO();
   }
+  // cuốn tạo trước khi có nhiều mẫu → mặc định mẫu cũ
+  if (!p.templateId || !TEMPLATES[p.templateId]) p.templateId = 'lavipco';
+  const tpl = TEMPLATES[p.templateId];
+  if (tpl.zones && (!Array.isArray(p.zones) || !p.zones.length)) p.zones = [...tpl.zones];
+  if (tpl.hasBook && !p.book) p.book = deepCopy(tpl.book);
 }
 
+// splitAfter: null = 1 trang/ngày · số = 2 trang · mảng [a,b] = 3 trang…
+function splitPoints(p) {
+  const s = tplOf(p).splitAfter;
+  if (!s) return [];
+  return (Array.isArray(s) ? s : [s]).filter(n => n > 0);
+}
+// Số trang VẬT LÝ mà 1 ngày chiếm
+function entryPageCount(p) { return splitPoints(p).length + 1; }
+// Số trang đầu quyển được đánh số: Tr1 (liệt kê văn bản) + Tr2 (danh sách cán bộ).
+// Các trang bìa không đánh số, đúng như quyển mẫu.
+function frontMatterPages(p) { return (tplOf(p).hasBook && p.book) ? 2 : 0; }
+
+// Số trang của TRANG ĐẦU TIÊN của ngày dateISO — đánh liên tục cả quyển:
+//   startPage → Tr1, +1 → Tr2, rồi mỗi ngày chiếm entryPageCount trang.
 function computePagenum(p, dateISO) {
   if (!p) return '';
   const startPage = Number(p.startPage) || 1;
@@ -642,7 +1067,7 @@ function computePagenum(p, dateISO) {
   all.add(dateISO);
   const relevant = [...all].filter(d => d >= startDate).sort();
   const idx = relevant.indexOf(dateISO);
-  return Math.max(1, startPage + (idx >= 0 ? idx : 0));
+  return Math.max(1, startPage + frontMatterPages(p) + (idx >= 0 ? idx : 0) * entryPageCount(p));
 }
 
 function ensureEntry(dateISO) {
@@ -665,6 +1090,7 @@ function ensureEntry(dateISO) {
       note_a: '',
       note_b: '',
       pagenum: '7',
+      restDay: false,
       rep_a: p.rep_a,
       rep_b: p.rep_b,
       items: JSON.parse(JSON.stringify(p.items)),
@@ -677,10 +1103,19 @@ function ensureEntry(dateISO) {
 function syncItemsStructureToProject() {
   const p = getProject();
   if (!p) return;
-  // template lưu qty mặc định = 0 (mỗi ngày tự nhập)
-  p.items = items.map(it => it.group !== undefined
-    ? { group: it.group }
-    : { name: it.name, unit: it.unit, qty: 0 });
+  const tpl = tplOf(p);
+  const keys = qtyKeys(p);
+  const single = keys.length === 1 && keys[0] === 'qty';
+  // Mẫu cũ: template lưu khối lượng = 0 (mỗi ngày tự nhập).
+  // Mẫu keepQty: template chụp lại khối lượng của ngày đang mở, để ngày mới
+  // không phải nhập lại 38×6 số (file Excel gốc lặp y hệt số liệu mỗi ngày).
+  p.items = items.map(it => {
+    if (it.group !== undefined) return { group: it.group };
+    const copy = { name: it.name, unit: it.unit };
+    if (single) copy.qty = 0;
+    else copy.q = (tpl.keepQty && it.q) ? deepCopy(it.q) : blankQ(p);
+    return copy;
+  });
 }
 
 // ====== LƯU TRỮ ======
@@ -749,6 +1184,28 @@ function refreshProjectSelect() {
   sel.value = appState.currentProjectId || '';
 }
 
+function refreshTemplateSelect() {
+  const sel = document.getElementById('templateSelect');
+  if (!sel) return;
+  const p = getProject();
+  if (!sel.options.length) {
+    Object.values(TEMPLATES).forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.name;
+      sel.appendChild(opt);
+    });
+  }
+  sel.value = p ? p.templateId : 'lavipco';
+  const btn = document.getElementById('bookBtn');
+  if (btn) {
+    const has = !!tplOf(p).hasBook;
+    btn.disabled = !has;
+    btn.style.opacity = has ? '' : '0.45';
+    btn.title = has ? '' : 'Mẫu này không có trang bìa / văn bản / cán bộ';
+  }
+}
+
 function refreshDatePicker() {
   const dp = document.getElementById('datePicker');
   dp.value = appState.currentDate || '';
@@ -780,11 +1237,13 @@ function renderForm() {
   document.getElementById('note_b').value = e.note_b;
   document.getElementById('rep_a').value = e.rep_a;
   document.getElementById('rep_b').value = e.rep_b;
+  document.getElementById('restDay').checked = !!e.restDay;
   // Số trang tự tính theo thứ tự ngày trong cuốn
   const pn = computePagenum(p, appState.currentDate);
   e.pagenum = pn;
   document.getElementById('pagenum').value = pn;
   items = e.items;
+  refreshTemplateSelect();
   renderTable();
 }
 
@@ -805,6 +1264,7 @@ function collectForm() {
   e.note_b = document.getElementById('note_b').value;
   e.rep_a = document.getElementById('rep_a').value;
   e.rep_b = document.getElementById('rep_b').value;
+  e.restDay = document.getElementById('restDay').checked;
   // pagenum không lấy từ form (readonly, tự tính trong renderForm)
   // chữ ký mặc định ở cấp cuốn (sticky)
   p.rep_a = e.rep_a;
@@ -812,30 +1272,83 @@ function collectForm() {
 }
 
 // ====== RENDER BẢNG ======
+function renderTableHead() {
+  const head = document.getElementById('workHead');
+  const table = document.getElementById('workTable');
+  if (!head) return;
+  const p = getProject();
+  const tpl = tplOf(p);
+  const zs = zonesOf(p);
+  const keys = qtyKeys(p);
+  table.classList.toggle('multi', keys.length > 1);
+
+  if (!zs) {
+    head.innerHTML = `<tr>
+      <th class="stt">STT</th>
+      <th>${escapeHtml(tpl.itemsHeader)}</th>
+      <th class="unit">đơn vị tính</th>
+      <th class="qty">${escapeHtml(tpl.colGroups[0].label)}</th>
+    </tr>`;
+    return;
+  }
+  const groupTh = tpl.colGroups.map(g => `<th colspan="${zs.length}">${escapeHtml(g.label)}</th>`).join('');
+  const zoneTh = tpl.colGroups.map(() =>
+    zs.map((z, i) => `<th class="zone"><span class="zone-text">${escapeHtml(z)}</span><input type="text" class="zone-input" value="${escapeHtml(z)}" data-zone="${i}"></th>`).join('')
+  ).join('');
+  head.innerHTML = `
+    <tr>
+      <th class="stt" rowspan="2">STT</th>
+      <th rowspan="2">${escapeHtml(tpl.itemsHeader)}</th>
+      <th class="unit" rowspan="2">Đơn vị tính</th>
+      ${groupTh}
+    </tr>
+    <tr>${zoneTh}</tr>`;
+  // sửa tên địa bàn (chỉ hiện input khi bật chế độ sửa hạng mục)
+  head.querySelectorAll('input.zone-input').forEach(inp => {
+    inp.addEventListener('input', ev => {
+      const i = parseInt(ev.target.dataset.zone, 10);
+      if (isNaN(i) || !p) return;
+      p.zones = [...zonesOf(p)];
+      p.zones[i] = ev.target.value;
+      head.querySelectorAll(`input.zone-input[data-zone="${i}"]`).forEach(other => {
+        if (other !== ev.target) other.value = ev.target.value;
+      });
+      head.querySelectorAll(`th.zone`).forEach((th, k) => {
+        if (k % zonesOf(p).length === i) th.querySelector('.zone-text').textContent = ev.target.value;
+      });
+      persist();
+    });
+  });
+}
+
 function renderTable() {
+  renderTableHead();
+  const p = getProject();
+  const e = getEntry();
+  const tpl = tplOf(p);
   const body = document.getElementById('workBody');
+  const keys = qtyKeys(p);
+  const rest = !!(e && e.restDay);
+  body.classList.toggle('rest', rest);
   body.innerHTML = '';
   let stt = 0;
   items.forEach((it, idx) => {
     const tr = document.createElement('tr');
     if (it.group) {
       tr.className = 'group';
-      stt = 0;
+      if (!tpl.continuousNumbering) stt = 0;
       tr.innerHTML = `
         <td class="stt"></td>
-        <td colspan="3"><input type="text" value="${escapeHtml(it.group)}" data-idx="${idx}" data-field="group"></td>
-        <td><button class="row-del" onclick="delRow(${idx})">×</button></td>
-      `;
-      // chỉnh lại vì colspan 3 + nút xóa ngoài td
-      tr.innerHTML = `
-        <td class="stt"></td>
-        <td colspan="3" style="position:relative">
+        <td colspan="${2 + keys.length}" style="position:relative">
           <input type="text" value="${escapeHtml(it.group)}" data-idx="${idx}" data-field="group" style="font-weight:bold">
           <button class="row-del" onclick="delRow(${idx})">×</button>
         </td>
       `;
     } else {
       stt++;
+      const qtyTds = keys.map(k =>
+        `<td class="qty"><input type="number" value="${getQ(it, k) ?? ''}" data-idx="${idx}" data-key="${k}" min="0" step="1"${rest ? ' disabled' : ''}></td>`
+      ).join('');
       tr.innerHTML = `
         <td class="stt">${stt}</td>
         <td style="position:relative">
@@ -843,21 +1356,30 @@ function renderTable() {
           <button class="row-del" onclick="delRow(${idx})">×</button>
         </td>
         <td class="unit"><input type="text" value="${escapeHtml(it.unit)}" data-idx="${idx}" data-field="unit" style="text-align:center"></td>
-        <td class="qty"><input type="number" value="${it.qty ?? ''}" data-idx="${idx}" data-field="qty" min="0" step="1"></td>
+        ${qtyTds}
       `;
     }
     body.appendChild(tr);
   });
   // bind change
   body.querySelectorAll('input').forEach(inp => {
-    inp.addEventListener('input', e => {
-      const i = parseInt(e.target.dataset.idx);
-      const f = e.target.dataset.field;
-      if (isNaN(i) || !f) return;
-      if (f === 'qty') items[i].qty = e.target.value === '' ? '' : Number(e.target.value);
-      else { items[i][f] = e.target.value; syncItemsStructureToProject(); }
+    inp.addEventListener('input', ev => {
+      const i = parseInt(ev.target.dataset.idx);
+      if (isNaN(i)) return;
+      const k = ev.target.dataset.key;
+      if (k) { setQ(items[i], k, ev.target.value === '' ? '' : Number(ev.target.value)); return; }
+      const f = ev.target.dataset.field;
+      if (!f) return;
+      items[i][f] = ev.target.value;
+      syncItemsStructureToProject();
     });
   });
+}
+
+function onRestDayChange() {
+  collectForm();
+  renderTable();
+  persist();
 }
 
 function escapeHtml(s) {
@@ -868,7 +1390,7 @@ function escapeHtml(s) {
 function addRow() {
   const isGroup = confirm("OK = Thêm nhóm (I, II...)\nCancel = Thêm hạng mục thường");
   if (isGroup) items.push({ group: "Nhóm mới" });
-  else items.push({ name: "Hạng mục mới", unit: "trạm", qty: 0 });
+  else items.push(makeItem(getProject(), "Hạng mục mới", "trạm"));
   syncItemsStructureToProject();
   renderTable();
   persist();
@@ -901,9 +1423,8 @@ function exportData() {
   const blob = new Blob([JSON.stringify(p, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const safe = p.name.replace(/[^a-zA-Z0-9-_À-ỹ]+/g, '_');
   a.href = url;
-  a.download = `nhat-ky-${safe}.json`;
+  a.download = `${bookFileBase(p)}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -969,7 +1490,8 @@ function importData(e) {
 
 function resetQty() {
   if (!confirm("Đặt lại khối lượng của NGÀY hiện tại về 0?")) return;
-  items.forEach(it => { if (!it.group) it.qty = 0; });
+  const keys = qtyKeys(getProject());
+  items.forEach(it => { if (!it.group) keys.forEach(k => setQ(it, k, 0)); });
   renderTable();
   collectForm();
   persist();
@@ -1030,6 +1552,14 @@ function changeDate(dateISO) {
 }
 
 function newProject() {
+  const tplIds = Object.keys(TEMPLATES);
+  const menu = tplIds.map((id, i) => `${i + 1}. ${TEMPLATES[id].name}`).join('\n');
+  const tRaw = prompt('🧩 Chọn mẫu quyển:\n\n' + menu, String(tplIds.length));
+  if (tRaw === null) return;
+  const tIdx = parseInt(tRaw, 10) - 1;
+  if (!(tIdx >= 0 && tIdx < tplIds.length)) { alert('Số mẫu không hợp lệ.'); return; }
+  const templateId = tplIds[tIdx];
+
   const defaultName = 'Công trình ' + (Object.keys(appState.projects).length + 1);
   const name = prompt('Tên cuốn nhật ký (công trình mới):', defaultName);
   if (name === null) return;
@@ -1059,7 +1589,7 @@ function newProject() {
 
   collectForm();
   persist();
-  const id = createProject(trimmedName, startDate, startPage);
+  const id = createProject(trimmedName, startDate, startPage, templateId);
   appState.currentProjectId = id;
   appState.currentDate = startDate;
   const e = ensureEntry(appState.currentDate);
@@ -1086,6 +1616,40 @@ function setStartPage() {
   flash('Đã cập nhật trang bắt đầu ✓');
 }
 
+function onTemplateChange(ev) {
+  const p = getProject();
+  const newId = ev.target.value;
+  if (!p || !TEMPLATES[newId]) return;
+  if (newId === p.templateId) return;
+
+  clearTimeout(window._sv);
+  collectForm();
+
+  const oldTpl = tplOf(p);
+  const newTpl = TEMPLATES[newId];
+  if (!confirm(`Đổi mẫu của cuốn "${p.name}"\n\nTừ: ${oldTpl.name}\nSang: ${newTpl.name}\n\nSố cột khối lượng sẽ đổi theo mẫu mới. Số liệu cũ vẫn được giữ lại trong dữ liệu.`)) {
+    ev.target.value = p.templateId;
+    return;
+  }
+
+  p.templateId = newId;
+  delete p.zones;                 // để ensureProjectMeta nạp địa bàn của mẫu mới
+  ensureProjectMeta(p);
+
+  if (confirm('Nạp lại danh sách hạng mục mặc định của mẫu mới cho NGÀY hiện tại?\n\nOK = nạp lại (mất số liệu ngày này)\nCancel = giữ hạng mục hiện có')) {
+    p.items = deepCopy(newTpl.items);
+    const e = getEntry();
+    if (e) e.items = deepCopy(newTpl.items);
+    p.rep_a = newTpl.sign.a;
+    p.rep_b = newTpl.sign.b;
+    if (e) { e.rep_a = newTpl.sign.a; e.rep_b = newTpl.sign.b; }
+  }
+
+  renderForm();
+  persist();
+  flash(`Đã chuyển sang ${newTpl.name} ✓`);
+}
+
 function renameProject() {
   const p = getProject();
   if (!p) return;
@@ -1097,9 +1661,162 @@ function renameProject() {
   persist();
 }
 
+// ====== MODAL THÔNG TIN QUYỂN (bìa + văn bản + cán bộ) ======
+function bookOf(p) {
+  if (!p || !tplOf(p).hasBook) return null;
+  if (!p.book) p.book = deepCopy(tplOf(p).book);
+  return p.book;
+}
+
+function openBook() {
+  const p = getProject();
+  if (!tplOf(p).hasBook) {
+    alert('Mẫu "' + tplOf(p).name + '" không có trang bìa / văn bản / cán bộ.');
+    return;
+  }
+  renderBookForm();
+  const m = document.getElementById('bookModal');
+  m.classList.add('open');
+  m.setAttribute('aria-hidden', 'false');
+}
+
+function closeBook() {
+  const m = document.getElementById('bookModal');
+  m.classList.remove('open');
+  m.setAttribute('aria-hidden', 'true');
+}
+
+const BOOK_TEXT_FIELDS = ['duToan','goiThau','diaDiem','congTac','diaBan','benA','benB','daiDienLienDanh',
+  'soTrang','trangTu','trangDen','quyenSo','tongSoQuyen',
+  'donViB','chucDanhB','nguoiKyB','donViA','chucDanhA','nguoiKyA','noiKy','docsSignerB'];
+
+function renderBookForm() {
+  const p = getProject();
+  const b = bookOf(p);
+  if (!b) return;
+  BOOK_TEXT_FIELDS.forEach(f => {
+    const el = document.getElementById('bk_' + f);
+    if (el) el.value = b[f] ?? '';
+  });
+  // "Công tác" để trống thì hiển thị mẫu câu theo loại bìa
+  if (!b.congTac) {
+    document.getElementById('bk_congTac').value = b.coverType === 'bd' ? (b.congTacBD || '') : (b.congTacVH || '');
+  }
+  document.getElementById('bk_repAName').value = (b.repA && b.repA.name) || '';
+  document.getElementById('bk_repARole').value = (b.repA && b.repA.role) || '';
+  document.getElementById('bk_repBName').value = (b.repB && b.repB.name) || '';
+  document.getElementById('bk_repBRole').value = (b.repB && b.repB.role) || '';
+  const ct = document.querySelector(`input[name="bk_coverType"][value="${b.coverType || 'vh'}"]`);
+  if (ct) ct.checked = true;
+  document.getElementById('bk_showCoverTong').checked = b.showCoverTong !== false;
+  // để trống thì lấy số tự tính — hiện luôn giá trị đó làm placeholder
+  const pr = bookPageRange(p);
+  document.getElementById('bk_soTrang').placeholder = pr.auto.soTrang ? `tự động: ${pr.auto.soTrang}` : 'chưa có ngày nào';
+  document.getElementById('bk_trangTu').placeholder = `tự động: ${pr.auto.trangTu}`;
+  document.getElementById('bk_trangDen').placeholder = pr.auto.trangDen ? `tự động: ${pr.auto.trangDen}` : 'chưa có ngày nào';
+  renderDocsRows(b);
+  renderStaffRows(b);
+}
+
+function renderDocsRows(b) {
+  const body = document.getElementById('bk_docsBody');
+  body.innerHTML = (b.docs || []).map((d, i) => `
+    <tr>
+      <td style="text-align:center">${i + 1}</td>
+      <td><textarea data-doc="${i}" data-f="ref">${escapeHtml(d.ref)}</textarea></td>
+      <td><textarea data-doc="${i}" data-f="issuer">${escapeHtml(d.issuer)}</textarea></td>
+      <td><input type="text" data-doc="${i}" data-f="received" value="${escapeHtml(d.received)}"></td>
+      <td><textarea data-doc="${i}" data-f="summary">${escapeHtml(d.summary)}</textarea></td>
+      <td style="text-align:center"><button class="book-mini-btn del" onclick="delDocRow(${i})">×</button></td>
+    </tr>`).join('');
+}
+
+function renderStaffRows(b) {
+  const body = document.getElementById('bk_staffBody');
+  body.innerHTML = (b.staff || []).map((s, i) => `
+    <tr>
+      <td>
+        <select data-staff="${i}" data-f="side">
+          <option value="B"${s.side === 'B' ? ' selected' : ''}>Bên B</option>
+          <option value="A"${s.side === 'A' ? ' selected' : ''}>Bên A</option>
+        </select>
+      </td>
+      <td><input type="text" data-staff="${i}" data-f="name" value="${escapeHtml(s.name)}"></td>
+      <td><input type="text" data-staff="${i}" data-f="title" value="${escapeHtml(s.title)}"></td>
+      <td><input type="text" data-staff="${i}" data-f="duty" value="${escapeHtml(s.duty)}"></td>
+      <td><input type="text" data-staff="${i}" data-f="note" value="${escapeHtml(s.note)}"></td>
+      <td style="text-align:center"><button class="book-mini-btn del" onclick="delStaffRow(${i})">×</button></td>
+    </tr>`).join('');
+}
+
+function collectBookForm() {
+  const p = getProject();
+  const b = bookOf(p);
+  if (!b) return null;
+  BOOK_TEXT_FIELDS.forEach(f => {
+    const el = document.getElementById('bk_' + f);
+    if (el) b[f] = el.value;
+  });
+  b.repA = { name: document.getElementById('bk_repAName').value, role: document.getElementById('bk_repARole').value };
+  b.repB = { name: document.getElementById('bk_repBName').value, role: document.getElementById('bk_repBRole').value };
+  b.coverType = document.querySelector('input[name="bk_coverType"]:checked')?.value || 'vh';
+  b.showCoverTong = document.getElementById('bk_showCoverTong').checked;
+  document.querySelectorAll('#bk_docsBody [data-doc]').forEach(el => {
+    const i = parseInt(el.dataset.doc, 10);
+    if (b.docs[i]) b.docs[i][el.dataset.f] = el.value;
+  });
+  document.querySelectorAll('#bk_staffBody [data-staff]').forEach(el => {
+    const i = parseInt(el.dataset.staff, 10);
+    if (b.staff[i]) b.staff[i][el.dataset.f] = el.value;
+  });
+  return b;
+}
+
+function addDocRow() {
+  const b = collectBookForm();
+  if (!b) return;
+  if (!Array.isArray(b.docs)) b.docs = [];
+  b.docs.push({ ref: '', issuer: '', received: '', summary: '' });
+  renderDocsRows(b);
+}
+function delDocRow(i) {
+  const b = collectBookForm();
+  if (!b || !confirm('Xóa dòng văn bản này?')) return;
+  b.docs.splice(i, 1);
+  renderDocsRows(b);
+}
+function addStaffRow() {
+  const b = collectBookForm();
+  if (!b) return;
+  if (!Array.isArray(b.staff)) b.staff = [];
+  b.staff.push({ side: 'B', name: '', title: '', duty: '', note: '' });
+  renderStaffRows(b);
+}
+function delStaffRow(i) {
+  const b = collectBookForm();
+  if (!b || !confirm('Xóa cán bộ này?')) return;
+  b.staff.splice(i, 1);
+  renderStaffRows(b);
+}
+
+function saveBook() {
+  if (!collectBookForm()) return;
+  persist();
+  closeBook();
+  flash('Đã lưu thông tin quyển ✓');
+}
+
 // ====== XUẤT WORD / PDF ======
 function sanitizeFilename(s) {
-  return String(s || 'cuon').replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, '_').slice(0, 100);
+  return String(s || 'cuon').replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim().slice(0, 120);
+}
+
+// Tên file: NKTC + địa bàn + tháng  →  "NKTC - Phường A, Phường B - T07-2026"
+function bookFileBase(p, dateISO) {
+  const zs = zonesOf(p);
+  const diaBan = (zs && zs.length) ? zs.join(', ') : p.name;
+  const { y, m } = isoToParts(dateISO || p.startDate || todayISO());
+  return sanitizeFilename(`NKTC - ${diaBan} - T${String(m).padStart(2, '0')}-${y}`);
 }
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
@@ -1113,23 +1830,63 @@ function downloadBlob(blob, filename) {
 }
 function multilineHtml(s) { return escapeHtml(s || '').replace(/\n/g, '<br>'); }
 
-function buildEntryHTML(p, e) {
-  const pn = computePagenum(p, e.date);
-  let itemsHtml = '';
+// 0 / rỗng → "-" với mẫu dùng dấu gạch (giống file Excel); ngày nghỉ → luôn để trống
+function fmtQty(tpl, v, rest) {
+  if (rest) return '';
+  if (v === '' || v === null || v === undefined) return tpl.zeroAsDash ? '-' : '';
+  if (tpl.zeroAsDash && Number(v) === 0) return '-';
+  return String(v);
+}
+
+function workTheadHTML(p) {
+  const tpl = tplOf(p);
+  const zs = zonesOf(p);
+  return zs
+    ? `<tr>
+         <th style="width:9mm;" rowspan="2">STT</th>
+         <th rowspan="2">${escapeHtml(tpl.itemsHeader)}</th>
+         <th style="width:14mm;" rowspan="2">Đơn vị tính</th>
+         ${tpl.colGroups.map(g => `<th colspan="${zs.length}">${escapeHtml(g.label)}</th>`).join('')}
+       </tr>
+       <tr>${tpl.colGroups.map(() => zs.map(z => `<th class="zone" style="width:11mm;">${escapeHtml(z)}</th>`).join('')).join('')}</tr>`
+    : `<tr>
+         <th style="width:11mm;">STT</th>
+         <th>${escapeHtml(tpl.itemsHeader)}</th>
+         <th style="width:22mm;">đơn vị tính</th>
+         <th style="width:24mm;">${escapeHtml(tpl.colGroups[0].label)}</th>
+       </tr>`;
+}
+
+// Trả về [{ n, html }] — n = STT của hạng mục (null với dòng nhóm)
+function workRowsHTML(p, e) {
+  const tpl = tplOf(p);
+  const keys = qtyKeys(p);
+  const rest = !!e.restDay;
   let stt = 0;
-  (e.items || []).forEach(it => {
+  return (e.items || []).map(it => {
     if (it.group) {
-      stt = 0;
-      itemsHtml += `<tr><td></td><td colspan="3" style="font-weight:bold;background:#fafafa;">${escapeHtml(it.group)}</td></tr>`;
-    } else {
-      stt++;
-      itemsHtml += `<tr><td style="text-align:center;">${stt}</td><td>${escapeHtml(it.name)}</td><td style="text-align:center;">${escapeHtml(it.unit)}</td><td style="text-align:center;">${it.qty ?? ''}</td></tr>`;
+      if (!tpl.continuousNumbering) stt = 0;
+      return { n: null, html: `<tr><td></td><td colspan="${2 + keys.length}" style="font-weight:bold;background:#fafafa;">${escapeHtml(it.group)}</td></tr>` };
     }
+    stt++;
+    const tds = keys.map(k => `<td style="text-align:center;">${escapeHtml(fmtQty(tpl, getQ(it, k), rest))}</td>`).join('');
+    return { n: stt, html: `<tr><td style="text-align:center;">${stt}</td><td>${escapeHtml(it.name)}</td><td style="text-align:center;">${escapeHtml(it.unit)}</td>${tds}</tr>` };
   });
-  return `<div class="page">
-    <h1 class="title">Nhật ký thi công hàng ngày</h1>
-    <div class="project-line">Công trình: ${escapeHtml(p.name)}</div>
-    <div class="date-line">Ngày ${e.day} tháng ${e.month} năm ${e.year}</div>
+}
+
+function buildWorkTableHTML(p, rows) {
+  const cls = qtyKeys(p).length > 1 ? 'work multi' : 'work';
+  return `<table class="${cls}"><thead>${workTheadHTML(p)}</thead><tbody>${rows.map(r => r.html).join('')}</tbody></table>`;
+}
+
+function buildEntryHTML(p, e) {
+  const tpl = tplOf(p);
+  const pn = computePagenum(p, e.date);
+  const rows = workRowsHTML(p, e);
+
+  // Dòng "Công trình:" chỉ hiển thị trên màn hình để biết đang sửa cuốn nào — không xuất ra file
+  const head = `<h1 class="title">Nhật ký thi công hàng ngày</h1>
+    <div class="date-line">Ngày ${e.day} tháng ${e.month} năm ${e.year}${e.restDay ? ' <em>(ngày nghỉ)</em>' : ''}</div>
     <div class="section-num">1. Tình hình thời tiết:</div>
     <table class="weather">
       <tr><th></th><th>Sáng</th><th>Chiều</th></tr>
@@ -1143,24 +1900,18 @@ function buildEntryHTML(p, e) {
     <div class="subsection">2.2. Thiết bị thi công:</div>
     <div style="padding-left:10mm">${escapeHtml(e.equipment)}</div>
     <div class="section-num">3. Tình hình diễn biến thi công, nghiệm thu công việc:</div>
-    <div class="subsection">3.1. Diễn biến thi công, nghiệm thu công việc:</div>
-    <table class="work">
-      <thead><tr>
-        <th style="width:11mm;">STT</th>
-        <th>Công tác quản lý, vận hành</th>
-        <th style="width:22mm;">đơn vị tính</th>
-        <th style="width:24mm;">Khối lượng thực hiện</th>
-      </tr></thead>
-      <tbody>${itemsHtml}</tbody>
-    </table>
-    <div class="section-num">4. Công tác vệ sinh môi trường:</div>
+    <div class="subsection">3.1. Diễn biến thi công, nghiệm thu công việc:</div>`;
+
+  const tail = `<div class="section-num">4. Công tác vệ sinh môi trường:</div>
     <div style="padding-left:6mm">${escapeHtml(e.env || '')}</div>
     <div class="section-num">5. Công tác an toàn lao động, an toàn giao thông:</div>
     <div style="padding-left:6mm">${escapeHtml(e.safe || '')}</div>
     <div class="section-num">6. Nhận xét và yêu cầu của giám sát bên A:</div>
-    <div style="min-height:2.4em">${multilineHtml(e.note_a)}</div>
+    <div class="note-line">${multilineHtml(e.note_a)}</div>
+    <div class="note-line"></div>
     <div class="section-num">7. Những kiến nghị đề xuất của bên B:</div>
-    <div style="min-height:2.4em">${multilineHtml(e.note_b)}</div>
+    <div class="note-line">${multilineHtml(e.note_b)}</div>
+    <div class="note-line"></div>
     <table style="width:100%; margin-top:24px; border:none;">
       <tr>
         <td style="width:50%; text-align:center; border:none; vertical-align:top;">
@@ -1174,14 +1925,237 @@ function buildEntryHTML(p, e) {
           <div>${escapeHtml(e.rep_b || '')}</div>
         </td>
       </tr>
+    </table>`;
+
+  // số trang đánh liên tục cả quyển; mỗi trang vật lý một số
+  const foot = n => `<div class="page-num">trang ${n}</div>`;
+
+  // Mẫu có splitAfter: 1 ngày chiếm nhiều trang A4 cố định, cắt sau các hạng mục
+  // đã chỉ định; mỗi trang tiếp theo lặp lại dòng tiêu đề bảng — như quyển mẫu Excel.
+  const pts = splitPoints(p);
+  const cls = pts.length ? 'page compact' : 'page';
+  if (!pts.length) {
+    return `<div class="${cls}">${head}${buildWorkTableHTML(p, rows)}${tail}${foot(pn)}</div>`;
+  }
+  const cuts = pts.map(n => rows.findIndex(r => r.n && r.n > n)).filter(i => i > 0);
+  const chunks = [];
+  let prev = 0;
+  cuts.forEach(i => { chunks.push(rows.slice(prev, i)); prev = i; });
+  chunks.push(rows.slice(prev));
+  return chunks.map((chunk, i) =>
+    `<div class="${cls}">${i === 0 ? head : ''}${buildWorkTableHTML(p, chunk)}` +
+    `${i === chunks.length - 1 ? tail : ''}${foot(pn + i)}</div>`
+  ).join('\n');
+}
+
+// ====== CÁC TRANG ĐẦU QUYỂN (bìa tổng, bìa quyển, Tr1, Tr2) ======
+function bookMonthYear(p) {
+  const iso = p.startDate || todayISO();
+  const { y, m } = isoToParts(iso);
+  return { mm: String(m).padStart(2, '0'), yyyy: String(y) };
+}
+function bookCongTac(p) {
+  const b = p.book || {};
+  const { mm, yyyy } = bookMonthYear(p);
+  const raw = b.congTac || (b.coverType === 'bd' ? b.congTacBD : b.congTacVH) || '';
+  return raw.replace(/\{MM\}/g, mm).replace(/\{YYYY\}/g, yyyy);
+}
+function lastEntryDate(p) {
+  const dates = Object.keys(p.entries || {}).sort();
+  return dates[dates.length - 1] || p.startDate || todayISO();
+}
+function viDate(iso) {
+  const { y, m, d } = isoToParts(iso);
+  return `ngày ${String(d).padStart(2, '0')} tháng ${String(m).padStart(2, '0')} năm ${y}`;
+}
+
+// "Sổ này gồm … trang, đánh số thứ tự từ … đến …" — tự tính theo số ngày đã ghi
+// (mỗi ngày = 1 số trang, đúng cách đánh của computePagenum). Ô nào người dùng
+// đã nhập tay trong modal thì ưu tiên giá trị nhập.
+function bookPageRange(p) {
+  const b = p.book || {};
+  const days = Object.keys(p.entries || {}).length;
+  const count = days ? frontMatterPages(p) + days * entryPageCount(p) : 0;
+  const from = Number(p.startPage) || 1;
+  const auto = {
+    soTrang: count ? String(count) : '',
+    trangTu: String(from),
+    trangDen: count ? String(from + count - 1) : ''
+  };
+  return {
+    auto,
+    soTrang: (b.soTrang || '').trim() || auto.soTrang || '.............',
+    trangTu: (b.trangTu || '').trim() || auto.trangTu,
+    trangDen: (b.trangDen || '').trim() || auto.trangDen || '............'
+  };
+}
+
+// Một dòng "Nhãn | Nội dung" của khối thông tin trên bìa (khớp cột B|D của BÌA TỔNG
+// và cột C|E của bìa quyển trong file Excel — nhãn ~22% bề ngang, nội dung canh đều)
+function coverRow(label, value, justify) {
+  return `<tr><td class="lbl">${escapeHtml(label)}</td><td class="val${justify ? ' just' : ''}">${escapeHtml(value)}</td></tr>`;
+}
+
+function buildCoverTongHTML(p) {
+  const b = p.book;
+  const { mm, yyyy } = bookMonthYear(p);
+  const signHead = (org, role) => `
+      <div class="sign-org">${multilineHtml(org)}</div>
+      <div class="sign-role">${multilineHtml(role)}</div>`;
+  return `<div class="page cover tong">
+    <div class="nation">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+    <div class="nation-sub">Độc lập - Tự do - Hạnh phúc</div>
+    <div class="cover-title big">NHẬT KÝ THI CÔNG<br>XÂY DỰNG CÔNG TRÌNH</div>
+    <div class="cover-month">THÁNG ${mm}/${yyyy}</div>
+    <table class="cover-info">
+      ${coverRow('Dự toán mua sắm:', b.duToan, true)}
+      ${coverRow('Gói thầu:', b.goiThau, true)}
+      ${coverRow('Đơn vị thi công:', b.benB)}
+      ${coverRow('Đại diện liên danh:', b.daiDienLienDanh)}
+      ${coverRow('Chủ đầu tư:', b.benA)}
     </table>
-    <div class="page-num">trang ${pn}</div>
+    <table class="sign-table">
+      <tr>
+        <td class="left"></td><td class="gap"></td>
+        <td class="right"><div class="place">${escapeHtml(b.noiKy)}, ${viDate(p.startDate || todayISO())}</div></td>
+      </tr>
+      <tr>
+        <td class="left">${signHead(b.donViB, b.chucDanhB)}</td>
+        <td class="gap"></td>
+        <td class="right">${signHead(b.donViA, b.chucDanhA)}</td>
+      </tr>
+      <tr><td class="sign-gap" colspan="3"></td></tr>
+      <tr>
+        <td class="left sign-name">${escapeHtml(b.nguoiKyB)}</td>
+        <td class="gap"></td>
+        <td class="right sign-name">${escapeHtml(b.nguoiKyA)}</td>
+      </tr>
+    </table>
   </div>`;
+}
+
+function buildCoverQuyenHTML(p) {
+  const b = p.book;
+  const { mm, yyyy } = bookMonthYear(p);
+  const pr = bookPageRange(p);
+  return `<div class="page cover quyen">
+    <div class="nation">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+    <div class="nation-sub">Độc lập - Tự do - Hạnh phúc</div>
+    <div class="cover-title mid">NHẬT KÝ THI CÔNG<br>XÂY DỰNG CÔNG TRÌNH</div>
+    <table class="cover-info">
+      ${coverRow('Dự toán mua sắm:', b.duToan, true)}
+      ${coverRow('Gói thầu:', b.goiThau, true)}
+      ${coverRow('Địa điểm:', b.diaDiem, true)}
+      ${coverRow('Công tác:', bookCongTac(p))}
+      ${coverRow('', b.diaBan)}
+      ${coverRow('Bên A:', b.benA)}
+      ${coverRow('Bên B:', b.benB)}
+      ${coverRow('Đại diện liên danh:', b.daiDienLienDanh)}
+    </table>
+    <table class="rep-table">
+      <tr><td colspan="2">* Đại diện bên A:</td><td class="sig-col">Chữ ký</td></tr>
+      <tr><td>${escapeHtml(b.repA.name)}</td><td>Chức vụ: ${escapeHtml(b.repA.role)}</td><td class="sig-col">...............</td></tr>
+      <tr><td colspan="2">* Đại diện bên B:</td><td class="sig-col"></td></tr>
+      <tr><td>${escapeHtml(b.repB.name)}</td><td>Chức vụ: ${escapeHtml(b.repB.role)}</td><td class="sig-col">...............</td></tr>
+    </table>
+    <div class="cover-note">(Sổ này gồm ${escapeHtml(pr.soTrang)} trang, đánh số thứ tự từ ${escapeHtml(pr.trangTu)} đến ${escapeHtml(pr.trangDen)} có đóng dấu giáp lai)</div>
+    <div class="cover-note">Quyển số: ${escapeHtml(b.quyenSo || '……..')} / tổng số ${escapeHtml(b.tongSoQuyen || '…….')} quyển.</div>
+    <div class="cover-month bottom">THÁNG ${mm} NĂM ${yyyy}</div>
+  </div>`;
+}
+
+// Khối ký cuối trang Tr1/Tr2 — trong Excel nằm ở ô merge C:E nên lệch về nửa phải trang
+function sheetSignHTML(b, signer, range) {
+  return `<div class="sheet-foot">
+      ${range ? `<div class="range">${range}</div>` : ''}
+      <div class="rep">Đại diện bên B<br>${escapeHtml(b.benB)}</div>
+      <div class="rep-gap"></div>
+      <div class="rep-name">${escapeHtml(signer || '')}</div>
+    </div>`;
+}
+
+function buildDocsHTML(p) {
+  const b = p.book;
+  const docs = b.docs || [];
+  const MIN_ROWS = 8;                       // Excel: 4 dòng có nội dung + 4 dòng để trống
+  let rows = docs.map((d, i) => `<tr>
+      <td class="tt">${i + 1}</td>
+      <td>${multilineHtml(d.ref)}</td>
+      <td>${multilineHtml(d.issuer)}</td>
+      <td class="ct">${escapeHtml(d.received)}</td>
+      <td>${multilineHtml(d.summary)}</td>
+    </tr>`).join('');
+  for (let i = docs.length; i < MIN_ROWS; i++) {
+    // dòng trống: KHÔNG đánh số TT (đúng như quyển mẫu)
+    rows += `<tr class="blank"><td class="tt"></td><td></td><td></td><td class="ct"></td><td></td></tr>`;
+  }
+  return `<div class="page sheet docs">
+    <h1 class="sheet-title">Liệt kê các văn bản<br>liên quan đến công trình</h1>
+    <table class="doc-table">
+      <thead><tr>
+        <th style="width:5%;">TT</th>
+        <th style="width:25%;">Văn bản số ngày</th>
+        <th style="width:30%;">Cơ quan phát hành</th>
+        <th style="width:12.5%;">Ngày nhận</th>
+        <th>Tóm tắt nội dung</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    ${sheetSignHTML(b, b.docsSignerB, `Từ ${viDate(p.startDate || todayISO())} đến ${viDate(lastEntryDate(p))}`)}
+    <div class="page-num">Trang ${Number(p.startPage) || 1}</div>
+  </div>`;
+}
+
+function buildStaffHTML(p) {
+  const b = p.book || {};
+  const staff = b.staff || [];
+  // Cột "Chức danh" bị ẩn trong quyển mẫu (cột E,F của sheet Tr2-G2 là hidden)
+  // nên bản in chỉ có 5 cột; dữ liệu chức danh vẫn giữ trong modal.
+  const sideRows = (side, roman, label) => {
+    const list = staff.filter(s => s.side === side);
+    let html = `<tr class="grp"><td class="tt">${roman}</td><td colspan="4">${label}</td></tr>`;
+    html += list.map((s, i) => `<tr>
+        <td class="tt">${i + 1}</td>
+        <td>${escapeHtml(s.name)}</td>
+        <td>${escapeHtml(s.duty)}</td>
+        <td></td>
+        <td>${escapeHtml(s.note)}</td>
+      </tr>`).join('');
+    for (let i = 0; i < 3; i++) {   // 3 dòng trống chừa sẵn sau mỗi nhóm, như mẫu
+      html += '<tr class="blank"><td class="tt"></td><td></td><td></td><td></td><td></td></tr>';
+    }
+    return html;
+  };
+  return `<div class="page sheet staff">
+    <h1 class="sheet-title">Danh sách cán bộ kỹ thuật - giám sát<br>tham gia xây dựng công trình</h1>
+    <table class="staff-table">
+      <thead><tr>
+        <th style="width:6%;">TT</th>
+        <th style="width:30%;">Họ và tên</th>
+        <th style="width:26%;">Nhiệm vụ</th>
+        <th style="width:22%;">Chữ ký</th>
+        <th>Ghi chú</th>
+      </tr></thead>
+      <tbody>
+        ${sideRows('B', 'I', 'Đại diện bên B:')}
+        ${sideRows('A', 'II', 'Đại diện bên A:')}
+      </tbody>
+    </table>
+    <div class="page-num">Trang ${(Number(p.startPage) || 1) + 1}</div>
+  </div>`;
+}
+
+function buildBookPagesHTML(p) {
+  if (!tplOf(p).hasBook || !p.book) return '';
+  const parts = [];
+  if (p.book.showCoverTong !== false) parts.push(buildCoverTongHTML(p));
+  parts.push(buildCoverQuyenHTML(p), buildDocsHTML(p), buildStaffHTML(p));
+  return parts.join('\n');
 }
 
 const EXPORT_CSS = `
   body { font-family: 'Times New Roman', Times, serif; font-size: 13pt; color: #000; margin: 0; background: #fff; }
-  .page { background: #fff; width: 210mm; min-height: 297mm; padding: 18mm 18mm 16mm 22mm; box-sizing: border-box; page-break-after: always; }
+  .page { background: #fff; width: 210mm; min-height: 297mm; padding: 15mm 20mm; box-sizing: border-box; page-break-after: always; position: relative; }
   .page:last-child { page-break-after: auto; }
   .title { text-align: center; font-weight: bold; font-size: 16pt; text-transform: uppercase; margin: 0 0 14px 0; letter-spacing: 0.3px; }
   .project-line { text-align: center; font-weight: bold; font-style: italic; margin: 0 0 10px 0; font-size: 14pt; }
@@ -1189,59 +2163,274 @@ const EXPORT_CSS = `
   .section-num { font-weight: bold; margin: 10px 0 6px 0; }
   .subsection { font-style: italic; margin: 8px 0 4px 0; padding-left: 6mm; }
   table { width: 100%; border-collapse: collapse; margin: 4px 0 10px 0; }
-  table th, table td { border: 1px solid #000; padding: 5px 7px; vertical-align: middle; }
+  /* font-size phải ghi rõ: container xuất PDF nằm trong document thật nên style
+     mobile của app (@media screen and (max-width:820px)) vẫn có thể lọt vào. */
+  table th, table td { border: 1px solid #000; padding: 5px 7px; vertical-align: middle; font-size: 13pt; }
   table th { font-weight: bold; text-align: center; }
+  table.work td { font-size: 12pt; }
+
+  /* CỠ CHỮ: dùng đúng số pt ghi trong ô Excel. Nội dung có thể cao hơn 1 trang,
+     nhưng renderPagesToPDF sẽ thu nhỏ đều toàn trang cho vừa A4 — nhờ vậy tỉ lệ
+     giữa tiêu đề / tiêu mục / bảng vẫn giữ nguyên như quyển mẫu. */
   table.weather td:first-child { text-align: left; font-style: italic; width: 26%; }
-  .page-num { text-align: center; margin-top: 18px; font-size: 11pt; color: #444; }
+  /* Số trang nằm ở đáy giấy, CÁCH MÉP DƯỚI 10mm (trong vùng lề, giống footer của
+     Excel). Dùng position:absolute nên không bao giờ đẩy nội dung tràn trang. */
+  .page-num { position: absolute; bottom: 10mm; left: 20mm; right: 20mm;
+              text-align: center; font-size: 11pt; color: #000; margin: 0; }
+  /* bảng khối lượng nhiều địa bàn */
+  table.work.multi { font-size: 9.5pt; }
+  table.work.multi th, table.work.multi td { padding: 2px 3px; font-size: 9.5pt; line-height: 1.2; }
+  table.work.multi th.zone { font-weight: normal; font-size: 8.5pt; }
+  /* trang của mẫu 2-trang-mỗi-ngày: bóp khoảng cách dọc để nội dung vừa A4,
+     đỡ phải nhờ tới bước tự thu nhỏ trong renderPagesToPDF */
+  .page.compact .title { margin-bottom: 8px; }
+  .page.compact .date-line { margin: 5px 0 6px; }
+  .page.compact .section-num { margin: 6px 0 3px; }
+  .page.compact .subsection { margin: 5px 0 3px; }
+  .page.compact table { margin: 3px 0 6px; }
+  .page.compact table.weather th, .page.compact table.weather td { padding: 3px 6px; }
+  /* ==== TRANG BÌA (dựng theo sheet BÌA TỔNG-G2 / Biavh-Q8: chữ 13pt đậm,
+         nhãn chiếm ~22% bề ngang, nội dung canh đều) ==== */
+  .cover { text-align: center; font-size: 13pt; }
+  .cover .nation, .cover .nation-sub { font-weight: bold; font-size: inherit; }
+  .cover .nation-sub { border-bottom: 1px solid #000; display: inline-block; padding: 0 12px 2px; margin-top: 2mm; }
+  .cover .cover-title { font-weight: bold; line-height: 1.25; }
+  .cover .cover-title.big { font-size: 28pt; margin: 14mm 0 5mm; }   /* BÌA TỔNG: B6 = 28pt */
+  .cover .cover-title.mid { font-size: 25pt; margin: 12mm 0 5mm; }   /* bìa quyển: C7/C8 = 25pt */
+  .cover .cover-month { font-weight: bold; font-size: 18pt; margin: 2mm 0 6mm; }  /* BÌA TỔNG: B7 = 18pt */
+  .cover .cover-month.bottom { font-size: 13pt; margin-top: 12mm; }  /* bìa quyển: B27 = 13pt */
+  table.cover-info { width: 100%; border-collapse: collapse; margin: 6mm 0 0; }
+  table.cover-info td { border: none; padding: 2.5mm 0 0; vertical-align: top;
+                        font-size: inherit; font-weight: bold; text-align: left; }
+  table.cover-info td.lbl { width: 22%; padding-right: 4mm; white-space: nowrap; }
+  table.cover-info td.val.just { text-align: justify; }
+  .cover table.rep-table { border: none; margin-top: 8mm; }
+  .cover table.rep-table td { border: none; text-align: left; padding: 2mm 4px 0; font-size: inherit; }
+  .cover table.rep-table td.sig-col { text-align: center; width: 32mm; }
+  .cover .cover-note { text-align: center; margin-top: 5mm; font-size: inherit; }
+  .cover table.sign-table { border: none; margin-top: 8mm; }
+  .cover table.sign-table td { border: none; text-align: center; vertical-align: top;
+                               font-size: inherit; font-weight: bold; padding: 0; }
+  .cover table.sign-table td.left { width: 45%; }
+  .cover table.sign-table td.gap { width: 3%; }
+  .cover table.sign-table td.right { width: 52%; }
+  .cover .place { font-style: italic; font-weight: normal; margin-bottom: 3mm; }
+  .cover .sign-org { font-weight: bold; line-height: 1.3; }
+  .cover .sign-role { font-weight: bold; line-height: 1.3; }
+  /* khoảng chừa ký + hàng tên là các HÀNG RIÊNG của bảng, để 2 tên luôn nằm
+     ngang nhau dù khối bên trái/phải lệch số dòng (Excel: cả hai đều ở dòng 25) */
+  .cover table.sign-table td.sign-gap { height: 28mm; }
+  .cover table.sign-table td.sign-name { font-weight: bold; vertical-align: bottom; }
+  /* 2 dòng kẻ mảnh chừa sẵn dưới mục 6 và 7 để viết tay */
+  .note-line { border-bottom: 0.4pt solid #000; min-height: 7mm; padding: 1mm 2px 0; }
+  .page.compact .note-line { min-height: 6mm; }
+
+  /* ==== TRANG Tr1 (liệt kê văn bản) / Tr2 (danh sách cán bộ) ====
+     Số trang nằm sát đáy giấy — trong Excel đó là footer "Trang 1" / "Trang 2". */
+  .sheet-title { text-align: center; font-weight: bold; text-transform: uppercase;
+                 line-height: 1.35; margin: 0 0 7mm; }
+  .sheet.docs { font-size: 13pt; }                  /* Tr1: thân 13pt */
+  .sheet.staff { font-size: 12pt; }                 /* Tr2: thân 12pt */
+  .sheet.docs .sheet-title { font-size: 16pt; }     /* Tr1: A1/A2 = 16pt */
+  .sheet.staff .sheet-title { font-size: 15pt; }    /* Tr2: B2/B3 = 15pt */
+  table.doc-table, table.doc-table td { font-size: 13pt; }
+  table.doc-table th { font-size: 14pt; }
+  table.staff-table, table.staff-table th, table.staff-table td { font-size: 12pt; }
+  table.doc-table td, table.staff-table td { vertical-align: middle; padding: 4px 6px; }
+  table.doc-table td.tt, table.doc-table td.ct, table.staff-table td.tt { text-align: center; }
+  table.doc-table tr.blank td { height: 17mm; }
+  table.staff-table tr.blank td { height: 11mm; }
+  table.staff-table tr.grp td { font-weight: bold; }
+  .sheet-foot { width: 70%; margin-left: 30%; text-align: center; }
+  .sheet-foot .range { font-size: 14pt; font-style: italic; margin: 7mm 0 3mm; }  /* Tr1: C16 = 14pt */
+  .sheet-foot .rep { font-weight: bold; text-transform: uppercase; line-height: 1.35; }
+  .sheet-foot .rep-gap { height: 22mm; }
+  .sheet-foot .rep-name { font-weight: bold; font-style: italic; }
 `;
 
 function buildWordHTML(p) {
   const dates = Object.keys(p.entries || {}).sort();
-  const pagesHTML = dates.map(d => buildEntryHTML(p, p.entries[d])).join('\n');
+  const pagesHTML = buildBookPagesHTML(p) + '\n' + dates.map(d => buildEntryHTML(p, p.entries[d])).join('\n');
+  // LƯU Ý: mọi thẻ đóng trong chuỗi này phải viết dạng `<\/body>`, KHÔNG viết nguyên văn.
+  // Live Server (và các tool inject khác) tìm thẻ đóng body ĐẦU TIÊN trong file để chèn
+  // script auto-reload. Nếu thẻ đó nằm ở đây thì nó chèn vào giữa khối script của app,
+  // làm đứt script và phần còn lại đổ ra màn hình dạng text.
   return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
 <head>
 <meta charset='utf-8'>
-<title>${escapeHtml(p.name)}</title>
+<title>${escapeHtml(p.name)}<\/title>
 <style>
-@page WordSection1 { size: 21cm 29.7cm; margin: 1.8cm 1.8cm 1.6cm 2.2cm; mso-page-orientation: portrait; }
+@page WordSection1 { size: 21cm 29.7cm; margin: 1.5cm 2cm; mso-page-orientation: portrait; }
 div.WordSection1 { page: WordSection1; }
 ${EXPORT_CSS}
-</style>
-</head>
-<body><div class='WordSection1'>${pagesHTML}</div></body>
-</html>`;
+/* Trong Word lề đã do @page lo — bỏ padding của .page để khỏi cộng dồn thành 4cm */
+div.WordSection1 .page { width: auto; padding: 0; min-height: 0; }
+<\/style>
+<\/head>
+<body><div class='WordSection1'>${pagesHTML}<\/div><\/body>
+<\/html>`;
 }
 
 function exportBookAsWord(p) {
   const html = buildWordHTML(p);
   const blob = new Blob(['﻿', html], { type: 'application/msword' });
-  downloadBlob(blob, `nhat-ky-${sanitizeFilename(p.name)}.doc`);
+  downloadBlob(blob, `${bookFileBase(p)}.doc`);
 }
 
-async function exportBookAsPDF(p) {
+const PDF_SCALE = 2;              // html2canvas scale — dùng chung với phép tính chiều cao trang
+const PX_PER_MM = 96 / 25.4;      // 1mm CSS = 3.7795px
+
+// Toast tiến độ (giữ nguyên 1 phần tử, khác flash() là loại tự biến mất)
+function showProgress(msg) {
+  let d = document.getElementById('pdfProgress');
+  if (!d) {
+    d = document.createElement('div');
+    d.id = 'pdfProgress';
+    d.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;z-index:2000;font-family:sans-serif;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,0.3)";
+    document.body.appendChild(d);
+  }
+  d.textContent = msg;
+}
+function hideProgress() {
+  const d = document.getElementById('pdfProgress');
+  if (d) d.remove();
+}
+
+// Dựng PDF bằng jsPDF (qua html2pdf) — không dùng hộp thoại in của trình duyệt.
+// Lề 2cm nằm trong padding của .page, nên margin của jsPDF = 0.
+//
+// HAI CÁI BẪY đã gặp, đừng làm lại:
+// 1. html2pdf CLONE phần tử nguồn vào một container `height:auto`. Nếu phần tử nguồn
+//    là `position:absolute` (kiểu để ẩn ngoài màn hình) thì clone cũng absolute →
+//    container cao 0 → PDF ra ĐÚNG 1 TRANG TRẮNG. Vì vậy khung ẩn `holder` mới là cái
+//    absolute, còn từng trang phải nằm trong luồng bình thường.
+// 2. Render cả cuốn trong 1 lần sẽ tạo canvas cao hàng trăm nghìn px, vượt giới hạn
+//    canvas của trình duyệt (~65535px) → cũng ra trang trắng. Nên render TỪNG TRANG rồi
+//    ghép vào cùng một jsPDF: mỗi .page = đúng 1 trang PDF.
+// 3. KHÔNG đặt html2canvas.windowWidth. html2canvas lấy vùng cắt `x` từ bounds của phần tử
+//    GỐC nhưng lại dựng iframe clone theo windowWidth — ép windowWidth khác bề rộng cửa sổ
+//    thật thì 2 hệ tọa độ lệch nhau và ảnh bị xén mất phần bên trái.
+async function renderPagesToPDF(pagesHTML, filename) {
   if (typeof html2pdf === 'undefined') {
     throw new Error('Chưa tải được thư viện PDF — kiểm tra kết nối mạng.');
   }
+  window.scrollTo(0, 0);   // overlay của html2pdf là position:fixed — tránh lệch do cuộn trang
+  const holder = document.createElement('div');
+  holder.style.cssText = 'position:absolute; left:-99999px; top:0; width:210mm; background:#fff;';
+  document.body.appendChild(holder);
+
+  try {
+    const stage = document.createElement('div');
+    stage.innerHTML = pagesHTML;
+    const pages = Array.from(stage.children).filter(el => el.classList.contains('page'));
+    if (!pages.length) throw new Error('Không có nội dung để xuất.');
+
+    // mỗi trang được bọc riêng kèm 1 bản EXPORT_CSS, vì html2pdf chỉ clone đúng
+    // phần tử được truyền vào — thẻ <style> nằm ngoài sẽ không đi theo
+    // Chiều cao an toàn cho 1 trang. html2canvas dựng canvas theo
+    //   canvas.w = floor(ceil(bounds.w) * scale) ; canvas.h = floor(ceil(bounds.h) * scale)
+    // còn toPdf cắt mỗi o = floor(canvas.w * 297/210) pixel. Để đúng 297mm thì
+    // ceil(1122.52) = 1123 → canvas.h = 2246 > o = 2245 → dư 1 pixel → SINH TRANG TRẮNG.
+    // Nên phải tính ngược chiều cao tối đa mà vẫn gói gọn trong 1 lát cắt.
+    const CANVAS_W = Math.floor(Math.ceil(210 * PX_PER_MM) * PDF_SCALE);
+    const PAGE_H_PX = Math.floor(Math.floor(CANVAS_W * 297 / 210) / PDF_SCALE) - 0.5;
+
+    const wrappers = pages.map(pg => {
+      const w = document.createElement('div');
+      w.style.cssText = `width:210mm; height:${PAGE_H_PX}px; overflow:hidden; background:#fff;`;
+      const st = document.createElement('style');
+      st.textContent = EXPORT_CSS;
+      w.appendChild(st);
+      w.appendChild(pg);
+      holder.appendChild(w);
+      return w;
+    });
+
+    // Ép mỗi .page vừa trọn 1 khổ A4. Nếu không làm bước này, trang nào cao hơn 1 khổ
+    // sẽ bị html2pdf cắt đôi giữa chừng (dòng bảng đứt làm hai) và mất luôn lề dưới 2cm.
+    // Cách thu: nới khung lên 1/k rồi scale(k) ngược lại → chữ nhỏ đi đều, lề vẫn đúng 2cm.
+    wrappers.forEach((w, i) => {
+      const pg = w.querySelector('.page');
+      pg.style.minHeight = PAGE_H_PX + 'px';
+      let k = 1;
+      for (let n = 0; n < 8; n++) {
+        const h = pg.getBoundingClientRect().height;       // đã tính cả transform
+        if (h <= PAGE_H_PX) break;
+        k *= (PAGE_H_PX / h) * 0.997;
+        pg.style.width = (210 / k) + 'mm';
+        pg.style.minHeight = (PAGE_H_PX / k) + 'px';
+        pg.style.padding = (15 / k) + 'mm ' + (20 / k) + 'mm';
+        pg.style.transformOrigin = 'top left';
+        pg.style.transform = 'scale(' + k + ')';
+      }
+      if (k < 1) console.info(`[PDF] trang ${i + 1} thu còn ${Math.round(k * 100)}% để vừa A4`);
+    });
+
+    const opt = {
+      margin: 0,
+      filename,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: PDF_SCALE, useCORS: true, logging: false, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+      pagebreak: { mode: [], before: [], after: [], avoid: [] }   // tự ngắt trang thủ công
+    };
+
+    showProgress(`Đang tạo PDF... trang 1/${wrappers.length}`);
+    let worker = html2pdf().set(opt).from(wrappers[0]).toContainer().toCanvas().toPdf();
+    for (let i = 1; i < wrappers.length; i++) {
+      const n = i;
+      worker = worker.get('pdf')
+        .then(pdf => {
+          pdf.addPage();
+          showProgress(`Đang tạo PDF... trang ${n + 1}/${wrappers.length}`);
+        })
+        .from(wrappers[n]).toContainer().toCanvas().toPdf();
+    }
+    await worker.save();
+  } finally {
+    hideProgress();
+    holder.remove();
+  }
+}
+
+async function exportBookAsPDF(p) {
   const dates = Object.keys(p.entries || {}).sort();
   if (!dates.length) return;
-  const container = document.createElement('div');
-  container.style.cssText = 'position:absolute; left:-99999px; top:0; background:#fff; width:210mm;';
-  const styleEl = document.createElement('style');
-  styleEl.textContent = EXPORT_CSS;
-  container.appendChild(styleEl);
-  container.insertAdjacentHTML('beforeend', dates.map(d => buildEntryHTML(p, p.entries[d])).join('\n'));
-  document.body.appendChild(container);
+  const html = buildBookPagesHTML(p) + '\n' + dates.map(d => buildEntryHTML(p, p.entries[d])).join('\n');
+  await renderPagesToPDF(html, `${bookFileBase(p)}.pdf`);
+}
+
+// Nút "Xuất PDF ngày này" — thay cho hộp thoại in của trình duyệt
+async function exportDayAsPDF() {
+  const p = getProject();
+  const e = getEntry();
+  if (!p || !e) return;
+  clearTimeout(window._sv);
+  collectForm();
+  persist();
   try {
-    await html2pdf().set({
-      margin: 0,
-      filename: `nhat-ky-${sanitizeFilename(p.name)}.pdf`,
-      image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 794 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-      pagebreak: { mode: ['css', 'legacy'] }
-    }).from(container).save();
-  } finally {
-    container.remove();
+    const d = String(e.day).padStart(2, '0');
+    await renderPagesToPDF(buildEntryHTML(p, e), `${bookFileBase(p, e.date)} - ngay ${d}.pdf`);
+    flash('Đã tạo PDF ✓');
+  } catch (err) {
+    alert('Không tạo được PDF: ' + (err.message || err));
+  }
+}
+
+// Xuất PDF cả cuốn mà KHÔNG kết thúc/xóa cuốn
+async function exportBookPDFOnly() {
+  const p = getProject();
+  if (!p) return;
+  const count = Object.keys(p.entries || {}).length;
+  if (!count) { alert('Cuốn này chưa có ngày nào.'); return; }
+  clearTimeout(window._sv);
+  collectForm();
+  persist();
+  try {
+    await exportBookAsPDF(p);
+    flash(`Đã tạo PDF ${count} ngày ✓`);
+  } catch (err) {
+    alert('Không tạo được PDF: ' + (err.message || err));
   }
 }
 
@@ -1296,11 +2485,17 @@ function listEntries() {
   if (!p) return;
   const dates = Object.keys(p.entries).sort().reverse();
   if (!dates.length) { alert('Cuốn này chưa có ngày nào.'); return; }
+  // tổng khối lượng = cộng nhóm cột đầu (thực hiện)
+  const firstGroup = tplOf(p).colGroups[0];
+  const doneKeys = firstGroup.prefix
+    ? zonesOf(p).map((_, i) => firstGroup.prefix + i)
+    : ['qty'];
   const lines = dates.map((d, i) => {
     const e = p.entries[d];
-    const totalQty = (e.items || []).reduce((s, it) => s + (it.group ? 0 : Number(it.qty) || 0), 0);
+    const totalQty = (e.items || []).reduce((s, it) =>
+      s + (it.group ? 0 : doneKeys.reduce((t, k) => t + (Number(getQ(it, k)) || 0), 0)), 0);
     const pn = computePagenum(p, d);
-    return `${i+1}. ${d}  · tr.${pn}  ·  ${totalQty} ${(e.items||[]).find(x=>!x.group)?.unit || ''}`;
+    return `${i+1}. ${d}  · tr.${pn}${e.restDay ? '  · NGHỈ' : ''}  ·  ${totalQty} ${(e.items||[]).find(x=>!x.group)?.unit || ''}`;
   });
   const pick = prompt(
     `📚 ${p.name} — ${dates.length} ngày (bắt đầu ${p.startDate}, trang ${p.startPage})\n\n${lines.join('\n')}\n\nNhập STT để mở (hoặc bỏ qua):`
@@ -1560,6 +2755,7 @@ const _initIsFresh = _initEntry && _initEntry._isNew;
 if (_initEntry) delete _initEntry._isNew;
 
 refreshProjectSelect();
+refreshTemplateSelect();
 refreshDatePicker();
 renderForm();
 persist();
@@ -1571,7 +2767,10 @@ if (_initIsFresh && appState.currentDate === todayISO()) {
 
 // auto-save khi đổi (không kích hoạt khi đổi select cuốn/ngày/forecast — đã xử lý riêng)
 document.addEventListener('input', (ev) => {
-  if (ev.target && ['projectSelect', 'datePicker', 'importFile', 'forecastDays'].includes(ev.target.id)) return;
+  if (!ev.target) return;
+  if (['projectSelect', 'templateSelect', 'datePicker', 'importFile', 'forecastDays'].includes(ev.target.id)) return;
+  // modal Thông tin quyển có nút Lưu riêng
+  if (ev.target.closest && ev.target.closest('#bookModal')) return;
   clearTimeout(window._sv);
   window._sv = setTimeout(() => {
     collectForm();
@@ -1582,6 +2781,8 @@ document.addEventListener('input', (ev) => {
 // Escape để đóng modal dự báo
 document.addEventListener('keydown', (ev) => {
   if (ev.key === 'Escape') {
+    const bm = document.getElementById('bookModal');
+    if (bm && bm.classList.contains('open')) { closeBook(); return; }
     const modal = document.getElementById('forecastModal');
     if (modal && modal.classList.contains('open')) closeForecast();
   }
