@@ -184,6 +184,65 @@
     background: rgba(15, 23, 42, 0.45);
   }
   .menu-overlay.open { display: block; }
+  /* Dòng phiên bản dưới tiêu đề thanh công cụ */
+  .tool-version {
+    flex: 1 1 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    color: #94a3b8;
+    margin: -2px 0 2px;
+  }
+  /* Thanh báo có bản mới — nổi dưới đáy, không che nội dung đang nhập */
+  .update-bar {
+    display: none;
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    z-index: 1200;
+    max-width: calc(100vw - 24px);
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #0f172a;
+    color: #fff;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+  }
+  .update-bar.show { display: flex; }
+  .update-bar button {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 14px;
+    min-height: 40px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: var(--accent);
+    color: #fff;
+    white-space: nowrap;
+  }
+  .update-bar button.later {
+    background: transparent;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    font-weight: 500;
+  }
+  /* Màn hẹp: trải hết bề ngang, chữ xuống dòng riêng — không thì các nút
+     (white-space: nowrap) bóp chữ thành một cột hẹp một từ mỗi dòng. */
+  @media screen and (max-width: 520px) {
+    .update-bar {
+      left: 12px; right: 12px;
+      transform: none;
+      max-width: none;
+      flex-wrap: wrap;
+    }
+    .update-bar span { flex: 1 1 100%; }
+    .update-bar button { flex: 1 1 0; }
+  }
   .project-line {
     text-align: center;
     font-weight: bold;
@@ -732,7 +791,7 @@
   /* ==== IN ==== */
   @media print {
     body { background: #fff; padding: 0 !important; }
-    .toolbar, .mobilebar, .menu-overlay,
+    .toolbar, .mobilebar, .menu-overlay, .update-bar,
     .add-row-btn, .row-del, .restday { display: none !important; }
     .table-wrap { overflow: visible !important; }
     /* chốt lại bố cục bản in, không để media query nào khác đè */
@@ -776,6 +835,7 @@
   <h1>📋 Nhật ký thi công hàng ngày
     <button class="tb-close" onclick="closeMenu()" aria-label="Đóng menu">×</button>
   </h1>
+  <div class="tool-version">Phiên bản <span id="appVersion">—</span></div>
   <div class="toolbar-row">
     <span class="tool-label">📒 Cuốn:</span>
     <select id="projectSelect" onchange="onProjectChange(event)"></select>
@@ -814,6 +874,12 @@
 </div>
 
 <div class="menu-overlay" onclick="closeMenu()"></div>
+
+<div class="update-bar" id="updateBar" role="status">
+  <span>Đã có phiên bản mới.</span>
+  <button onclick="applyUpdate()">Tải lại ngay</button>
+  <button class="later" onclick="dismissUpdate()">Để sau</button>
+</div>
 
 <!-- ==== MODAL DỰ BÁO THỜI TIẾT ==== -->
 <div class="modal" id="forecastModal" aria-hidden="true">
@@ -2945,6 +3011,10 @@ function exportBookAsWord(p) {
   downloadBlob(blob, `${bookFileBase(p)}.doc`);
 }
 
+// Phiên bản hiển thị cho người dùng. ĐỔI CÙNG LÚC với VERSION trong sw.js —
+// hai chuỗi phải khớp, sw.js dùng nó làm khoá cache còn chỗ này để hiển thị.
+const APP_VERSION = '2026.08.19';
+
 const PDF_SCALE = 2;              // html2canvas scale — dùng chung với phép tính chiều cao trang
 const PX_PER_MM = 96 / 25.4;      // 1mm CSS = 3.7795px
 
@@ -3417,6 +3487,9 @@ if (Object.keys(appState.projects).length === 0) {
 if (!appState.currentProjectId || !appState.projects[appState.currentProjectId]) {
   appState.currentProjectId = Object.keys(appState.projects)[0];
 }
+const _vEl = document.getElementById('appVersion');
+if (_vEl) _vEl.textContent = APP_VERSION;
+
 if (!appState.currentDate) appState.currentDate = todayISO();
 const _initEntry = ensureEntry(appState.currentDate);
 const _initIsFresh = _initEntry && _initEntry._isNew;
@@ -3473,8 +3546,54 @@ document.addEventListener('keydown', (ev) => {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
+      .then(reg => watchForUpdate(reg))
       .catch(err => console.info('[PWA] chưa đăng ký được service worker:', err.message));
   });
+}
+
+let _updateReady = false;
+
+// Báo khi có bản mới. sw.js gọi skipWaiting() ngay lúc install nên bản mới
+// kích hoạt liền, nhưng TRANG đang mở vẫn chạy code cũ tới khi tải lại —
+// vì vậy chỉ hiện thanh nhắc, KHÔNG tự reload (người dùng có thể đang gõ dở).
+function watchForUpdate(reg) {
+  if (!reg) return;
+  if (reg.waiting && navigator.serviceWorker.controller) showUpdateBar();
+  reg.addEventListener('updatefound', () => {
+    const nw = reg.installing;
+    if (!nw) return;
+    nw.addEventListener('statechange', () => {
+      // Có controller = đây là bản CẬP NHẬT, không phải lần cài đầu tiên
+      if (nw.state === 'installed' && navigator.serviceWorker.controller) showUpdateBar();
+    });
+  });
+  // Quay lại tab thì hỏi lại server xem có bản mới không (tối đa 1 lần / 5 phút)
+  let last = 0;
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    const now = Date.now();
+    if (now - last < 5 * 60 * 1000) return;
+    last = now;
+    reg.update().catch(() => {});
+  });
+}
+
+function showUpdateBar() {
+  if (_updateReady) return;
+  _updateReady = true;
+  const bar = document.getElementById('updateBar');
+  if (bar) bar.classList.add('show');
+}
+
+function dismissUpdate() {
+  const bar = document.getElementById('updateBar');
+  if (bar) bar.classList.remove('show');
+}
+
+function applyUpdate() {
+  // Lưu form đang mở trước khi tải lại, đừng để mất chữ đang gõ
+  try { clearTimeout(window._sv); collectForm(); persist(); } catch (_) {}
+  location.reload();
 }
 
 let _installPrompt = null;

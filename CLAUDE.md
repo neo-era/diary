@@ -113,6 +113,9 @@ Chỉ bật khi `tplOf(p).hasBook`. Chứa 5 phần: loại bìa · bìa quyển
 
 ## PWA — cài lên máy tính / điện thoại
 
+- **Phiên bản** khai ở **hai** chỗ và **phải khớp nhau**: `APP_VERSION` trong `index.html` (hiển thị dưới tiêu đề thanh công cụ) và `VERSION` trong `sw.js` (`'nktc-' + APP_VERSION`, dùng làm khoá cache). Đổi nội dung app là bump cả hai.
+- **Báo có bản mới**: `watchForUpdate(reg)` bắt `updatefound` → `statechange === 'installed'` **và** `navigator.serviceWorker.controller` có sẵn (có controller nghĩa là bản CẬP NHẬT, không phải lần cài đầu). Khi đó hiện `.update-bar`. Quay lại tab thì gọi `reg.update()` lại, tối đa 1 lần / 5 phút.
+- **Không tự reload.** `sw.js` gọi `skipWaiting()` ngay lúc install nên bản mới kích hoạt liền, nhưng TRANG đang mở vẫn chạy code cũ tới khi tải lại — tự reload là mất chữ người dùng đang gõ. `applyUpdate()` chạy `collectForm()` + `persist()` trước rồi mới `location.reload()`.
 - **`sw.js`**: HTML dùng **mạng-trước** (app sửa liên tục, phải luôn lấy bản mới; mất mạng mới rơi về cache), ảnh/manifest/CDN dùng **cache-trước**, `api.open-meteo.com` **không cache**. Đổi nội dung app xong nhớ **tăng `VERSION`** trong `sw.js` để cache cũ bị dọn.
 - Mọi đường dẫn trong manifest và lúc `register('./sw.js')` đều **tương đối** để chạy được cả ở root lẫn thư mục con (`neo-era.github.io/diary/`).
 - Không đặt `id` trong manifest — mặc định lấy theo `start_url` nên tự khớp mọi nơi host.
@@ -283,6 +286,14 @@ Muốn khỏi phải thu nhỏ thì giảm `splitAfter` hoặc bóp thêm `.page
 - [ ] Mẫu 2/3 vẫn đúng 2 trang, mẫu 1 vẫn 1 trang
 
 > Kiểm bằng `page.screenshot()` của puppeteer là **chưa đủ** — nó dùng engine thật nên vẫn đẹp trong khi html2canvas đã hỏng. Phải gọi thẳng `exportDayAsPDF()` / `exportBookPDFOnly()`.
+
+**Phiên bản & cập nhật:**
+- [ ] Dòng "Phiên bản …" hiện dưới tiêu đề thanh công cụ, khớp `APP_VERSION`
+- [ ] `APP_VERSION` (index.html) và `VERSION` (sw.js) khớp nhau
+- [ ] Deploy bản mới (đổi `VERSION`) → mở lại tab cũ → thanh "Đã có phiên bản mới" tự hiện
+- [ ] Bấm "Để sau" → thanh ẩn; bấm "Tải lại ngay" → không mất chữ đang gõ dở
+- [ ] Ctrl+P → cả dòng phiên bản lẫn thanh báo đều không lọt vào bản in
+- [ ] Mobile 390px: thanh báo trải hết bề ngang, chữ không bị bóp thành cột hẹp
 
 **Bố cục thanh công cụ:**
 - [ ] 1440 / 1280 / 1100px → thanh dọc bên trái đúng 300px, **không nút nào tràn sang cột thứ hai**, trang nhật ký không bị đè, không cuộn ngang
