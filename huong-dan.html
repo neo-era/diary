@@ -230,18 +230,22 @@
 </div>
 
 <h2 id="templates">4. Chọn mẫu quyển</h2>
-<p>Phần mềm có sẵn <strong>2 mẫu quyển</strong>. Mỗi cuốn dùng 1 mẫu, chọn bằng dropdown <span class="btn">🧩 Mẫu</span>:</p>
+<p>Phần mềm có sẵn <strong>3 mẫu quyển</strong>. Mỗi cuốn dùng 1 mẫu, chọn bằng dropdown <span class="btn">🧩 Mẫu</span>:</p>
 
 <table class="steps">
-  <tr><th style="width:190px;">Mẫu cũ<br>— 1 cột khối lượng</th><td>
+  <tr><th style="width:190px;">Mẫu 1<br>(1 cột khối lượng)</th><td>
     Trang nhật ký như phiên bản trước: bảng 4 cột <em>STT · Công tác · Đơn vị tính · Khối lượng thực hiện</em>.
     Không có trang bìa. <strong>Các cuốn đã tạo từ trước đều tự nhận mẫu này</strong> — số liệu cũ giữ nguyên.
   </td></tr>
-  <tr><th>Mẫu Quận 8<br>— 3 phường</th><td>
-    Theo quyển nhật ký mẫu của gói thầu Quận 8: bảng <strong>9 cột</strong> — khối lượng tách riêng
-    <em>Khối lượng thực hiện</em> và <em>Khối lượng nghiệm thu</em>, mỗi nhóm 3 phường.
+  <tr><th>Mẫu 2<br>(thực hiện + nghiệm thu)</th><td>
+    Bảng <strong>9 cột</strong> — khối lượng tách riêng <em>Khối lượng thực hiện</em> và
+    <em>Khối lượng nghiệm thu</em>, mỗi nhóm 3 địa bàn.
     Có sẵn <strong>38 hạng mục</strong> chia 2 nhóm <em>Tủ thường</em> / <em>Tủ kết nối</em>, ô bằng 0 in ra dấu <code>-</code>.
     Kèm <a href="#book-info">trang bìa, trang liệt kê văn bản và trang danh sách cán bộ</a>.
+  </td></tr>
+  <tr><th>Mẫu 3<br>(chỉ khối lượng thực hiện)</th><td>
+    Giống hệt Mẫu 2 nhưng <strong>bỏ nhóm cột <em>Khối lượng nghiệm thu</em></strong> —
+    bảng còn <strong>6 cột</strong>, mỗi địa bàn một cột số. Dùng khi biên bản không cần tách nghiệm thu.
   </td></tr>
 </table>
 
@@ -253,7 +257,7 @@
 </ol>
 
 <div class="callout">
-  <strong>Đổi tên phường / địa bàn:</strong> bấm <span class="btn">✏️ Sửa hạng mục</span> rồi sửa trực tiếp
+  <strong>Đổi tên địa bàn:</strong> bấm <span class="btn">✏️ Sửa hạng mục</span> rồi sửa trực tiếp
   tên phường trên đầu bảng. Tên mới áp dụng cho <em>mọi ngày</em> của cuốn.
 </div>
 
@@ -325,6 +329,27 @@ BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký
 <div class="callout">
   Khi sửa <strong>tên</strong> hoặc <strong>đơn vị</strong>, thay đổi áp dụng cho cả ngày hiện tại và các ngày mới sẽ tạo sau. Sửa <strong>khối lượng</strong> chỉ áp dụng cho ngày đang xem (mỗi ngày có khối lượng riêng).
 </div>
+<h3>Thêm / bớt địa bàn (mẫu Quận 8)</h3>
+<p>Ở chế độ <span class="btn">✏️ Sửa hạng mục</span>, mỗi tên địa bàn trên đầu bảng có nút <span class="btn danger">×</span> để xóa,
+và dưới bảng có nút <span class="btn">+ Thêm địa bàn</span>. Mỗi địa bàn tương ứng <strong>2 cột số</strong>
+(một dưới <em>Khối lượng thực hiện</em>, một dưới <em>Khối lượng nghiệm thu</em>), tối đa 6 địa bàn.</p>
+<div class="callout danger">
+  <strong>Xóa địa bàn là mất số liệu.</strong> Cột bị xóa sẽ mất ở <em>tất cả các ngày</em> trong cuốn, không hoàn tác được.
+  Thêm địa bàn thì an toàn — số liệu các cột cũ giữ nguyên, cột mới bắt đầu từ 0.
+</div>
+<p>Dòng <em>“Địa bàn: …”</em> trên bìa quyển tự cập nhật theo danh sách mới, trừ khi bạn đã tự sửa câu đó trong
+<span class="btn">📕 Thông tin quyển</span> — khi đó phần mềm giữ nguyên câu của bạn.</p>
+
+<h3>Ẩn hạng mục không có khối lượng</h3>
+<p>Ô tích <strong>“Ẩn hạng mục có khối lượng = 0 khi xuất PDF / Word”</strong> ngay dưới bảng.
+Khi bật, bản in chỉ còn những hạng mục thực sự có số — nhóm nào không còn hạng mục nào cũng ẩn luôn,
+STT đánh lại liên tục từ 1. <strong>Màn hình nhập liệu vẫn hiện đủ mọi hạng mục</strong> để bạn gõ số.</p>
+<div class="callout">
+  Nhờ ít dòng hơn, một ngày thường chỉ còn <strong>1 trang</strong> thay vì 2 — số trang của cả quyển và dòng
+  <em>“Sổ này gồm … trang”</em> tự tính lại theo. Riêng <strong>ngày nghỉ</strong> vẫn in đủ tên hạng mục
+  (bảng cố ý để trống), không bị ẩn.
+</div>
+
 <div class="callout">
   <strong>Riêng mẫu Quận 8:</strong> ngày mới tạo sẽ <em>kế thừa khối lượng của ngày bạn đang mở</em>
   (quyển mẫu lặp lại y hệt bộ số mỗi ngày), nên không phải nhập lại 38 × 6 ô. Muốn ngày mới trống,

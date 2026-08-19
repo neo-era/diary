@@ -168,7 +168,8 @@
     margin: 4px 0 10px 0;
   }
   table th, table td {
-    border: 1px solid var(--line);
+    border: 0.5pt solid var(--line);   /* nét mảnh, khớp bản xuất */
+    /* bảng khối lượng nhiều cột mảnh hơn nữa — xem quy tắc table.work.multi bên dưới */
     padding: 5px 7px;
     text-align: center;
     vertical-align: middle;
@@ -228,14 +229,37 @@
 
   /* ==== BẢNG NHIỀU CỘT KHỐI LƯỢNG (mẫu nhiều địa bàn) ==== */
   .table-wrap { overflow-x: auto; }
-  table.work.multi th, table.work.multi td { font-size: 10pt; padding: 2px 3px; }
-  table.work.multi td.stt { width: 9mm; }
-  table.work.multi td.qty { width: 11mm; }
-  table.work.multi td.unit { width: 14mm; }
+  table.work.multi th, table.work.multi td { font-size: 10pt; padding: 2px 3px; border: 0.4pt solid var(--line); }
+  /* bề ngang do renderTableHead() đặt theo % — đừng ghi cứng mm ở đây,
+     số cột đổi theo số địa bàn */
   table.work th.zone { font-size: 9.5pt; font-weight: normal; }
   table.work th.zone .zone-input { font-size: 9.5pt; text-align: center; display: none; }
   body.edit-mode table.work th.zone .zone-text { display: none; }
   body.edit-mode table.work th.zone .zone-input { display: inline-block; }
+  table.work th.zone .zone-del {
+    display: none;
+    margin-top: 3px;
+    padding: 0 6px;
+    border: 1px solid #fecaca;
+    background: #fff;
+    color: #b91c1c;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  body.edit-mode table.work th.zone .zone-del { display: inline-block; }
+  .opt-hide-zero {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0 10px 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    color: #334155;
+    cursor: pointer;
+  }
+  .opt-hide-zero input { width: 15px; height: 15px; margin: 0; }
   table.work tbody.rest input[type="number"] { visibility: hidden; }
 
   /* ==== Ô TÍCH NGÀY NGHỈ ==== */
@@ -543,7 +567,7 @@
   <div class="toolbar-row">
     <button class="primary" onclick="exportDayAsPDF()">📄 Xuất PDF ngày này</button>
     <button onclick="exportBookPDFOnly()">📕 Xuất PDF cả cuốn</button>
-    <button onclick="toggleEdit()" id="editBtn">✏️ Sửa hạng mục</button>
+    <button onclick="toggleEdit()" id="editBtn">✏️ Sửa hạng mục / địa bàn</button>
     <button onclick="saveData()">💾 Lưu</button>
     <label class="file-label" for="importFile">📂 Tải file</label>
     <input type="file" id="importFile" accept=".json" onchange="importData(event)">
@@ -762,6 +786,13 @@
     </table>
   </div>
   <button class="add-row-btn" onclick="addRow()">+ Thêm hạng mục</button>
+  <button class="add-row-btn" onclick="addZone()">+ Thêm địa bàn</button>
+  <div>
+    <label class="opt-hide-zero">
+      <input type="checkbox" id="hideZero" onchange="onHideZeroChange()">
+      Ẩn hạng mục có khối lượng = 0 khi xuất PDF / Word
+    </label>
+  </div>
 
   <div class="section-num">4. Công tác vệ sinh môi trường:</div>
   <div class="checks">
@@ -818,12 +849,14 @@ const DEFAULT_ITEMS = [
 const DEFAULT_SIGN_A = "Ông Võ Thanh Quang";
 const DEFAULT_SIGN_B = "Ông Trần Hữu Lưu";
 
-// ====== MẪU QUẬN 8 (theo file Excel NKTC-Gói thầu 2026-2029-Quận 8) ======
+// ====== DỮ LIỆU CHO MẪU 2 & MẪU 3 (dựng theo file .xlsx trong repo) ======
 const Q8_DIA_BAN_LIST = "phường Xóm Chiếu, phường Khánh Hội, phường Vĩnh Hội, phường Bình Tây, "
   + "phường Bình Tiên, phường Bình Phú, phường Phú Lâm, phường Tân Thuận, phường Phú Thuận, "
   + "phường Tân Mỹ, phường Tân Hưng, phường Chánh Hưng, phường Phú Định, phường Bình Đông, "
   + "xã Vĩnh Lộc, xã Tân Vĩnh Lộc, xã Bình Lợi, xã Tân Nhựt, xã Bình Chánh, xã Hưng Long, "
   + "xã Bình Hưng, xã Bình Khánh, xã An Thới Đông, xã Cần Giờ, xã Nhà Bè, xã Hiệp Phước, xã Thạnh An.";
+
+const Q8_ZONES = ["Phường Chánh Hưng", "Phường Phú Định", "Phường Bình Đông"];
 
 // [tên hạng mục, Chánh Hưng, Phú Định, Bình Đông] — nghiệm thu mặc định bằng thực hiện
 const Q8_RAW = [
@@ -873,6 +906,11 @@ const Q8_ITEMS = Q8_RAW.map(r => r[0] === "*"
   ? { group: r[1] }
   : { name: r[0], unit: "trạm", q: { th0: r[1], th1: r[2], th2: r[3], nt0: r[1], nt1: r[2], nt2: r[3] } });
 
+// Mẫu 3 dùng lại y hệt danh sách hạng mục nhưng bỏ hẳn khoá nghiệm thu (nt*)
+const Q8_ITEMS_TH = Q8_ITEMS.map(it => it.group !== undefined
+  ? { group: it.group }
+  : { name: it.name, unit: it.unit, q: { th0: it.q.th0, th1: it.q.th1, th2: it.q.th2 } });
+
 const Q8_BOOK_DEFAULT = {
   coverType: "vh",          // 'vh' = quyển vận hành | 'bd' = quyển bảo dưỡng
   showCoverTong: true,
@@ -882,7 +920,7 @@ const Q8_BOOK_DEFAULT = {
   congTacVH: "Quản lý, vận hành hệ thống chiếu sáng đô thị thực hiện tháng {MM} năm {YYYY}.",
   congTacBD: "Bảo dưỡng hệ thống chiếu sáng đô thị thực hiện tháng {MM} năm {YYYY}.",
   congTac: "",              // nếu người dùng nhập tay thì dùng giá trị này
-  diaBan: "Địa bàn: phường Chánh Hưng, phường Phú Định, phường Bình Đông - Thành phố Hồ Chí Minh.",
+  diaBan: diaBanText(Q8_ZONES),   // để syncDiaBan nhận ra là chuỗi tự sinh
   benA: "Trung tâm Quản lý Giao thông và Hạ tầng kỹ thuật TP.HCM",
   benB: "Liên danh Chiếu sáng công cộng TP.HCM - Kỹ thuật Điện Phú Thọ",
   daiDienLienDanh: "Công ty cổ phần Chiếu sáng công cộng TP.HCM",
@@ -918,7 +956,7 @@ const Q8_BOOK_DEFAULT = {
 const TEMPLATES = {
   lavipco: {
     id: "lavipco",
-    name: "Mẫu cũ — 1 cột khối lượng",
+    note: "1 cột khối lượng",
     zones: null,
     colGroups: [{ label: "Khối lượng thực hiện", prefix: null }],
     itemsHeader: "Công tác quản lý, vận hành",
@@ -931,8 +969,8 @@ const TEMPLATES = {
   },
   q8: {
     id: "q8",
-    name: "Mẫu Quận 8 — 3 phường (thực hiện / nghiệm thu)",
-    zones: ["Phường Chánh Hưng", "Phường Phú Định", "Phường Bình Đông"],
+    note: "thực hiện + nghiệm thu",
+    zones: Q8_ZONES,
     colGroups: [
       { label: "Khối lượng thực hiện", prefix: "th" },
       { label: "Khối lượng nghiệm thu", prefix: "nt" }
@@ -946,10 +984,36 @@ const TEMPLATES = {
     items: Q8_ITEMS,
     book: Q8_BOOK_DEFAULT,
     sign: { a: "Ông Huỳnh Phước Hải", b: "Ông Phạm Tấn Việt" }
+  },
+  // Giống hệt mẫu q8, chỉ bỏ nhóm cột "Khối lượng nghiệm thu"
+  q8th: {
+    id: "q8th",
+    note: "chỉ khối lượng thực hiện",
+    zones: Q8_ZONES,
+    colGroups: [
+      { label: "Khối lượng thực hiện", prefix: "th" }
+    ],
+    itemsHeader: "Công tác quản lý vận hành",
+    hasBook: true,
+    zeroAsDash: true,
+    keepQty: true,
+    continuousNumbering: true,
+    splitAfter: 23,
+    items: Q8_ITEMS_TH,
+    book: Q8_BOOK_DEFAULT,
+    sign: { a: "Ông Huỳnh Phước Hải", b: "Ông Phạm Tấn Việt" }
   }
 };
 
 function tplOf(p) { return (p && TEMPLATES[p.templateId]) || TEMPLATES.lavipco; }
+// Nhãn hiển thị: "Mẫu <STT> (ghi chú)". STT lấy theo thứ tự khai báo trong TEMPLATES
+// nên thêm mẫu mới là tự đánh số, không phải sửa tay chỗ nào.
+function tplLabel(id) {
+  const t = TEMPLATES[id];
+  if (!t) return '';
+  const n = Object.keys(TEMPLATES).indexOf(id) + 1;
+  return 'Mẫu ' + n + (t.note ? ' (' + t.note + ')' : '');
+}
 function zonesOf(p) {
   const tpl = tplOf(p);
   if (!tpl.zones) return null;
@@ -975,6 +1039,45 @@ function makeItem(p, name, unit) {
     : { name, unit, q: blankQ(p) };
 }
 function deepCopy(o) { return JSON.parse(JSON.stringify(o)); }
+
+const MAX_ZONES = 6;   // 2 × 6 = 12 cột số — quá mức này bảng không còn đọc nổi
+
+// Bề ngang các cột, tính theo % để bảng không vỡ khi thêm/bớt địa bàn.
+// Cột tên hạng mục không đặt width → tự ăn phần còn lại.
+function colWidths(p) {
+  const n = qtyKeys(p).length;
+  return { stt: '5%', unit: '8%', qty: (48 / n).toFixed(2) + '%' };
+}
+
+// Đánh lại chỉ số khoá `q` khi số địa bàn thay đổi.
+// mapping[chỉ số mới] = chỉ số cũ, hoặc -1 nếu là cột mới (khởi tạo 0).
+// PHẢI áp cho cả p.items (template) lẫn items của MỌI ngày, nếu không số liệu
+// các ngày cũ sẽ nằm lệch cột.
+function applyZoneMapping(p, mapping) {
+  const prefixes = tplOf(p).colGroups.map(g => g.prefix).filter(Boolean);
+  if (!prefixes.length) return;
+  const remap = it => {
+    if (!it || it.group !== undefined) return;
+    const src = it.q || {};
+    const out = {};
+    prefixes.forEach(pre => mapping.forEach((oldI, newI) => {
+      out[pre + newI] = oldI >= 0 ? (src[pre + oldI] ?? 0) : 0;
+    }));
+    it.q = out;
+  };
+  (p.items || []).forEach(remap);
+  Object.values(p.entries || {}).forEach(e => (e.items || []).forEach(remap));
+}
+
+// Dòng "Địa bàn: …" trên bìa quyển là text tự do; chỉ ghi đè khi nó vẫn đang
+// khớp chuỗi sinh tự động, để không xoá mất câu người dùng đã tự sửa.
+function diaBanText(zones) {
+  return 'Địa bàn: ' + (zones || []).join(', ') + ' - Thành phố Hồ Chí Minh.';
+}
+function syncDiaBan(p, oldZones) {
+  if (!p || !p.book) return;
+  if ((p.book.diaBan || '').trim() === diaBanText(oldZones)) p.book.diaBan = diaBanText(p.zones);
+}
 
 const STORAGE_KEY = "nktc_lavipco_v2";
 const OLD_STORAGE_KEY = "nktc_lavipco_v1";
@@ -1051,8 +1154,29 @@ function splitPoints(p) {
   if (!s) return [];
   return (Array.isArray(s) ? s : [s]).filter(n => n > 0);
 }
+
+// Chia các dòng bảng của 1 ngày thành từng trang. Nếu ẩn bớt dòng khối lượng 0
+// mà số hạng mục còn lại không vượt điểm cắt thì ngày đó chỉ còn 1 trang —
+// nên số trang phải suy ra từ ĐÂY, không phải từ splitAfter.
+function entryRowChunks(p, e) {
+  const rows = workRowsHTML(p, e);
+  const pts = splitPoints(p);
+  if (!pts.length) return [rows];
+  const cuts = [...new Set(
+    pts.map(n => rows.findIndex(r => r.n && r.n > n)).filter(i => i > 0)
+  )].sort((a, b) => a - b);
+  if (!cuts.length) return [rows];
+  const chunks = [];
+  let prev = 0;
+  cuts.forEach(i => { chunks.push(rows.slice(prev, i)); prev = i; });
+  chunks.push(rows.slice(prev));
+  return chunks;
+}
+
 // Số trang VẬT LÝ mà 1 ngày chiếm
-function entryPageCount(p) { return splitPoints(p).length + 1; }
+function entryPageCount(p, e) {
+  return e ? entryRowChunks(p, e).length : splitPoints(p).length + 1;
+}
 // Số trang đầu quyển được đánh số: Tr1 (liệt kê văn bản) + Tr2 (danh sách cán bộ).
 // Các trang bìa không đánh số, đúng như quyển mẫu.
 function frontMatterPages(p) { return (tplOf(p).hasBook && p.book) ? 2 : 0; }
@@ -1066,8 +1190,19 @@ function computePagenum(p, dateISO) {
   const all = new Set(Object.keys(p.entries || {}));
   all.add(dateISO);
   const relevant = [...all].filter(d => d >= startDate).sort();
-  const idx = relevant.indexOf(dateISO);
-  return Math.max(1, startPage + frontMatterPages(p) + (idx >= 0 ? idx : 0) * entryPageCount(p));
+  let n = startPage + frontMatterPages(p);
+  for (const d of relevant) {
+    if (d === dateISO) break;
+    n += entryPageCount(p, p.entries[d]);
+  }
+  return Math.max(1, n);
+}
+
+// Tổng số trang được đánh số của cả cuốn
+function bookPageTotal(p) {
+  const dates = Object.keys(p.entries || {}).sort();
+  if (!dates.length) return 0;
+  return frontMatterPages(p) + dates.reduce((s, d) => s + entryPageCount(p, p.entries[d]), 0);
 }
 
 function ensureEntry(dateISO) {
@@ -1106,7 +1241,7 @@ function syncItemsStructureToProject() {
   const tpl = tplOf(p);
   const keys = qtyKeys(p);
   const single = keys.length === 1 && keys[0] === 'qty';
-  // Mẫu cũ: template lưu khối lượng = 0 (mỗi ngày tự nhập).
+  // Mẫu 1 (1 cột): template lưu khối lượng = 0 (mỗi ngày tự nhập).
   // Mẫu keepQty: template chụp lại khối lượng của ngày đang mở, để ngày mới
   // không phải nhập lại 38×6 số (file Excel gốc lặp y hệt số liệu mỗi ngày).
   p.items = items.map(it => {
@@ -1192,7 +1327,7 @@ function refreshTemplateSelect() {
     Object.values(TEMPLATES).forEach(t => {
       const opt = document.createElement('option');
       opt.value = t.id;
-      opt.textContent = t.name;
+      opt.textContent = tplLabel(t.id);
       sel.appendChild(opt);
     });
   }
@@ -1238,6 +1373,7 @@ function renderForm() {
   document.getElementById('rep_a').value = e.rep_a;
   document.getElementById('rep_b').value = e.rep_b;
   document.getElementById('restDay').checked = !!e.restDay;
+  document.getElementById('hideZero').checked = !!p.hideZeroRows;
   // Số trang tự tính theo thứ tự ngày trong cuốn
   const pn = computePagenum(p, appState.currentDate);
   e.pagenum = pn;
@@ -1291,15 +1427,21 @@ function renderTableHead() {
     </tr>`;
     return;
   }
+  const w = colWidths(p);
   const groupTh = tpl.colGroups.map(g => `<th colspan="${zs.length}">${escapeHtml(g.label)}</th>`).join('');
-  const zoneTh = tpl.colGroups.map(() =>
-    zs.map((z, i) => `<th class="zone"><span class="zone-text">${escapeHtml(z)}</span><input type="text" class="zone-input" value="${escapeHtml(z)}" data-zone="${i}"></th>`).join('')
+  // nút xóa chỉ gắn ở nhóm cột ĐẦU TIÊN để mỗi địa bàn chỉ có một nút
+  const zoneTh = tpl.colGroups.map((g, gi) =>
+    zs.map((z, i) => `<th class="zone" style="width:${w.qty}">
+        <span class="zone-text">${escapeHtml(z)}</span>
+        <input type="text" class="zone-input" value="${escapeHtml(z)}" data-zone="${i}">
+        ${gi === 0 ? `<button class="zone-del" onclick="delZone(${i})" title="Xóa địa bàn">×</button>` : ''}
+      </th>`).join('')
   ).join('');
   head.innerHTML = `
     <tr>
-      <th class="stt" rowspan="2">STT</th>
+      <th class="stt" rowspan="2" style="width:${w.stt}">STT</th>
       <th rowspan="2">${escapeHtml(tpl.itemsHeader)}</th>
-      <th class="unit" rowspan="2">Đơn vị tính</th>
+      <th class="unit" rowspan="2" style="width:${w.unit}">Đơn vị tính</th>
       ${groupTh}
     </tr>
     <tr>${zoneTh}</tr>`;
@@ -1404,10 +1546,59 @@ function delRow(idx) {
   persist();
 }
 
+// ====== THÊM / BỚT ĐỊA BÀN (mỗi địa bàn = 2 cột số) ======
+function addZone() {
+  const p = getProject();
+  const zs = zonesOf(p);
+  if (!zs) { alert(tplLabel(tplOf(p).id) + ' không tách khối lượng theo địa bàn.'); return; }
+  if (zs.length >= MAX_ZONES) { alert(`Tối đa ${MAX_ZONES} địa bàn.`); return; }
+  const name = prompt('Tên địa bàn mới:', 'Phường ');
+  if (name === null) return;
+
+  clearTimeout(window._sv);
+  collectForm();
+  const old = zs.slice();
+  p.zones = [...old, name.trim() || `Địa bàn ${old.length + 1}`];
+  applyZoneMapping(p, [...old.map((_, i) => i), -1]);
+  syncDiaBan(p, old);
+  renderForm();
+  persist();
+  flash('Đã thêm địa bàn ✓');
+}
+
+function delZone(i) {
+  const p = getProject();
+  const zs = zonesOf(p);
+  if (!zs) return;
+  if (zs.length <= 1) { alert('Phải còn ít nhất 1 địa bàn.'); return; }
+  if (!confirm(`Xóa địa bàn "${zs[i]}"?\n\nSố liệu của địa bàn này ở TẤT CẢ các ngày trong cuốn sẽ mất.`)) return;
+
+  clearTimeout(window._sv);
+  collectForm();
+  const old = zs.slice();
+  p.zones = old.filter((_, k) => k !== i);
+  applyZoneMapping(p, old.map((_, k) => k).filter(k => k !== i));
+  syncDiaBan(p, old);
+  renderForm();
+  persist();
+  flash('Đã xóa địa bàn ✓');
+}
+
+function onHideZeroChange() {
+  const p = getProject();
+  if (!p) return;
+  p.hideZeroRows = document.getElementById('hideZero').checked;
+  persist();
+  flash(p.hideZeroRows ? 'Khi xuất sẽ ẩn hạng mục khối lượng 0 ✓' : 'Khi xuất sẽ in đủ mọi hạng mục ✓');
+}
+
 function toggleEdit() {
   document.body.classList.toggle('edit-mode');
+  const on = document.body.classList.contains('edit-mode');
   const btn = document.getElementById('editBtn');
-  btn.textContent = document.body.classList.contains('edit-mode') ? '✓ Xong' : '✏️ Sửa hạng mục';
+  btn.textContent = on ? '✓ Xong' : '✏️ Sửa hạng mục / địa bàn';
+  // các nút thêm/xóa hạng mục & địa bàn chỉ hiện ở chế độ này — nhắc cho dễ thấy
+  if (on && zonesOf(getProject())) flash('Đã bật chế độ sửa: thêm/xóa hạng mục và địa bàn');
 }
 
 // ====== LƯU / TẢI ======
@@ -1553,7 +1744,7 @@ function changeDate(dateISO) {
 
 function newProject() {
   const tplIds = Object.keys(TEMPLATES);
-  const menu = tplIds.map((id, i) => `${i + 1}. ${TEMPLATES[id].name}`).join('\n');
+  const menu = tplIds.map((id, i) => `${i + 1}. ${tplLabel(id)}`).join('\n');
   const tRaw = prompt('🧩 Chọn mẫu quyển:\n\n' + menu, String(tplIds.length));
   if (tRaw === null) return;
   const tIdx = parseInt(tRaw, 10) - 1;
@@ -1627,7 +1818,7 @@ function onTemplateChange(ev) {
 
   const oldTpl = tplOf(p);
   const newTpl = TEMPLATES[newId];
-  if (!confirm(`Đổi mẫu của cuốn "${p.name}"\n\nTừ: ${oldTpl.name}\nSang: ${newTpl.name}\n\nSố cột khối lượng sẽ đổi theo mẫu mới. Số liệu cũ vẫn được giữ lại trong dữ liệu.`)) {
+  if (!confirm(`Đổi mẫu của cuốn "${p.name}"\n\nTừ: ${tplLabel(oldTpl.id)}\nSang: ${tplLabel(newTpl.id)}\n\nSố cột khối lượng sẽ đổi theo mẫu mới. Số liệu cũ vẫn được giữ lại trong dữ liệu.`)) {
     ev.target.value = p.templateId;
     return;
   }
@@ -1647,7 +1838,7 @@ function onTemplateChange(ev) {
 
   renderForm();
   persist();
-  flash(`Đã chuyển sang ${newTpl.name} ✓`);
+  flash(`Đã chuyển sang ${tplLabel(newTpl.id)} ✓`);
 }
 
 function renameProject() {
@@ -1671,7 +1862,7 @@ function bookOf(p) {
 function openBook() {
   const p = getProject();
   if (!tplOf(p).hasBook) {
-    alert('Mẫu "' + tplOf(p).name + '" không có trang bìa / văn bản / cán bộ.');
+    alert(tplLabel(tplOf(p).id) + ' không có trang bìa / văn bản / cán bộ.');
     return;
   }
   renderBookForm();
@@ -1841,14 +2032,15 @@ function fmtQty(tpl, v, rest) {
 function workTheadHTML(p) {
   const tpl = tplOf(p);
   const zs = zonesOf(p);
+  const w = colWidths(p);
   return zs
     ? `<tr>
-         <th style="width:9mm;" rowspan="2">STT</th>
+         <th style="width:${w.stt};" rowspan="2">STT</th>
          <th rowspan="2">${escapeHtml(tpl.itemsHeader)}</th>
-         <th style="width:14mm;" rowspan="2">Đơn vị tính</th>
+         <th style="width:${w.unit};" rowspan="2">Đơn vị tính</th>
          ${tpl.colGroups.map(g => `<th colspan="${zs.length}">${escapeHtml(g.label)}</th>`).join('')}
        </tr>
-       <tr>${tpl.colGroups.map(() => zs.map(z => `<th class="zone" style="width:11mm;">${escapeHtml(z)}</th>`).join('')).join('')}</tr>`
+       <tr>${tpl.colGroups.map(() => zs.map(z => `<th class="zone" style="width:${w.qty};">${escapeHtml(z)}</th>`).join('')).join('')}</tr>`
     : `<tr>
          <th style="width:11mm;">STT</th>
          <th>${escapeHtml(tpl.itemsHeader)}</th>
@@ -1857,13 +2049,34 @@ function workTheadHTML(p) {
        </tr>`;
 }
 
-// Trả về [{ n, html }] — n = STT của hạng mục (null với dòng nhóm)
+function isZeroItem(p, it) {
+  return qtyKeys(p).every(k => !Number(getQ(it, k)));
+}
+
+// Lọc bỏ hạng mục khối lượng = 0 (khi bật p.hideZeroRows), đồng thời bỏ luôn
+// dòng nhóm không còn hạng mục nào. Ngày nghỉ thì KHÔNG lọc — bảng cố tình để
+// trống nhưng vẫn phải đủ tên hạng mục.
+function visibleItems(p, e) {
+  const all = e.items || [];
+  if (!p.hideZeroRows || e.restDay) return all;
+  const keep = all.map(it => it.group !== undefined ? false : !isZeroItem(p, it));
+  all.forEach((it, i) => {
+    if (it.group === undefined) return;
+    for (let j = i + 1; j < all.length && all[j].group === undefined; j++) {
+      if (keep[j]) { keep[i] = true; break; }
+    }
+  });
+  return all.filter((_, i) => keep[i]);
+}
+
+// Trả về [{ n, html }] — n = STT của hạng mục (null với dòng nhóm).
+// Khi ẩn bớt dòng thì STT đánh lại liên tục 1..N cho bảng in ra tự nhất quán.
 function workRowsHTML(p, e) {
   const tpl = tplOf(p);
   const keys = qtyKeys(p);
   const rest = !!e.restDay;
   let stt = 0;
-  return (e.items || []).map(it => {
+  return visibleItems(p, e).map(it => {
     if (it.group) {
       if (!tpl.continuousNumbering) stt = 0;
       return { n: null, html: `<tr><td></td><td colspan="${2 + keys.length}" style="font-weight:bold;background:#fafafa;">${escapeHtml(it.group)}</td></tr>` };
@@ -1879,10 +2092,18 @@ function buildWorkTableHTML(p, rows) {
   return `<table class="${cls}"><thead>${workTheadHTML(p)}</thead><tbody>${rows.map(r => r.html).join('')}</tbody></table>`;
 }
 
+// Mục 4 và 5: in ra ĐỦ 3 lựa chọn, đánh dấu ô đang chọn (ô vuông vẽ bằng CSS
+// nên không phụ thuộc font có ký tự ☑ hay không)
+const RATE_OPTIONS = ['Tốt', 'Bình thường', 'Kém'];
+function rateOptionsHTML(value) {
+  return '<div class="opts">' + RATE_OPTIONS.map(o =>
+    `<span class="opt"><i class="box${o === value ? ' on' : ''}"></i>${escapeHtml(o)}</span>`
+  ).join('') + '</div>';
+}
+
 function buildEntryHTML(p, e) {
   const tpl = tplOf(p);
   const pn = computePagenum(p, e.date);
-  const rows = workRowsHTML(p, e);
 
   // Dòng "Công trình:" chỉ hiển thị trên màn hình để biết đang sửa cuốn nào — không xuất ra file
   const head = `<h1 class="title">Nhật ký thi công hàng ngày</h1>
@@ -1903,9 +2124,9 @@ function buildEntryHTML(p, e) {
     <div class="subsection">3.1. Diễn biến thi công, nghiệm thu công việc:</div>`;
 
   const tail = `<div class="section-num">4. Công tác vệ sinh môi trường:</div>
-    <div style="padding-left:6mm">${escapeHtml(e.env || '')}</div>
+    ${rateOptionsHTML(e.env)}
     <div class="section-num">5. Công tác an toàn lao động, an toàn giao thông:</div>
-    <div style="padding-left:6mm">${escapeHtml(e.safe || '')}</div>
+    ${rateOptionsHTML(e.safe)}
     <div class="section-num">6. Nhận xét và yêu cầu của giám sát bên A:</div>
     <div class="note-line">${multilineHtml(e.note_a)}</div>
     <div class="note-line"></div>
@@ -1930,18 +2151,11 @@ function buildEntryHTML(p, e) {
   // số trang đánh liên tục cả quyển; mỗi trang vật lý một số
   const foot = n => `<div class="page-num">trang ${n}</div>`;
 
-  // Mẫu có splitAfter: 1 ngày chiếm nhiều trang A4 cố định, cắt sau các hạng mục
-  // đã chỉ định; mỗi trang tiếp theo lặp lại dòng tiêu đề bảng — như quyển mẫu Excel.
-  const pts = splitPoints(p);
-  const cls = pts.length ? 'page compact' : 'page';
-  if (!pts.length) {
-    return `<div class="${cls}">${head}${buildWorkTableHTML(p, rows)}${tail}${foot(pn)}</div>`;
-  }
-  const cuts = pts.map(n => rows.findIndex(r => r.n && r.n > n)).filter(i => i > 0);
-  const chunks = [];
-  let prev = 0;
-  cuts.forEach(i => { chunks.push(rows.slice(prev, i)); prev = i; });
-  chunks.push(rows.slice(prev));
+  // Mẫu có splitAfter: 1 ngày cắt sau các hạng mục đã chỉ định, mỗi trang tiếp theo
+  // lặp lại dòng tiêu đề bảng — như quyển mẫu Excel. Nếu ẩn bớt dòng khối lượng 0
+  // mà không còn đủ hạng mục để cắt thì entryRowChunks tự trả về 1 trang.
+  const chunks = entryRowChunks(p, e);
+  const cls = splitPoints(p).length ? 'page compact' : 'page';
   return chunks.map((chunk, i) =>
     `<div class="${cls}">${i === 0 ? head : ''}${buildWorkTableHTML(p, chunk)}` +
     `${i === chunks.length - 1 ? tail : ''}${foot(pn + i)}</div>`
@@ -1974,8 +2188,7 @@ function viDate(iso) {
 // đã nhập tay trong modal thì ưu tiên giá trị nhập.
 function bookPageRange(p) {
   const b = p.book || {};
-  const days = Object.keys(p.entries || {}).length;
-  const count = days ? frontMatterPages(p) + days * entryPageCount(p) : 0;
+  const count = bookPageTotal(p);
   const from = Number(p.startPage) || 1;
   const auto = {
     soTrang: count ? String(count) : '',
@@ -2165,8 +2378,11 @@ const EXPORT_CSS = `
   table { width: 100%; border-collapse: collapse; margin: 4px 0 10px 0; }
   /* font-size phải ghi rõ: container xuất PDF nằm trong document thật nên style
      mobile của app (@media screen and (max-width:820px)) vẫn có thể lọt vào. */
-  table th, table td { border: 1px solid #000; padding: 5px 7px; vertical-align: middle; font-size: 13pt; }
+  /* Nét kẻ mảnh theo quyển mẫu: Tr1/Tr2 dùng viền "thin" (~0,5pt), riêng bảng
+     khối lượng trang ngày dùng "hair" — mảnh nhất. Đừng quay lại 1px (~0,75pt). */
+  table th, table td { border: 0.5pt solid #000; padding: 5px 7px; vertical-align: middle; font-size: 13pt; }
   table th { font-weight: bold; text-align: center; }
+  table.work th, table.work td { border: 0.4pt solid #000; }
   table.work td { font-size: 12pt; }
 
   /* CỠ CHỮ: dùng đúng số pt ghi trong ô Excel. Nội dung có thể cao hơn 1 trang,
@@ -2193,7 +2409,7 @@ const EXPORT_CSS = `
          nhãn chiếm ~22% bề ngang, nội dung canh đều) ==== */
   .cover { text-align: center; font-size: 13pt; }
   .cover .nation, .cover .nation-sub { font-weight: bold; font-size: inherit; }
-  .cover .nation-sub { border-bottom: 1px solid #000; display: inline-block; padding: 0 12px 2px; margin-top: 2mm; }
+  .cover .nation-sub { border-bottom: 0.5pt solid #000; display: inline-block; padding: 0 12px 2px; margin-top: 2mm; }
   .cover .cover-title { font-weight: bold; line-height: 1.25; }
   .cover .cover-title.big { font-size: 28pt; margin: 14mm 0 5mm; }   /* BÌA TỔNG: B6 = 28pt */
   .cover .cover-title.mid { font-size: 25pt; margin: 12mm 0 5mm; }   /* bìa quyển: C7/C8 = 25pt */
@@ -2221,6 +2437,22 @@ const EXPORT_CSS = `
      ngang nhau dù khối bên trái/phải lệch số dòng (Excel: cả hai đều ở dòng 25) */
   .cover table.sign-table td.sign-gap { height: 28mm; }
   .cover table.sign-table td.sign-name { font-weight: bold; vertical-align: bottom; }
+  /* Mục 4-5: in đủ 3 lựa chọn, ô vuông vẽ bằng border nên không phụ thuộc font */
+  .opts { padding-left: 6mm; margin: 2mm 0; }
+  .opts .opt { display: inline-block; margin-right: 14mm; white-space: nowrap; }
+  .opts .box {
+    display: inline-block; position: relative;
+    width: 3.4mm; height: 3.4mm;
+    border: 0.8pt solid #000;
+    margin-right: 2mm; vertical-align: -0.3mm;
+  }
+  .opts .box.on::after {
+    content: ''; position: absolute;
+    left: 1.1mm; top: 0.1mm; width: 0.9mm; height: 2.1mm;
+    border: solid #000; border-width: 0 0.7pt 0.7pt 0;
+    transform: rotate(45deg);
+  }
+
   /* 2 dòng kẻ mảnh chừa sẵn dưới mục 6 và 7 để viết tay */
   .note-line { border-bottom: 0.4pt solid #000; min-height: 7mm; padding: 1mm 2px 0; }
   .page.compact .note-line { min-height: 6mm; }

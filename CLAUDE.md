@@ -33,7 +33,8 @@ appState = {
       startDate,   // 'YYYY-MM-DD', ngày = trang đầu tiên
       startPage,   // số trang của ngày bắt đầu (sticky base cho computePagenum)
       templateId,  // 'lavipco' | 'q8' — khóa vào TEMPLATES
-      zones,       // ['Phường Chánh Hưng', ...] — chỉ mẫu có địa bàn; sửa được ở edit-mode
+      zones,       // ['Phường Chánh Hưng', ...] — chỉ mẫu có địa bàn; sửa TÊN và SỐ LƯỢNG ở edit-mode
+      hideZeroRows,// true = khi xuất, ẩn hạng mục có mọi cột khối lượng = 0
       book,        // chỉ mẫu hasBook: dữ liệu bìa + Tr1 + Tr2 (xem Q8_BOOK_DEFAULT)
       items,       // template hạng mục, đồng bộ từ entry hiện tại (qua syncItemsStructureToProject)
       rep_a, rep_b,// chữ ký mặc định, sticky từ entry mới nhất
@@ -61,6 +62,15 @@ Item có **2 dạng khối lượng** tùy mẫu:
 
 Luôn truy cập qua `getQ(it, key)` / `setQ(it, key, v)` với `key` lấy từ `qtyKeys(project)` — đừng đọc `it.qty` trực tiếp ở code mới.
 
+### Thêm / bớt địa bàn
+
+Mỗi địa bàn = **2 cột số** (một cho mỗi `colGroup`). Khoá `q` đánh theo chỉ số (`th0…thN`, `nt0…ntN`) nên khi đổi số địa bàn **bắt buộc gọi `applyZoneMapping(p, mapping)`** — hàm này đánh lại chỉ số cho `p.items` *và* items của **mọi ngày**; quên là số liệu ngày cũ nằm lệch cột. `addZone()` / `delZone(i)` đã bọc sẵn.
+
+- Không bao giờ để `p.zones` thành mảng rỗng — `zonesOf()` sẽ lặng lẽ rơi về `tpl.zones`. `delZone` chặn khi còn 1.
+- Trần `MAX_ZONES = 6` (12 cột số).
+- Bề ngang cột lấy từ `colWidths(p)` theo **%**, dùng chung cho `renderTableHead()` (màn hình) và `workTheadHTML()` (bản xuất) — đừng ghi cứng mm.
+- `syncDiaBan()` chỉ ghi đè dòng "Địa bàn: …" trên bìa khi nó vẫn khớp `diaBanText(zones cũ)`, để không xoá câu người dùng đã tự sửa. Vì vậy `Q8_BOOK_DEFAULT.diaBan` phải sinh bằng `diaBanText(Q8_ZONES)`.
+
 Khóa cũ `nktc_lavipco_v1` được auto-migrate sang v2 trong `migrateFromV1()` — giữ lại cho đến khi user manually clear.
 
 Schema v2 **chỉ thêm field, không đổi field cũ** ⇒ dữ liệu localStorage đang có vẫn đọc được. Back-fill (`templateId`, `zones`, `book`) nằm hết trong `ensureProjectMeta(p)` — đây là chỗ duy nhất cần sửa khi thêm field cấp cuốn.
@@ -69,12 +79,17 @@ Schema v2 **chỉ thêm field, không đổi field cũ** ⇒ dữ liệu localSt
 
 Registry ở đầu `<script>`. Mỗi mẫu mô tả layout trang ngày + có/không phần bìa:
 
-| Mẫu | Cột khối lượng | Trang bìa | Ghi chú |
-|---|---|---|---|
-| `lavipco` | 1 cột (`qty`) | không | Mẫu gốc, mọi cuốn cũ tự nhận mẫu này |
-| `q8` | 2 nhóm × 3 phường = 6 cột (`th0..nt2`) | có | Dựng theo file `.xlsx` trong repo |
+| Key | Nhãn hiển thị | Cột khối lượng | Trang bìa | Ghi chú |
+|---|---|---|---|---|
+| `lavipco` | Mẫu 1 (1 cột khối lượng) | 1 cột (`qty`) | không | Mẫu gốc, mọi cuốn cũ tự nhận mẫu này |
+| `q8` | Mẫu 2 (thực hiện + nghiệm thu) | 2 nhóm × 3 địa bàn = 6 cột (`th0..nt2`) | có | Dựng theo file `.xlsx` trong repo |
+| `q8th` | Mẫu 3 (chỉ khối lượng thực hiện) | 1 nhóm × 3 địa bàn = 3 cột (`th0..th2`) | có | Y hệt `q8`, chỉ bỏ nhóm "Khối lượng nghiệm thu"; items lấy từ `Q8_ITEMS_TH` |
+
+Nhãn hiển thị **không lưu trong template** — `tplLabel(id)` ghép `Mẫu <STT> (note)` với STT lấy theo thứ tự khai báo trong `TEMPLATES`. Thêm mẫu mới là tự đánh số; template chỉ khai `note`. Mọi chỗ hiện tên mẫu (dropdown, prompt tạo cuốn, confirm đổi mẫu, alert) đều gọi `tplLabel`.
 
 Field của template: `zones`, `colGroups[{label, prefix}]`, `itemsHeader`, `hasBook`, `zeroAsDash` (0 → `-` khi xuất), `keepQty` (ngày mới kế thừa khối lượng thay vì về 0), `continuousNumbering` (STT chạy liên tục qua các nhóm), `splitAfter`, `items`, `book`, `sign`.
+
+Số trang mỗi ngày là **động**: `entryRowChunks(p, e)` chia dòng thật rồi `entryPageCount(p, e)` đếm. Bật `hideZeroRows` mà số hạng mục còn lại không vượt điểm cắt thì ngày đó tự rút còn 1 trang, `computePagenum` và `bookPageTotal` cộng dồn theo từng ngày nên số trang vẫn liên tục.
 
 **`splitAfter`** quyết định 1 ngày chiếm mấy trang: `null` = 1 trang · số = 2 trang, cắt sau hạng mục đó · mảng `[13, 26]` = 3 trang. `entryPageCount()`, số trang liên tục và dòng "Sổ này gồm … trang" đều tự suy ra từ nó. Hiện là **23** — đúng chỗ ngắt trang của file Excel gốc.
 
@@ -93,11 +108,13 @@ Chỉ bật khi `tplOf(p).hasBook`. Chứa 5 phần: loại bìa · bìa quyển
 ## Nguyên tắc thiết kế cần biết
 
 - **1 cuốn = 1 công trình. 1 entry = 1 ngày.** Không trộn.
-- **`pagenum` là computed**, không lưu user-editable. `computePagenum(p, dateISO)` = `startPage + sortedIndex(date, entries ≥ startDate)`. Ô `#pagenum` là `readonly`.
+- **`pagenum` là computed**, không lưu user-editable. `computePagenum(p, dateISO)` = `startPage` + số trang đầu quyển + tổng `entryPageCount()` của các ngày trước đó. Ô `#pagenum` là `readonly`.
 - **Date picker giới hạn `min=startDate`** để không tạo entry trước ngày bắt đầu cuốn (sẽ làm lệch số trang).
 - **`_isNew` flag** trên entry: dùng nội bộ để biết entry vừa tạo lần đầu → trigger auto-fetch nhiệt độ nếu ngày là hôm nay. Phải `delete` trước khi `persist()` để không leak vào localStorage.
 - **`items` global var** là tham chiếu tới `currentEntry.items`. `renderTable()` đọc từ đây. `syncItemsStructureToProject()` đẩy thay đổi name/unit/group/add/del sang `project.items` (template) nhưng KHÔNG đẩy qty (qty là số liệu hàng ngày).
 - **Auto-save debounce 800ms** trên `input` event của document, có filter để bỏ qua `#projectSelect`, `#templateSelect`, `#datePicker`, `#importFile`, `#forecastDays` và **mọi thứ trong `#bookModal`** (đều có handler riêng).
+- **Ẩn hạng mục khối lượng 0** (`p.hideZeroRows`) chỉ tác động lúc **xuất file** — `visibleItems()` lọc trong `workRowsHTML()`, màn hình vẫn hiện đủ dòng để nhập. Ngày nghỉ thì **không lọc** (bảng cố tình trống nhưng phải đủ tên hạng mục). STT in ra được đánh lại liên tục 1..N.
+- **Mục 4 và 5 in đủ 3 lựa chọn** Tốt / Bình thường / Kém, ô vuông vẽ bằng `border` + `transform` (`.opts .box`) chứ không dùng ký tự ☑ — tránh phụ thuộc font khi html2canvas rasterize.
 - **Chuyển cuốn/ngày** luôn `clearTimeout(window._sv)` rồi `collectForm()` trước khi switch — không thì debounce sẽ ghi đè entry mới bằng form cũ.
 
 ## Kết thúc cuốn
@@ -116,7 +133,9 @@ Dòng `Công trình: …` **chỉ có trên màn hình**, không đưa vào `bui
 
 `EXPORT_CSS` dùng **đúng số pt ghi trong ô Excel** (bìa 28/25/18/13pt · Tr1 16/14/13pt · Tr2 15/12pt · trang ngày 16/13pt, riêng bảng khối lượng 9,5pt cho vừa 9 cột). Nội dung có thể cao hơn 1 khổ A4 — bước tự thu nhỏ trong `renderPagesToPDF` sẽ co đều cả trang, nhờ vậy **tỉ lệ** giữa tiêu đề / tiêu mục / bảng vẫn giống quyển mẫu.
 
-Đừng đổi các số pt này để "cho vừa trang" — cứ để bước thu nhỏ lo. Nếu cần chữ to hơn thì giảm số hạng mục mỗi trang (`splitAfter`) chứ không tăng pt.
+Đừng đổi các số pt này để "cho vừa trang" — cứ để bước thu nhỏ lo.
+
+**Nét kẻ bảng** lấy theo kiểu viền của quyển mẫu: bảng khối lượng trang ngày là `hair` → **0,4pt**, các bảng còn lại (thời tiết, Tr1, Tr2) là `thin` → **0,5pt**. Đừng quay lại `1px` (≈0,75pt) — dày hơn bản gốc. CSS màn hình vẫn để `1px` vì dưới mức đó trình duyệt vẽ không sắc nét. Nếu cần chữ to hơn thì giảm số hạng mục mỗi trang (`splitAfter`) chứ không tăng pt.
 
 ### Giới hạn vật lý đã đo
 
@@ -181,6 +200,11 @@ Muốn khỏi phải thu nhỏ thì giảm `splitAfter` hoặc bóp thêm `.page
 **Mẫu Q8:**
 - [ ] `+ Cuốn mới` → chọn mẫu 2 → 38 hạng mục, 2 nhóm, header 2 tầng, 6 cột số đúng tên 3 phường
 - [ ] Sửa hạng mục → đổi tên phường trên header → áp dụng mọi ngày
+- [ ] `+ Thêm địa bàn` → cột mới ở CẢ 2 nhóm, =0; số liệu 3 cột cũ ở mọi ngày giữ nguyên
+- [ ] Xóa địa bàn giữa (chỉ số 1) → số liệu cột 0 và 2 không bị dồn sai chỗ
+- [ ] Còn 1 địa bàn → chặn xóa; quá `MAX_ZONES` → chặn thêm; mẫu cũ → báo không tách địa bàn
+- [ ] Tick "Ẩn hạng mục khối lượng = 0" → màn hình vẫn đủ 40 dòng, PDF chỉ còn hạng mục có số và ngày rút còn 1 trang; số trang + "Sổ này gồm" tự tính lại
+- [ ] Mục 4, 5 trong PDF in đủ Tốt / Bình thường / Kém, đúng 1 ô được tick
 - [ ] Tick "Ngày nghỉ" → ô số bị khóa; xuất PDF thấy bảng trống nhưng còn đủ tên hạng mục
 - [ ] `📕 Thông tin quyển` → sửa bìa, thêm/xóa văn bản + cán bộ → Lưu → reload còn nguyên
 - [ ] `📄 Xuất PDF ngày này` → mở PDF: **đúng 2 trang**, trang 1 hạng mục 1–23, trang 2 lặp header + 24–38 + mục 4–7 + chữ ký nằm ngang
