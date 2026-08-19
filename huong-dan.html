@@ -2,8 +2,12 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Hướng dẫn sử dụng — Nhật ký thi công</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#1e40af">
+<link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <style>
   * { box-sizing: border-box; }
   body {
@@ -157,6 +161,7 @@
   <strong>Mục lục</strong>
   <ol>
     <li><a href="#start">Bắt đầu sử dụng</a></li>
+    <li><a href="#install">Cài lên máy tính / điện thoại</a></li>
     <li><a href="#toolbar">Thanh công cụ</a></li>
     <li><a href="#new-book">Tạo cuốn nhật ký mới</a></li>
     <li><a href="#templates">Chọn mẫu quyển</a></li>
@@ -183,7 +188,40 @@
   <strong>Lưu ý:</strong> Dữ liệu lưu trên <em>chính máy/điện thoại bạn đang dùng</em>. Nếu xóa lịch sử trình duyệt hoặc đổi máy, dữ liệu sẽ mất. Để an toàn, hãy <a href="#backup">xuất file sao lưu</a> định kỳ.
 </div>
 
-<h2 id="toolbar">2. Thanh công cụ</h2>
+<h2 id="install">2. Cài lên máy tính / điện thoại</h2>
+<p>Phần mềm là một <strong>ứng dụng web cài được (PWA)</strong>: cài xong nó chạy trong cửa sổ riêng,
+có biểu tượng ngoài màn hình chính, và <strong>mở được cả khi mất mạng</strong>.</p>
+
+<table class="steps">
+  <tr><th style="width:150px;">Máy tính<br>(Chrome / Edge)</th><td>
+    Bấm <span class="btn">📲 Cài đặt</span> trên thanh công cụ, hoặc bấm biểu tượng ⊕ ở thanh địa chỉ,
+    hoặc menu ⋮ → <em>“Cài đặt Nhật ký thi công…”</em>.
+  </td></tr>
+  <tr><th>Android</th><td>
+    Mở bằng Chrome → bấm <span class="btn">📲 Cài đặt</span>, hoặc menu ⋮ → <em>“Thêm vào màn hình chính”</em>.
+  </td></tr>
+  <tr><th>iPhone / iPad</th><td>
+    <strong>Phải dùng Safari</strong> (Chrome trên iOS không cài được).
+    Bấm nút Chia sẻ <strong>⬆️</strong> ở thanh dưới → chọn <em>“Thêm vào MH chính”</em> → <strong>Thêm</strong>.
+  </td></tr>
+</table>
+
+<div class="callout warn">
+  <strong>Bắt buộc mở qua <code>https://</code></strong> (hoặc <code>localhost</code>) thì mới cài được.
+  Mở file trực tiếp bằng <code>file://</code> sẽ không thấy nút Cài đặt — app vẫn chạy nhưng không cài và không dùng offline được.
+</div>
+<div class="callout">
+  <strong>Chạy offline:</strong> sau lần mở đầu tiên, giao diện được lưu lại nên lần sau không có mạng vẫn ghi nhật ký bình thường.
+  Riêng <a href="#weather">lấy nhiệt độ</a> và <a href="#print-single">xuất PDF</a> vẫn cần mạng
+  (một bên gọi API thời tiết, một bên cần thư viện jsPDF).
+</div>
+<div class="callout">
+  Dữ liệu vẫn nằm trong trình duyệt của <em>chính thiết bị đó</em> — cài trên máy tính và điện thoại là
+  <strong>hai bộ dữ liệu riêng</strong>, không tự đồng bộ. Muốn chuyển thì dùng
+  <span class="btn">📤 Xuất cuốn</span> / <span class="btn">📂 Tải file</span>.
+</div>
+
+<h2 id="toolbar">3. Thanh công cụ</h2>
 <p>Thanh trên cùng chia làm <strong>4 hàng</strong>:</p>
 
 <table class="steps">
@@ -196,7 +234,7 @@
     <span class="btn danger">🏁 Kết thúc</span>
   </td></tr>
   <tr><th>Hàng 2 — Mẫu</th><td>
-    <span class="btn">🧩 Mẫu:</span> chọn mẫu quyển cho cuốn đang mở (xem <a href="#templates">mục 4</a>)
+    <span class="btn">🧩 Mẫu:</span> chọn mẫu quyển cho cuốn đang mở (xem <a href="#templates">mục 5</a>)
   </td></tr>
   <tr><th>Hàng 3 — Ngày</th><td>
     <span class="btn">📅 Ngày:</span> chọn ngày để xem/sửa ·
@@ -213,14 +251,15 @@
     <span class="btn">📤 Xuất cuốn</span> (xuất JSON) ·
     <span class="btn">🌡️ Cập nhật nhiệt độ</span> ·
     <span class="btn">🔮 Dự báo thời tiết</span> ·
-    <span class="btn danger">🔄 Reset khối lượng</span>
+    <span class="btn danger">🔄 Reset khối lượng</span> ·
+    <span class="btn">📲 Cài đặt</span> (chỉ hiện khi cài được)
   </td></tr>
 </table>
 
-<h2 id="new-book">3. Tạo cuốn nhật ký mới</h2>
+<h2 id="new-book">4. Tạo cuốn nhật ký mới</h2>
 <p>Khi mở công trình mới, bấm <span class="btn">+ Cuốn mới</span> và làm 4 bước:</p>
 <ol>
-  <li><strong>Chọn mẫu quyển:</strong> gõ số thứ tự của mẫu (xem <a href="#templates">mục 4</a>). Mặc định là mẫu mới nhất.</li>
+  <li><strong>Chọn mẫu quyển:</strong> gõ số thứ tự của mẫu (xem <a href="#templates">mục 5</a>). Mặc định là mẫu mới nhất.</li>
   <li><strong>Tên công trình:</strong> ví dụ <em>"Đường Lê Lợi - Q1 - 2026"</em>. Sau này có thể đổi qua nút <span class="btn">✏️ Đổi tên</span>.</li>
   <li><strong>Ngày bắt đầu:</strong> điền theo định dạng <code>YYYY-MM-DD</code> (ví dụ <code>2026-05-21</code>). Đây sẽ là <strong>trang đầu tiên</strong> của cuốn.</li>
   <li><strong>Số trang bắt đầu:</strong> mặc định <code>1</code>. Nếu cuốn này nối tiếp cuốn cũ (ví dụ cuốn cũ kết thúc ở trang 7), nhập <code>8</code>.</li>
@@ -229,7 +268,7 @@
   <strong>Mẹo:</strong> Mỗi cuốn được lưu độc lập. Bạn có thể có nhiều cuốn cùng lúc cho nhiều công trình khác nhau — chỉ cần chuyển bằng dropdown <span class="btn">📒 Cuốn</span>.
 </div>
 
-<h2 id="templates">4. Chọn mẫu quyển</h2>
+<h2 id="templates">5. Chọn mẫu quyển</h2>
 <p>Phần mềm có sẵn <strong>3 mẫu quyển</strong>. Mỗi cuốn dùng 1 mẫu, chọn bằng dropdown <span class="btn">🧩 Mẫu</span>:</p>
 
 <table class="steps">
@@ -261,7 +300,7 @@
   tên phường trên đầu bảng. Tên mới áp dụng cho <em>mọi ngày</em> của cuốn.
 </div>
 
-<h2 id="book-info">5. Thông tin quyển (bìa, văn bản, cán bộ)</h2>
+<h2 id="book-info">6. Thông tin quyển (bìa, văn bản, cán bộ)</h2>
 <p>Chỉ dùng cho mẫu có trang bìa (mẫu Quận 8). Bấm <span class="btn">📕 Thông tin quyển</span> để mở bảng nhập gồm 5 phần:</p>
 <ol>
   <li><strong>Loại bìa</strong> — quyển <em>vận hành</em> hay <em>bảo dưỡng</em>, và có in kèm <em>BÌA TỔNG</em> hay không.</li>
@@ -282,7 +321,7 @@ BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký
 <p>Chỗ ghi <em>“Công tác: … tháng {MM} năm {YYYY}”</em> sẽ tự thay bằng tháng/năm của
 <strong>ngày bắt đầu cuốn</strong> khi xuất file.</p>
 
-<h2 id="daily">6. Ghi nhật ký hàng ngày</h2>
+<h2 id="daily">7. Ghi nhật ký hàng ngày</h2>
 <p>Khi mở cuốn, bạn sẽ thấy form nhật ký với các mục:</p>
 <ul>
   <li><strong>Tên công trình</strong> — tự điền từ tên cuốn, không sửa được trên form (đổi qua nút Đổi tên).</li>
@@ -300,7 +339,7 @@ BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký
   ✅ Dữ liệu <strong>tự động lưu</strong> sau mỗi lần gõ phím — không lo mất.
 </div>
 
-<h2 id="navigation">7. Chuyển ngày và xem lịch sử</h2>
+<h2 id="navigation">8. Chuyển ngày và xem lịch sử</h2>
 <table class="steps">
   <tr><th>Thao tác</th><th>Cách làm</th></tr>
   <tr><td>Xem ngày khác</td><td>Chọn ngày trong ô <span class="btn">📅 Ngày</span></td></tr>
@@ -313,7 +352,7 @@ BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký
   <strong>Lưu ý số trang:</strong> Số trang ở cuối form là <strong>tự động</strong>, không sửa tay. Cách tính: ngày bắt đầu = trang <code>startPage</code>, ngày tiếp theo trong cuốn = trang <code>startPage+1</code>, v.v. Nếu cần đổi trang đầu, dùng nút <span class="btn">📄 Trang bắt đầu</span>.
 </div>
 
-<h2 id="items">8. Sửa danh sách hạng mục</h2>
+<h2 id="items">9. Sửa danh sách hạng mục</h2>
 <p>Bảng công việc đi kèm sẵn danh sách mặc định. Để thay đổi:</p>
 <ol>
   <li>Bấm <span class="btn">✏️ Sửa hạng mục</span> để vào chế độ chỉnh sửa.</li>
@@ -358,7 +397,7 @@ STT đánh lại liên tục từ 1. <strong>Màn hình nhập liệu vẫn hi�
 </div>
 <p>Nút <span class="btn danger">🔄 Reset khối lượng</span> sẽ đặt toàn bộ khối lượng của <em>ngày hiện tại</em> về 0 (không ảnh hưởng ngày khác).</p>
 
-<h2 id="weather">9. Tự động lấy nhiệt độ</h2>
+<h2 id="weather">10. Tự động lấy nhiệt độ</h2>
 <p>Khi tạo nhật ký mới cho hôm nay, phần mềm <strong>tự động</strong> hỏi quyền vị trí và lấy nhiệt độ + tình hình thời tiết từ Open-Meteo:</p>
 <ul>
   <li><strong>Sáng</strong>: nhiệt độ min–max khoảng 6h–11h</li>
@@ -370,7 +409,7 @@ STT đánh lại liên tục từ 1. <strong>Màn hình nhập liệu vẫn hi�
   Cần <strong>kết nối Internet</strong> và <strong>cho phép vị trí</strong> khi trình duyệt hỏi. Nếu mở bằng cách kéo file vào trình duyệt (<code>file://</code>), một số trình duyệt sẽ chặn — nên đặt file trên web host hoặc dùng localhost.
 </div>
 
-<h2 id="forecast">10. Dự báo thời tiết những ngày tới</h2>
+<h2 id="forecast">11. Dự báo thời tiết những ngày tới</h2>
 <p>Bấm <span class="btn">🔮 Dự báo thời tiết</span> để mở cửa sổ dự báo:</p>
 <ol>
   <li>Nhập <strong>Số ngày</strong> muốn xem (mặc định <code>7</code>, tối đa <code>16</code>).</li>
@@ -393,7 +432,7 @@ STT đánh lại liên tục từ 1. <strong>Màn hình nhập liệu vẫn hi�
   Open-Meteo cung cấp dữ liệu tối đa 16 ngày. Càng xa hôm nay thì độ chính xác càng giảm — tốt nhất xem 3-7 ngày tới.
 </div>
 
-<h2 id="print-single">11. Xuất PDF</h2>
+<h2 id="print-single">12. Xuất PDF</h2>
 <p>Phần mềm <strong>tự dựng file PDF</strong> (thư viện jsPDF), không đi qua hộp thoại in của trình duyệt nữa —
 nhờ vậy khổ giấy và lề luôn đúng, không phụ thuộc thiết lập máy in của từng máy.</p>
 <table class="steps">
@@ -420,7 +459,7 @@ nhờ vậy khổ giấy và lề luôn đúng, không phụ thuộc thiết l�
   Cần <strong>Internet</strong> khi xuất PDF vì thư viện jsPDF tải từ CDN.
 </div>
 
-<h2 id="backup">12. Sao lưu / Khôi phục dữ liệu</h2>
+<h2 id="backup">13. Sao lưu / Khôi phục dữ liệu</h2>
 <h3>Sao lưu</h3>
 <p>Bấm <span class="btn">📤 Xuất cuốn</span> để tải về file <code>NKTC - &lt;địa bàn&gt; - T&lt;tháng&gt;-&lt;năm&gt;.json</code>. File này chứa <strong>toàn bộ ngày</strong> của cuốn hiện tại — gửi qua email, lưu USB, hoặc upload đám mây để dự phòng.</p>
 <h3>Khôi phục</h3>
@@ -434,7 +473,7 @@ nhờ vậy khổ giấy và lề luôn đúng, không phụ thuộc thiết l�
   <strong>Khuyến nghị:</strong> Xuất file sao lưu mỗi tuần hoặc sau mỗi 5–10 ngày ghi.
 </div>
 
-<h2 id="end">13. Kết thúc cuốn nhật ký</h2>
+<h2 id="end">14. Kết thúc cuốn nhật ký</h2>
 <p>Khi công trình hoàn thành, bấm <span class="btn danger">🏁 Kết thúc</span>. Phần mềm sẽ:</p>
 <ol>
   <li>Hỏi xác nhận 2 lần.</li>
@@ -455,7 +494,7 @@ nhờ vậy khổ giấy và lề luôn đúng, không phụ thuộc thiết l�
   Cần <strong>Internet</strong> lúc bấm Kết thúc vì cần tải thư viện tạo PDF. Nếu mất mạng, phần mềm sẽ báo lỗi và hỏi có muốn xóa cuốn không — chọn <strong>Cancel</strong> để giữ lại cuốn và thử lại sau.
 </div>
 
-<h2 id="tips">14. Mẹo và xử lý sự cố</h2>
+<h2 id="tips">15. Mẹo và xử lý sự cố</h2>
 
 <h3>Phần mềm không nhớ dữ liệu sau khi đóng trình duyệt?</h3>
 <ul>

@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# ảnh icon PWA — nhị phân, không chuẩn hóa xuống dòng
+*.png binary

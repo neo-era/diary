@@ -10,11 +10,16 @@ App nhật ký thi công hàng ngày (tiếng Việt) cho công ty chiếu sáng
 
 ```
 diary/
-├── index.html       # Toàn bộ app (HTML + CSS + JS inline)
-├── huong-dan.html   # Hướng dẫn người dùng (tiếng Việt)
+├── index.html            # Toàn bộ app (HTML + CSS + JS inline)
+├── huong-dan.html        # Hướng dẫn người dùng (tiếng Việt)
+├── manifest.webmanifest  # PWA — tên app, icon, màu, start_url
+├── sw.js                 # PWA — service worker (cache để chạy offline)
+├── icon-192.png · icon-512.png · icon-maskable.png · apple-touch-icon.png
 ├── NKTC-Gói thầu 2026-2029-Quận 8 (A.TÀI) đã cập nhật.xlsx   # Quyển mẫu gốc, nguồn của TEMPLATES.q8
-└── CLAUDE.md        # File này
+└── CLAUDE.md             # File này
 ```
+
+Quy tắc "đừng tách file" vẫn áp cho **code app** — toàn bộ logic ở trong `index.html`. `sw.js` và `manifest.webmanifest` buộc phải là file riêng vì trình duyệt yêu cầu vậy, không phải ngoại lệ tự ý.
 
 ## Dependencies (chỉ runtime, qua CDN)
 
@@ -104,6 +109,16 @@ Chỉ bật khi `tplOf(p).hasBook`. Chứa 5 phần: loại bìa · bìa quyển
 - **Không** dùng auto-save debounce — handler `input` bỏ qua mọi thứ trong `#bookModal`; lưu bằng nút `saveBook()`.
 - `collectBookForm()` phải được gọi trước mỗi lần re-render bảng động (`addDocRow`/`delDocRow`/`addStaffRow`/`delStaffRow`) để không mất chữ đang gõ.
 - Chuỗi `{MM}` / `{YYYY}` trong `congTacVH`/`congTacBD` được thay bằng tháng/năm của `p.startDate` lúc xuất (`bookCongTac`).
+
+## PWA — cài lên máy tính / điện thoại
+
+- **`sw.js`**: HTML dùng **mạng-trước** (app sửa liên tục, phải luôn lấy bản mới; mất mạng mới rơi về cache), ảnh/manifest/CDN dùng **cache-trước**, `api.open-meteo.com` **không cache**. Đổi nội dung app xong nhớ **tăng `VERSION`** trong `sw.js` để cache cũ bị dọn.
+- Mọi đường dẫn trong manifest và lúc `register('./sw.js')` đều **tương đối** để chạy được cả ở root lẫn thư mục con (`neo-era.github.io/diary/`).
+- Không đặt `id` trong manifest — mặc định lấy theo `start_url` nên tự khớp mọi nơi host.
+- Nút `📲 Cài đặt` ẩn sẵn, chỉ hiện khi `beforeinstallprompt` bắn (Chrome/Edge/Android) hoặc khi phát hiện iOS (Safari không có sự kiện này → hướng dẫn thủ công).
+- `isStandalone()` **phải bọc try/catch quanh `matchMedia`** — hàm này chạy ngay lúc khởi động, ném lỗi ở đó là vỡ cả app trên WebView cũ.
+- `padding-top` chừa tai thỏ của `.toolbar` phải đặt **sau** shorthand `padding`, không thì bị ghi đè.
+- Service worker chỉ chạy qua **https:// hoặc localhost** — mở bằng `file://` thì đăng ký thất bại (đã bắt lỗi, app vẫn chạy bình thường).
 
 ## Nguyên tắc thiết kế cần biết
 

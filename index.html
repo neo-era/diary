@@ -2,8 +2,19 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Nhật ký thi công hàng ngày</title>
+
+<!-- ==== PWA: cài được lên máy tính và điện thoại ==== -->
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#1e40af">
+<link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Nhật ký TC">
+<meta name="description" content="Ghi nhật ký thi công hàng ngày, xuất PDF/Word theo mẫu quyển. Dữ liệu lưu ngay trên máy.">
 <style>
   * { box-sizing: border-box; }
   :root {
@@ -28,6 +39,9 @@
     background: #fff;
     border-bottom: 1px solid #ddd;
     padding: 10px 12px;
+    /* phải đặt SAU shorthand `padding` ở trên, không thì bị ghi đè.
+       Chừa tai thỏ khi chạy ở chế độ đã cài (standalone) trên iPhone. */
+    padding-top: calc(10px + env(safe-area-inset-top));
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
@@ -575,6 +589,7 @@
     <button onclick="fetchLocalTemperature(true)" id="tempBtn">🌡️ Cập nhật nhiệt độ</button>
     <button onclick="openForecast()">🔮 Dự báo thời tiết</button>
     <button class="danger" onclick="resetQty()">🔄 Reset khối lượng</button>
+    <button onclick="installApp()" id="installBtn" style="display:none">📲 Cài đặt</button>
     <a href="huong-dan.html" target="_blank" style="display:inline-block;padding:10px 14px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;color:#0f172a;font-weight:500;text-decoration:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;">📖 Hướng dẫn</a>
   </div>
 </div>
@@ -3019,6 +3034,64 @@ document.addEventListener('keydown', (ev) => {
     if (modal && modal.classList.contains('open')) closeForecast();
   }
 });
+
+// ====== PWA: CÀI ĐẶT LÊN MÁY / ĐIỆN THOẠI ======
+// Service worker chỉ chạy qua https:// hoặc localhost — mở bằng file:// sẽ bỏ qua.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .catch(err => console.info('[PWA] chưa đăng ký được service worker:', err.message));
+  });
+}
+
+let _installPrompt = null;
+
+function isStandalone() {
+  // matchMedia không có ở mọi WebView — phải bọc lại, hàm này chạy ngay lúc
+  // khởi động nên ném lỗi ở đây là vỡ cả app.
+  try {
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+  } catch (_) {}
+  return navigator.standalone === true;
+}
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);   // iPad iPadOS
+}
+function showInstallBtn(on) {
+  const b = document.getElementById('installBtn');
+  if (b) b.style.display = on ? '' : 'none';
+}
+
+// Chrome/Edge/Android: bắt sự kiện rồi mới hiện nút
+window.addEventListener('beforeinstallprompt', ev => {
+  ev.preventDefault();
+  _installPrompt = ev;
+  showInstallBtn(true);
+});
+window.addEventListener('appinstalled', () => {
+  _installPrompt = null;
+  showInstallBtn(false);
+  flash('Đã cài ứng dụng ✓');
+});
+// Safari trên iPhone/iPad không có beforeinstallprompt → hiện nút để chỉ cách làm thủ công
+try { if (!isStandalone() && isIOS()) showInstallBtn(true); } catch (_) {}
+
+async function installApp() {
+  if (_installPrompt) {
+    _installPrompt.prompt();
+    const { outcome } = await _installPrompt.userChoice;
+    _installPrompt = null;
+    showInstallBtn(false);
+    if (outcome !== 'accepted') flash('Đã hủy cài đặt');
+    return;
+  }
+  if (isIOS()) {
+    alert('Cài lên iPhone / iPad:\n\n1. Mở trang này bằng Safari\n2. Bấm nút Chia sẻ ⬆️ ở thanh dưới\n3. Chọn "Thêm vào MH chính"\n4. Bấm "Thêm"');
+    return;
+  }
+  alert('Cài lên máy tính / Android:\n\n• Chrome hoặc Edge: bấm biểu tượng ⊕ (Cài đặt) ở thanh địa chỉ,\n  hoặc menu ⋮ → "Cài đặt Nhật ký thi công…"\n• Android: menu ⋮ → "Thêm vào màn hình chính"\n\nLưu ý: phải mở qua https:// (hoặc localhost) thì mới cài được.');
+}
 
 // Enter trong ô số ngày → tải dự báo
 document.getElementById('forecastDays').addEventListener('keydown', (ev) => {
