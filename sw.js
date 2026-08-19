@@ -9,7 +9,7 @@
  *
  * Đổi nội dung app xong nhớ tăng VERSION để cache cũ bị dọn.
  */
-const VERSION = 'nktc-2026-08-19';
+const VERSION = 'nktc-2026-08-19g';
 const SHELL = [
   './',
   './index.html',

@@ -54,6 +54,10 @@
     flex: 1 1 100%;
     color: #1e293b;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
   }
   .toolbar button, .toolbar label.file-label {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -104,6 +108,82 @@
     font-weight: 600;
     padding: 0 2px;
   }
+  /* Link "Hướng dẫn" — trông như nút trong toolbar (trước đây là inline style) */
+  .tool-link {
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    border-radius: 8px;
+    color: #0f172a;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  /* Nút × đóng ngăn kéo — chỉ hiện khi < 1100px */
+  .tb-close {
+    display: none;
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0;
+  }
+  /* ==== THANH MỎNG TRÊN CÙNG (chỉ khi < 1100px) ==== */
+  .mobilebar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 90;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    /* phải đặt SAU shorthand `padding`, không thì bị ghi đè (tai thỏ iPhone) */
+    padding-top: calc(8px + env(safe-area-inset-top));
+  }
+  .mobilebar button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    min-width: 44px;
+    min-height: 44px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #0f172a;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mobilebar button:active { background: #e2e8f0; }
+  .mobilebar .mb-menu { font-size: 20px; border-color: var(--accent); color: var(--accent); }
+  .mobilebar input[type="date"] {
+    flex: 1;
+    min-width: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;              /* ≥16px để iOS không tự zoom */
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #fff;
+    color: #0f172a;
+  }
+  .menu-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    background: rgba(15, 23, 42, 0.45);
+  }
+  .menu-overlay.open { display: block; }
   .project-line {
     text-align: center;
     font-weight: bold;
@@ -312,6 +392,100 @@
   /* PHẢI có `screen and` — khổ A4 dọc chỉ rộng ~794px CSS, nhỏ hơn 820px, nên nếu
      thiếu thì toàn bộ style mobile sẽ đè lên bản in: chữ co lại còn 12–14px và
      khối chữ ký bị xếp dọc thay vì nằm ngang. */
+  /* ==== BỐ CỤC: thanh dọc bên phải (≥1100px) ====
+     Ngưỡng 1100px chứ không phải 820px vì .page rộng cố định 210mm ≈ 794px;
+     794 + 300 (thanh dọc bên trái) + lề ⇒ hẹp hơn ~1100px là trang bị cuộn ngang. */
+  @media screen and (min-width: 1100px) {
+    body { padding-left: 300px; }
+    .toolbar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      right: auto;
+      width: 300px;
+      overflow-y: auto;
+      flex-direction: column;
+      flex-wrap: nowrap;          /* KHÔNG bỏ: cột + wrap = nút tràn sang cột thứ 2 */
+      align-items: stretch;
+      border-right: 1px solid #ddd;
+      border-bottom: none;
+      box-shadow: 2px 0 6px rgba(0,0,0,0.08);
+    }
+    .toolbar h1 {
+      flex: 0 0 auto;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e2e8f0;
+      z-index: 1;
+    }
+    .toolbar-row {
+      flex: 0 0 auto;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .toolbar-row:last-child { border-bottom: none; }
+    .toolbar button:not(.tb-close),
+    .toolbar label.file-label,
+    .toolbar select,
+    .toolbar input[type="date"],
+    .toolbar .tool-link {
+      width: 100%;
+      max-width: none;
+      text-align: left;
+      box-sizing: border-box;
+    }
+  }
+
+  /* ==== BỐ CỤC: menu trượt (<1100px) ==== */
+  @media screen and (max-width: 1099.98px) {
+    .mobilebar { display: flex; }
+    body { padding-top: calc(60px + env(safe-area-inset-top)); }
+    .toolbar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      right: auto;
+      width: min(320px, 88vw);
+      overflow-y: auto;
+      flex-direction: column;
+      flex-wrap: nowrap;          /* KHÔNG bỏ: cột + wrap = nút tràn sang cột thứ 2 */
+      align-items: stretch;
+      border-bottom: none;
+      border-right: 1px solid #ddd;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.18);
+      transform: translateX(-100%);
+      transition: transform 0.22s ease;
+      z-index: 100;
+    }
+    .toolbar.open { transform: translateX(0); }
+    .toolbar h1 { flex: 0 0 auto; }
+    .tb-close { display: block; }
+    .toolbar-row {
+      flex: 0 0 auto;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .toolbar-row:last-child { border-bottom: none; }
+    .toolbar button:not(.tb-close),
+    .toolbar label.file-label,
+    .toolbar select,
+    .toolbar input[type="date"],
+    .toolbar .tool-link {
+      width: 100%;
+      max-width: none;
+      text-align: left;
+      box-sizing: border-box;
+      font-size: 16px;            /* ≥16px để iOS không tự zoom */
+      min-height: 44px;
+    }
+  }
+
   @media screen and (max-width: 820px) {
     .page {
       width: 100%;
@@ -406,6 +580,40 @@
     font-weight: 500;
   }
   .modal-controls button:hover { opacity: 0.9; }
+  /* Form tạo cuốn mới — nhãn trái, ô nhập phải */
+  .nb-form { display: grid; grid-template-columns: 150px 1fr; gap: 12px 14px; align-items: center; }
+  .nb-form label { font-size: 14px; color: #475569; font-weight: 500; }
+  .nb-form input, .nb-form select {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 15px;
+    color: #0f172a;
+    background: #fff;
+    box-sizing: border-box;
+  }
+  .nb-form input:focus, .nb-form select:focus { outline: 2px solid #1e40af; outline-offset: -1px; }
+  .nb-hint { grid-column: 2; margin-top: -6px; font-size: 12px; color: #94a3b8; }
+  .nb-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+  .nb-actions button {
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+  }
+  .nb-actions button.primary { border-color: #1e40af; background: #1e40af; color: #fff; }
+  .nb-actions button:hover { opacity: 0.9; }
+  @media screen and (max-width: 820px) {
+    .nb-form { grid-template-columns: 1fr; gap: 6px; }
+    .nb-hint { grid-column: 1; }
+    .nb-form label { margin-top: 8px; }
+    .nb-form input, .nb-form select { font-size: 16px; }
+  }
   .forecast-meta {
     margin-bottom: 10px;
     font-size: 13px;
@@ -523,8 +731,9 @@
 
   /* ==== IN ==== */
   @media print {
-    body { background: #fff; }
-    .toolbar, .add-row-btn, .row-del, .restday { display: none !important; }
+    body { background: #fff; padding: 0 !important; }
+    .toolbar, .mobilebar, .menu-overlay,
+    .add-row-btn, .row-del, .restday { display: none !important; }
     .table-wrap { overflow: visible !important; }
     /* chốt lại bố cục bản in, không để media query nào khác đè */
     .signatures { display: flex !important; flex-direction: row !important; gap: 10mm; }
@@ -555,8 +764,18 @@
 </head>
 <body>
 
-<div class="toolbar">
-  <h1>📋 Nhật ký thi công hàng ngày</h1>
+<!-- Thanh mỏng luôn hiện khi < 1100px: chuyển ngày + nút mở menu công cụ -->
+<div class="mobilebar">
+  <button class="mb-menu" onclick="toggleMenu()" aria-label="Mở menu công cụ">☰</button>
+  <button onclick="prevDay()" aria-label="Hôm trước">◀</button>
+  <input type="date" id="datePickerTop" class="js-datepicker" onchange="onDatePickerChange(event)">
+  <button onclick="nextDay()" aria-label="Hôm sau">▶</button>
+</div>
+
+<div class="toolbar" id="toolbar">
+  <h1>📋 Nhật ký thi công hàng ngày
+    <button class="tb-close" onclick="closeMenu()" aria-label="Đóng menu">×</button>
+  </h1>
   <div class="toolbar-row">
     <span class="tool-label">📒 Cuốn:</span>
     <select id="projectSelect" onchange="onProjectChange(event)"></select>
@@ -572,7 +791,7 @@
   </div>
   <div class="toolbar-row">
     <span class="tool-label">📅 Ngày:</span>
-    <input type="date" id="datePicker" onchange="onDatePickerChange(event)">
+    <input type="date" id="datePicker" class="js-datepicker" onchange="onDatePickerChange(event)">
     <button onclick="prevDay()">◀ Hôm trước</button>
     <button onclick="nextDay()">Hôm sau ▶</button>
     <button onclick="todayDay()">Hôm nay</button>
@@ -590,9 +809,11 @@
     <button onclick="openForecast()">🔮 Dự báo thời tiết</button>
     <button class="danger" onclick="resetQty()">🔄 Reset khối lượng</button>
     <button onclick="installApp()" id="installBtn" style="display:none">📲 Cài đặt</button>
-    <a href="huong-dan.html" target="_blank" style="display:inline-block;padding:10px 14px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;color:#0f172a;font-weight:500;text-decoration:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;">📖 Hướng dẫn</a>
+    <a href="huong-dan.html" target="_blank" class="tool-link">📖 Hướng dẫn</a>
   </div>
 </div>
+
+<div class="menu-overlay" onclick="closeMenu()"></div>
 
 <!-- ==== MODAL DỰ BÁO THỜI TIẾT ==== -->
 <div class="modal" id="forecastModal" aria-hidden="true">
@@ -610,6 +831,36 @@
     </div>
     <div id="forecastContent">
       <div class="forecast-status">Bấm <strong>Xem dự báo</strong> để tải dữ liệu từ vị trí của bạn.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==== MODAL TẠO CUỐN MỚI ==== -->
+<div class="modal" id="newBookModal" aria-hidden="true">
+  <div class="modal-overlay" onclick="closeNewBook()"></div>
+  <div class="modal-body" role="dialog" aria-modal="true" style="max-width:560px">
+    <div class="modal-header">
+      <h2>📘 Tạo cuốn nhật ký mới</h2>
+      <button class="modal-close" onclick="closeNewBook()" aria-label="Đóng">×</button>
+    </div>
+    <div class="nb-form">
+      <label for="nbSource">Khởi tạo từ</label>
+      <select id="nbSource" onchange="onNewBookSourceChange()"></select>
+      <div class="nb-hint" id="nbSourceHint"></div>
+
+      <label for="nbName">Tên cuốn</label>
+      <input type="text" id="nbName" placeholder="Công trình 1">
+
+      <label for="nbStartDate">Ngày bắt đầu</label>
+      <input type="date" id="nbStartDate">
+      <div class="nb-hint">Đây là trang đầu tiên của cuốn.</div>
+
+      <label for="nbStartPage">Số trang đầu</label>
+      <input type="number" id="nbStartPage" value="1" min="1" step="1">
+    </div>
+    <div class="nb-actions">
+      <button onclick="closeNewBook()">Hủy</button>
+      <button class="primary" onclick="submitNewBook()">Tạo cuốn</button>
     </div>
   </div>
 </div>
@@ -1128,9 +1379,13 @@ function getEntry() {
 }
 
 // ====== QUẢN LÝ CUỐN ======
-function createProject(name, startDate, startPage, templateId) {
+// sourceId: kế thừa cấu hình từ một cuốn đã có (mẫu, hạng mục, khối lượng, địa
+// bàn, bìa, chữ ký). entries LUÔN rỗng — cuốn mới là quyển mới, bắt đầu lại từ
+// trang đầu, không nối tiếp số trang của cuốn nguồn.
+function createProject(name, startDate, startPage, templateId, sourceId) {
   const id = generateId();
-  const tpl = TEMPLATES[templateId] || TEMPLATES.lavipco;
+  const src = sourceId ? appState.projects[sourceId] : null;
+  const tpl = TEMPLATES[(src && src.templateId) || templateId] || TEMPLATES.lavipco;
   const p = {
     id,
     name: name || ('Công trình ' + (Object.keys(appState.projects).length + 1)),
@@ -1144,6 +1399,18 @@ function createProject(name, startDate, startPage, templateId) {
     rep_b: tpl.sign.b,
     entries: {}
   };
+  if (src) {
+    // Khối lượng lấy từ ngày làm việc cuối cùng, không phải src.items (chỉ là
+    // giá trị khởi tạo, cập nhật khi sửa cấu trúc nên thường cũ hơn thực tế).
+    const last = lastWorkEntryOf(src);
+    const srcItems = (last && Array.isArray(last.items)) ? last.items : src.items;
+    if (Array.isArray(srcItems)) p.items = deepCopy(srcItems);
+    if (Array.isArray(src.zones) && src.zones.length) p.zones = [...src.zones];
+    if (src.book) p.book = deepCopy(src.book);
+    if (src.rep_a !== undefined) p.rep_a = src.rep_a;
+    if (src.rep_b !== undefined) p.rep_b = src.rep_b;
+    p.hideZeroRows = !!src.hideZeroRows;
+  }
   appState.projects[id] = p;
   ensureProjectMeta(p);
   return id;
@@ -1220,32 +1487,67 @@ function bookPageTotal(p) {
   return frontMatterPages(p) + dates.reduce((s, d) => s + entryPageCount(p, p.entries[d]), 0);
 }
 
+// Nguồn kế thừa cho một ngày mới: ngày LÀM VIỆC gần nhất trước đó.
+// Bỏ qua entry ngày nghỉ — sau đợt nghỉ lễ dài vẫn phải lấy được số liệu
+// của ngày đi làm cuối cùng, không phải mớ rỗng của ngày nghỉ.
+function prevWorkEntryOf(p, dateISO) {
+  const ds = Object.keys(p.entries || {}).filter(k => k < dateISO).sort();
+  for (let i = ds.length - 1; i >= 0; i--) {
+    const e = p.entries[ds[i]];
+    if (e && !e.restDay) return e;
+  }
+  return null;
+}
+
+// Ngày làm việc cuối cùng của một cuốn (bỏ qua ngày nghỉ). Dùng khi cuốn mới
+// kế thừa cuốn cũ — phải lấy số thực tế mới nhất, không phải p.items khởi tạo.
+function lastWorkEntryOf(p) { return p ? prevWorkEntryOf(p, '9999-12-31') : null; }
+
+// Chép khối lượng ngày nguồn sang danh sách hạng mục của ngày mới.
+// Khớp theo vị trí trước (cấu trúc hầu như không đổi), lệch thì dò theo tên.
+// Đi qua getQ/setQ nên dùng chung được cho mẫu 1 cột lẫn mẫu nhiều địa bàn.
+function inheritQty(p, dst, src) {
+  const keys = qtyKeys(p);
+  const byName = new Map();
+  src.forEach(it => { if (it.group === undefined && !byName.has(it.name)) byName.set(it.name, it); });
+  dst.forEach((it, i) => {
+    if (it.group !== undefined) return;
+    const at = src[i];
+    const s = (at && at.group === undefined && at.name === it.name) ? at : byName.get(it.name);
+    if (!s) return;
+    keys.forEach(k => { const v = getQ(s, k); if (v !== undefined) setQ(it, k, v); });
+  });
+}
+
 function ensureEntry(dateISO) {
   const p = getProject();
   if (!p) return null;
   if (!p.entries[dateISO]) {
     const { y, m, d } = isoToParts(dateISO);
-    p.entries[dateISO] = {
+    const prev = prevWorkEntryOf(p, dateISO);
+    const e = {
       date: dateISO,
       day: d, month: m, year: y,
       w_morning: 'Bình thường',
       w_afternoon: 'Bình thường',
       t_morning: '24°C-33°C',
       t_afternoon: '24°C-33°C',
-      workers: '07',
-      workers_other: '',
-      equipment: '',
-      env: 'Bình thường',
-      safe: 'Bình thường',
+      workers: prev?.workers ?? '07',
+      workers_other: prev?.workers_other ?? '',
+      equipment: prev?.equipment ?? '',
+      env: prev?.env ?? 'Bình thường',
+      safe: prev?.safe ?? 'Bình thường',
       note_a: '',
       note_b: '',
       pagenum: '7',
       restDay: false,
       rep_a: p.rep_a,
       rep_b: p.rep_b,
-      items: JSON.parse(JSON.stringify(p.items)),
+      items: deepCopy(p.items),
       _isNew: true
     };
+    if (prev && Array.isArray(prev.items)) inheritQty(p, e.items, prev.items);
+    p.entries[dateISO] = e;
   }
   return p.entries[dateISO];
 }
@@ -1256,9 +1558,10 @@ function syncItemsStructureToProject() {
   const tpl = tplOf(p);
   const keys = qtyKeys(p);
   const single = keys.length === 1 && keys[0] === 'qty';
-  // Mẫu 1 (1 cột): template lưu khối lượng = 0 (mỗi ngày tự nhập).
-  // Mẫu keepQty: template chụp lại khối lượng của ngày đang mở, để ngày mới
-  // không phải nhập lại 38×6 số (file Excel gốc lặp y hệt số liệu mỗi ngày).
+  // p.items là GIÁ TRỊ KHỞI TẠO của cuốn — chỉ dùng khi không tìm được ngày
+  // nguồn (ngày đầu cuốn, hoặc trước đó toàn ngày nghỉ). Kế thừa hằng ngày do
+  // ensureEntry + prevWorkEntryOf lo.
+  // Mẫu 1 (1 cột): khởi tạo = 0. Mẫu keepQty: giữ số mặc định của template.
   p.items = items.map(it => {
     if (it.group !== undefined) return { group: it.group };
     const copy = { name: it.name, unit: it.unit };
@@ -1356,12 +1659,15 @@ function refreshTemplateSelect() {
   }
 }
 
+// Có 2 ô ngày: một trong thanh công cụ, một trên thanh mỏng (<1100px). Cả hai
+// mang class js-datepicker và luôn được đồng bộ ở đây.
 function refreshDatePicker() {
-  const dp = document.getElementById('datePicker');
-  dp.value = appState.currentDate || '';
   const p = getProject();
-  if (p && p.startDate) dp.min = p.startDate;
-  else dp.removeAttribute('min');
+  document.querySelectorAll('.js-datepicker').forEach(dp => {
+    dp.value = appState.currentDate || '';
+    if (p && p.startDate) dp.min = p.startDate;
+    else dp.removeAttribute('min');
+  });
 }
 
 function renderForm() {
@@ -1757,27 +2063,128 @@ function changeDate(dateISO) {
   }
 }
 
+// Mở modal tạo cuốn mới. Thay cho chuỗi prompt() cũ — ngày bắt đầu giờ chọn
+// bằng <input type="date"> (lịch của trình duyệt) thay vì gõ tay YYYY-MM-DD.
 function newProject() {
-  const tplIds = Object.keys(TEMPLATES);
-  const menu = tplIds.map((id, i) => `${i + 1}. ${tplLabel(id)}`).join('\n');
-  const tRaw = prompt('🧩 Chọn mẫu quyển:\n\n' + menu, String(tplIds.length));
-  if (tRaw === null) return;
-  const tIdx = parseInt(tRaw, 10) - 1;
-  if (!(tIdx >= 0 && tIdx < tplIds.length)) { alert('Số mẫu không hợp lệ.'); return; }
-  const templateId = tplIds[tIdx];
+  const sel = document.getElementById('nbSource');
+  sel.innerHTML = '';
+
+  const gTpl = document.createElement('optgroup');
+  gTpl.label = 'Tạo trắng từ mẫu';
+  Object.keys(TEMPLATES).forEach(id => {
+    const o = document.createElement('option');
+    o.value = 'tpl:' + id;
+    o.textContent = tplLabel(id);
+    gTpl.appendChild(o);
+  });
+  sel.appendChild(gTpl);
+
+  // Cuốn đã có làm nguồn kế thừa — cùng thứ tự với dropdown cuốn ở toolbar
+  const ids = Object.keys(appState.projects).sort((a, b) =>
+    (appState.projects[a].createdAt || '').localeCompare(appState.projects[b].createdAt || ''));
+  if (ids.length) {
+    const gSrc = document.createElement('optgroup');
+    gSrc.label = 'Kế thừa từ cuốn đã có';
+    ids.forEach(id => {
+      const p = appState.projects[id];
+      const o = document.createElement('option');
+      o.value = 'src:' + id;
+      o.textContent = (p.endedAt ? '🏁 ' : '') + p.name
+        + ` — ${tplLabel(p.templateId)}, ${Object.keys(p.entries || {}).length} ngày`;
+      gSrc.appendChild(o);
+    });
+    sel.appendChild(gSrc);
+  }
+
+  // Mặc định: kế thừa cuốn đang mở nếu có, không thì mẫu cuối cùng
+  const cur = appState.currentProjectId;
+  sel.value = (cur && appState.projects[cur]) ? 'src:' + cur
+    : 'tpl:' + Object.keys(TEMPLATES).slice(-1)[0];
+
+  document.getElementById('nbName').value =
+    'Công trình ' + (Object.keys(appState.projects).length + 1);
+  document.getElementById('nbStartDate').value = todayISO();
+  document.getElementById('nbStartPage').value = '1';
+  onNewBookSourceChange();
+
+  const modal = document.getElementById('newBookModal');
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  setTimeout(() => document.getElementById('nbName').focus(), 50);
+}
+
+// ====== MENU CÔNG CỤ (<1100px) ======
+const MENU_BREAKPOINT = 1100;
+
+// Ba ham nay con duoc goi tu listener resize/keydown toan cuc, co the chay khi
+// DOM chua/khong con phan tu -> luon kiem tra null truoc.
+function toggleMenu() {
+  const tb = document.getElementById('toolbar');
+  if (!tb) return;
+  if (tb.classList.contains('open')) closeMenu(); else openMenu();
+}
+
+function openMenu() {
+  const tb = document.getElementById('toolbar');
+  const ov = document.querySelector('.menu-overlay');
+  if (tb) tb.classList.add('open');
+  if (ov) ov.classList.add('open');
+}
+
+function closeMenu() {
+  const tb = document.getElementById('toolbar');
+  const ov = document.querySelector('.menu-overlay');
+  if (tb) tb.classList.remove('open');
+  if (ov) ov.classList.remove('open');
+}
+
+// Bấm một nút trong ngăn kéo = thực thi rồi đóng luôn, khỏi phải bấm ×.
+// Select/input/label thì giữ ngăn kéo mở để còn thao tác tiếp.
+document.addEventListener('click', (ev) => {
+  const tb = document.getElementById('toolbar');
+  if (!tb || !tb.classList.contains('open')) return;
+  const t = ev.target;
+  if (!tb.contains(t)) return;
+  if (t.closest('button.tb-close')) return;               // đã tự đóng
+  if (t.closest('button, a.tool-link')) closeMenu();
+});
+
+// Kéo cửa sổ rộng ra thì thanh dọc hiện lại — đừng để kẹt lớp phủ mờ
+window.addEventListener('resize', () => {
+  if (window.innerWidth >= MENU_BREAKPOINT) closeMenu();
+});
+
+function closeNewBook() {
+  const modal = document.getElementById('newBookModal');
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function onNewBookSourceChange() {
+  const v = document.getElementById('nbSource').value || '';
+  const hint = document.getElementById('nbSourceHint');
+  if (v.startsWith('src:')) {
+    const src = appState.projects[v.slice(4)];
+    hint.textContent = src
+      ? `Chép hạng mục, khối lượng, địa bàn, bìa và chữ ký của "${src.name}". Không chép ngày nào — cuốn mới bắt đầu lại từ trang đầu.`
+      : '';
+  } else {
+    hint.textContent = 'Dùng hạng mục và bìa mặc định của mẫu.';
+  }
+}
+
+function submitNewBook() {
+  const raw = document.getElementById('nbSource').value || '';
+  const sourceId = raw.startsWith('src:') ? raw.slice(4) : null;
+  const templateId = raw.startsWith('tpl:') ? raw.slice(4) : null;
+  if (sourceId && !appState.projects[sourceId]) { alert('Cuốn nguồn không còn tồn tại.'); return; }
+  if (!sourceId && !TEMPLATES[templateId]) { alert('Hãy chọn mẫu quyển hoặc cuốn nguồn.'); return; }
 
   const defaultName = 'Công trình ' + (Object.keys(appState.projects).length + 1);
-  const name = prompt('Tên cuốn nhật ký (công trình mới):', defaultName);
-  if (name === null) return;
-  const trimmedName = (name.trim() || defaultName);
+  const trimmedName = (document.getElementById('nbName').value || '').trim() || defaultName;
 
-  const sdRaw = prompt('📅 Ngày bắt đầu cuốn (YYYY-MM-DD):\nĐây sẽ là trang đầu tiên.', todayISO());
-  if (sdRaw === null) return;
-  const startDate = sdRaw.trim() || todayISO();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
-    alert('Định dạng ngày không đúng. Hãy dùng dạng YYYY-MM-DD (ví dụ ' + todayISO() + ').');
-    return;
-  }
+  const startDate = (document.getElementById('nbStartDate').value || '').trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) { alert('Hãy chọn ngày bắt đầu cuốn.'); return; }
   const { y, m, d } = isoToParts(startDate);
   const check = new Date(y, m - 1, d);
   if (check.getFullYear() !== y || (check.getMonth() + 1) !== m || check.getDate() !== d) {
@@ -1785,26 +2192,34 @@ function newProject() {
     return;
   }
 
-  const spRaw = prompt('📄 Số trang của ngày đầu tiên:', '1');
-  if (spRaw === null) return;
-  const startPage = parseInt(spRaw, 10);
-  if (!(startPage >= 1)) {
-    alert('Số trang phải là số nguyên dương.');
-    return;
-  }
+  const startPage = parseInt(document.getElementById('nbStartPage').value, 10);
+  if (!(startPage >= 1)) { alert('Số trang phải là số nguyên dương.'); return; }
 
+  clearTimeout(window._sv);
   collectForm();
   persist();
-  const id = createProject(trimmedName, startDate, startPage, templateId);
+  closeNewBook();
+
+  const id = createProject(trimmedName, startDate, startPage, templateId, sourceId);
   appState.currentProjectId = id;
   appState.currentDate = startDate;
   const e = ensureEntry(appState.currentDate);
   const isFresh = e && e._isNew;
   if (e) delete e._isNew;
+
+  // Ngày đầu cuốn mới nối tiếp nhân lực/thiết bị của ngày làm việc cuối cuốn nguồn
+  const srcLast = sourceId ? lastWorkEntryOf(appState.projects[sourceId]) : null;
+  if (e && srcLast) {
+    ['workers', 'workers_other', 'equipment', 'env', 'safe'].forEach(k => {
+      if (srcLast[k] !== undefined) e[k] = srcLast[k];
+    });
+  }
+
   refreshProjectSelect();
   refreshDatePicker();
   renderForm();
   persist();
+  flash(sourceId ? 'Đã tạo cuốn mới, kế thừa cấu hình ✓' : 'Đã tạo cuốn mới ✓');
   if (isFresh && appState.currentDate === todayISO()) fetchLocalTemperature(false);
 }
 
@@ -2131,10 +2546,10 @@ function buildEntryHTML(p, e) {
     </table>
     <div class="section-num">2. Nhân lực và thiết bị thi công:</div>
     <div class="subsection">2.1. Nhân lực:</div>
-    <div style="padding-left:10mm">- Công nhân: ${escapeHtml(e.workers)} người</div>
-    <div style="padding-left:10mm">- Nhân lực khác: ${escapeHtml(e.workers_other)}</div>
+    <div style="padding-left:10mm">- Công nhân: ${e.restDay ? '' : escapeHtml(e.workers) + ' người'}</div>
+    <div style="padding-left:10mm">- Nhân lực khác: ${e.restDay ? '' : escapeHtml(e.workers_other)}</div>
     <div class="subsection">2.2. Thiết bị thi công:</div>
-    <div style="padding-left:10mm">${escapeHtml(e.equipment)}</div>
+    <div style="padding-left:10mm">${e.restDay ? '' : escapeHtml(e.equipment)}</div>
     <div class="section-num">3. Tình hình diễn biến thi công, nghiệm thu công việc:</div>
     <div class="subsection">3.1. Diễn biến thi công, nghiệm thu công việc:</div>`;
 
@@ -2393,8 +2808,14 @@ const EXPORT_CSS = `
   table { width: 100%; border-collapse: collapse; margin: 4px 0 10px 0; }
   /* font-size phải ghi rõ: container xuất PDF nằm trong document thật nên style
      mobile của app (@media screen and (max-width:820px)) vẫn có thể lọt vào. */
-  /* Nét kẻ mảnh theo quyển mẫu: Tr1/Tr2 dùng viền "thin" (~0,5pt), riêng bảng
-     khối lượng trang ngày dùng "hair" — mảnh nhất. Đừng quay lại 1px (~0,75pt). */
+  /* NÉT KẺ — 0,75pt là mức MẢNH NHẤT có thể, đừng phí công hạ số pt.
+     Đã đo: Chrome ép mọi thuộc tính border khác 0 lên tối thiểu 1px, nên 1pt và
+     0.05pt vẽ ra y hệt nhau; 1 CSS px ↔ 210mm/794px ⇒ luôn in ra 0,75pt.
+     Đã thử vẽ bằng background gradient để xuống 0,375pt: html2canvas KHÔNG
+     render được — gradient 0.5px làm nó ném "createPattern ... width or height
+     of 0", còn gradient kích thước nguyên + color-stop lẻ thì mất sạch nét
+     trong bảng. Muốn mảnh thật thì phải dựng trang ở bội số CSS px rồi thu nhỏ
+     lúc xuất (nhân đôi mọi giá trị pt), không phải chỉnh vài con số ở đây. */
   table th, table td { border: 0.5pt solid #000; padding: 5px 7px; vertical-align: middle; font-size: 13pt; }
   table th { font-weight: bold; text-align: center; }
   table.work th, table.work td { border: 0.4pt solid #000; }
@@ -3015,9 +3436,9 @@ if (_initIsFresh && appState.currentDate === todayISO()) {
 // auto-save khi đổi (không kích hoạt khi đổi select cuốn/ngày/forecast — đã xử lý riêng)
 document.addEventListener('input', (ev) => {
   if (!ev.target) return;
-  if (['projectSelect', 'templateSelect', 'datePicker', 'importFile', 'forecastDays'].includes(ev.target.id)) return;
-  // modal Thông tin quyển có nút Lưu riêng
-  if (ev.target.closest && ev.target.closest('#bookModal')) return;
+  if (['projectSelect', 'templateSelect', 'datePicker', 'datePickerTop', 'importFile', 'forecastDays'].includes(ev.target.id)) return;
+  // modal Thông tin quyển có nút Lưu riêng; modal Tạo cuốn mới có nút Tạo cuốn
+  if (ev.target.closest && ev.target.closest('#bookModal, #newBookModal')) return;
   clearTimeout(window._sv);
   window._sv = setTimeout(() => {
     collectForm();
@@ -3028,10 +3449,22 @@ document.addEventListener('input', (ev) => {
 // Escape để đóng modal dự báo
 document.addEventListener('keydown', (ev) => {
   if (ev.key === 'Escape') {
+    const nb = document.getElementById('newBookModal');
+    if (nb && nb.classList.contains('open')) { closeNewBook(); return; }
     const bm = document.getElementById('bookModal');
     if (bm && bm.classList.contains('open')) { closeBook(); return; }
     const modal = document.getElementById('forecastModal');
-    if (modal && modal.classList.contains('open')) closeForecast();
+    if (modal && modal.classList.contains('open')) { closeForecast(); return; }
+    const tb = document.getElementById('toolbar');
+    if (tb && tb.classList.contains('open')) closeMenu();
+  }
+  // Enter trong modal tạo cuốn = bấm "Tạo cuốn"
+  if (ev.key === 'Enter') {
+    const nb = document.getElementById('newBookModal');
+    if (nb && nb.classList.contains('open') && ev.target.closest && ev.target.closest('#newBookModal')) {
+      ev.preventDefault();
+      submitNewBook();
+    }
   }
 });
 

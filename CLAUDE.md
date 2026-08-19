@@ -16,6 +16,7 @@ diary/
 ├── sw.js                 # PWA — service worker (cache để chạy offline)
 ├── icon-192.png · icon-512.png · icon-maskable.png · apple-touch-icon.png
 ├── NKTC-Gói thầu 2026-2029-Quận 8 (A.TÀI) đã cập nhật.xlsx   # Quyển mẫu gốc, nguồn của TEMPLATES.q8
+├── prompts/              # Prompt tự chứa cho từng thay đổi lớn (chạy lại / giao session khác)
 └── CLAUDE.md             # File này
 ```
 
@@ -92,7 +93,7 @@ Registry ở đầu `<script>`. Mỗi mẫu mô tả layout trang ngày + có/kh
 
 Nhãn hiển thị **không lưu trong template** — `tplLabel(id)` ghép `Mẫu <STT> (note)` với STT lấy theo thứ tự khai báo trong `TEMPLATES`. Thêm mẫu mới là tự đánh số; template chỉ khai `note`. Mọi chỗ hiện tên mẫu (dropdown, prompt tạo cuốn, confirm đổi mẫu, alert) đều gọi `tplLabel`.
 
-Field của template: `zones`, `colGroups[{label, prefix}]`, `itemsHeader`, `hasBook`, `zeroAsDash` (0 → `-` khi xuất), `keepQty` (ngày mới kế thừa khối lượng thay vì về 0), `continuousNumbering` (STT chạy liên tục qua các nhóm), `splitAfter`, `items`, `book`, `sign`.
+Field của template: `zones`, `colGroups[{label, prefix}]`, `itemsHeader`, `hasBook`, `zeroAsDash` (0 → `-` khi xuất), `keepQty` (snapshot khối lượng vào `p.items` khi sửa cấu trúc — chỉ còn ảnh hưởng **ngày đầu cuốn**; kế thừa hằng ngày do `prevWorkEntryOf` lo), `continuousNumbering` (STT chạy liên tục qua các nhóm), `splitAfter`, `items`, `book`, `sign`.
 
 Số trang mỗi ngày là **động**: `entryRowChunks(p, e)` chia dòng thật rồi `entryPageCount(p, e)` đếm. Bật `hideZeroRows` mà số hạng mục còn lại không vượt điểm cắt thì ngày đó tự rút còn 1 trang, `computePagenum` và `bookPageTotal` cộng dồn theo từng ngày nên số trang vẫn liên tục.
 
@@ -127,8 +128,16 @@ Chỉ bật khi `tplOf(p).hasBook`. Chứa 5 phần: loại bìa · bìa quyển
 - **Date picker giới hạn `min=startDate`** để không tạo entry trước ngày bắt đầu cuốn (sẽ làm lệch số trang).
 - **`_isNew` flag** trên entry: dùng nội bộ để biết entry vừa tạo lần đầu → trigger auto-fetch nhiệt độ nếu ngày là hôm nay. Phải `delete` trước khi `persist()` để không leak vào localStorage.
 - **`items` global var** là tham chiếu tới `currentEntry.items`. `renderTable()` đọc từ đây. `syncItemsStructureToProject()` đẩy thay đổi name/unit/group/add/del sang `project.items` (template) nhưng KHÔNG đẩy qty (qty là số liệu hàng ngày).
+- **Ngày mới kế thừa ngày LÀM VIỆC gần nhất.** `ensureEntry` gọi `prevWorkEntryOf(p, dateISO)` — duyệt ngược các ngày `< dateISO`, **bỏ qua mọi entry `restDay`**: sau đợt nghỉ lễ dài phải lấy số của ngày đi làm cuối cùng, không phải mớ rỗng của ngày nghỉ. Kế thừa: **khối lượng (cả 3 mẫu)** qua `inheritQty()` — khớp theo vị trí, lệch thì fallback dò theo tên, đọc/ghi qua `getQ`/`setQ` nên dùng chung cho mẫu 1 cột lẫn mẫu nhiều địa bàn — cùng `workers`, `workers_other`, `equipment`, `env`, `safe`. **Không** kế thừa: thời tiết/nhiệt độ (giữ mặc định, để auto-fetch API lo), `note_a`/`note_b`, `restDay`. Không tìm được ngày nguồn → về `p.items` + hằng số cứng như cũ.
+- **Cuốn mới có thể kế thừa cuốn đã có.** `createProject(name, startDate, startPage, templateId, sourceId)` — khi có `sourceId` thì `templateId` **lấy theo cuốn nguồn** (tham số `templateId` bị bỏ qua), và chép sang: `items` (khối lượng lấy từ `lastWorkEntryOf(src)`, không phải `src.items`), `zones`, `book`, `rep_a/rep_b`, `hideZeroRows`. **`entries` luôn rỗng** — cuốn mới là quyển mới, bắt đầu lại từ `startPage` người dùng nhập, không nối tiếp số trang của cuốn nguồn. Ngày đầu của cuốn mới còn được seed `workers`/`workers_other`/`equipment`/`env`/`safe` từ ngày làm việc cuối cuốn nguồn (trong `submitNewBook`).
+- **`+ Cuốn mới` dùng modal `#newBookModal`**, không còn chuỗi `prompt()`. Ngày bắt đầu là `<input type="date">` (lịch của trình duyệt) thay vì gõ tay `YYYY-MM-DD`. Ô "Khởi tạo từ" là một `<select>` 2 `optgroup`: *Tạo trắng từ mẫu* (`value="tpl:<id>"`) và *Kế thừa từ cuốn đã có* (`value="src:<projectId>"`); nhóm thứ hai tự ẩn khi chưa có cuốn nào. Giống `#bookModal`, mọi input trong đây **bị loại khỏi auto-save debounce** — chỉ ghi khi bấm "Tạo cuốn".
+- **Bố cục 2 trạng thái, ngưỡng 1100px.** ≥ 1100px: `.toolbar` là **thanh dọc cố định bên TRÁI** rộng 300px, `body { padding-left: 300px }`, bên phải hoàn toàn là trang nhật ký. < 1100px: `.toolbar` thành **ngăn kéo** trượt từ trái (`transform: translateX(-100%)` → `.open`), cộng `.mobilebar` cố định trên cùng chứa nút menu + điều hướng ngày. **Ngưỡng là 1100px chứ không phải 820px** vì `.page` rộng cố định 210mm ≈ 794px; 794 + 300 + lề ⇒ hẹp hơn ~1100px là trang bị cuộn ngang.
+- **`.toolbar` khi xếp dọc BẮT BUỘC `flex-wrap: nowrap`.** Base `.toolbar` có `flex-wrap: wrap`; đổi sang `flex-direction: column` trên một phần tử bị chặn chiều cao (`position: fixed` + `bottom: 0`) thì các nút **wrap sang cột thứ hai và tràn ra ngoài màn hình**. Để `overflow-y: auto` lo việc cuộn.
+- **Quy tắc cho nút giãn hết bề ngang phải viết `.toolbar button:not(.tb-close)`** — `.toolbar button` (0,2,0) đè `.tb-close` (0,1,0), không loại trừ thì nút đóng ngăn kéo bị kéo rộng bằng cả ngăn kéo.
+- **Hai ô chọn ngày** (`#datePicker` trong thanh công cụ, `#datePickerTop` trên `.mobilebar`) cùng mang class **`.js-datepicker`**; `refreshDatePicker()` duyệt `querySelectorAll('.js-datepicker')` để đồng bộ cả `value` lẫn `min`. Thêm ô ngày mới thì chỉ cần gắn class này và thêm id vào filter auto-save.
 - **Auto-save debounce 800ms** trên `input` event của document, có filter để bỏ qua `#projectSelect`, `#templateSelect`, `#datePicker`, `#importFile`, `#forecastDays` và **mọi thứ trong `#bookModal`** (đều có handler riêng).
 - **Ẩn hạng mục khối lượng 0** (`p.hideZeroRows`) chỉ tác động lúc **xuất file** — `visibleItems()` lọc trong `workRowsHTML()`, màn hình vẫn hiện đủ dòng để nhập. Ngày nghỉ thì **không lọc** (bảng cố tình trống nhưng phải đủ tên hạng mục). STT in ra được đánh lại liên tục 1..N.
+- **Ngày nghỉ khi xuất file còn bỏ trống cả mục 2** (2.1 nhân lực + 2.2 thiết bị) trong `buildEntryHTML`, không chỉ bảng khối lượng. Giữ **nguyên số dòng**, chỉ bỏ phần giá trị — trang A4 đang khít, thêm/bớt dòng là vỡ điểm ngắt trang. Màn hình nhập vẫn hiện đủ để sửa.
 - **Mục 4 và 5 in đủ 3 lựa chọn** Tốt / Bình thường / Kém, ô vuông vẽ bằng `border` + `transform` (`.opts .box`) chứ không dùng ký tự ☑ — tránh phụ thuộc font khi html2canvas rasterize.
 - **Chuyển cuốn/ngày** luôn `clearTimeout(window._sv)` rồi `collectForm()` trước khi switch — không thì debounce sẽ ghi đè entry mới bằng form cũ.
 
@@ -150,7 +159,26 @@ Dòng `Công trình: …` **chỉ có trên màn hình**, không đưa vào `bui
 
 Đừng đổi các số pt này để "cho vừa trang" — cứ để bước thu nhỏ lo.
 
-**Nét kẻ bảng** lấy theo kiểu viền của quyển mẫu: bảng khối lượng trang ngày là `hair` → **0,4pt**, các bảng còn lại (thời tiết, Tr1, Tr2) là `thin` → **0,5pt**. Đừng quay lại `1px` (≈0,75pt) — dày hơn bản gốc. CSS màn hình vẫn để `1px` vì dưới mức đó trình duyệt vẽ không sắc nét. Nếu cần chữ to hơn thì giảm số hạng mục mỗi trang (`splitAfter`) chứ không tăng pt.
+### Nét kẻ bản xuất — 0,75pt là sàn, đừng phí công hạ số pt
+
+`EXPORT_CSS` ghi `0,4pt` (bảng khối lượng) và `0,5pt` (các bảng khác) theo `hair`/`thin` của Excel, **nhưng in ra cả hai đều là 0,75pt** — hai con số đó chưa bao giờ khác nhau. Lý do:
+
+**Chrome ép mọi thuộc tính `border` khác 0 lên tối thiểu 1px.** Đã đo: từ `1pt` xuống `0.05pt` đều cho `computed 1px`, cùng 2 device px ở `PDF_SCALE = 2`. Vì 1 CSS px ↔ 210mm/794px nên border luôn in ra **0,75pt**, bất kể ghi bao nhiêu pt.
+
+**Đã thử vẽ bằng `background` gradient để xuống 0,375pt — html2canvas không render được:**
+
+| Cách | Kết quả qua html2canvas |
+|---|---|
+| `background-size: … 0.5px` | **ném lỗi** `createPattern … canvas element with a width or height of 0` → hỏng hẳn nút xuất PDF |
+| `background-size: 1px` + color-stop 50% | không lỗi nhưng **mất sạch nét trong bảng**, chỉ còn viền ngoài |
+| `background-size: 2px` + color-stop 25% | như trên |
+| `border` | cách duy nhất cho lưới đầy đủ |
+
+Trình duyệt vẽ được nét 0,5px, **html2canvas thì không** — nên mọi kiểm chứng về nét kẻ **bắt buộc phải chạy qua html2canvas** (`html2pdf().from(el).toContainer().toCanvas()`), không được dùng `page.screenshot()` của puppeteer: nó rasterize bằng engine thật nên cho kết quả đẹp mà bản PDF thật lại vỡ.
+
+**Muốn mảnh hơn 0,75pt thật sự** thì phải dựng trang ở bội số CSS px rồi thu nhỏ lúc xuất — tức nhân đôi `.page { width }` và **mọi** giá trị `pt` trong `EXPORT_CSS`, rồi để `renderPagesToPDF` co lại. Khi đó 1 CSS px chỉ còn 0,375pt. Đây là việc lớn, không phải chỉnh vài con số.
+
+CSS màn hình giữ nguyên, không đụng tới. Nếu cần chữ to hơn thì giảm số hạng mục mỗi trang (`splitAfter`) chứ không tăng pt.
 
 ### Giới hạn vật lý đã đo
 
@@ -220,13 +248,52 @@ Muốn khỏi phải thu nhỏ thì giảm `splitAfter` hoặc bóp thêm `.page
 - [ ] Còn 1 địa bàn → chặn xóa; quá `MAX_ZONES` → chặn thêm; mẫu cũ → báo không tách địa bàn
 - [ ] Tick "Ẩn hạng mục khối lượng = 0" → màn hình vẫn đủ 40 dòng, PDF chỉ còn hạng mục có số và ngày rút còn 1 trang; số trang + "Sổ này gồm" tự tính lại
 - [ ] Mục 4, 5 trong PDF in đủ Tốt / Bình thường / Kém, đúng 1 ô được tick
-- [ ] Tick "Ngày nghỉ" → ô số bị khóa; xuất PDF thấy bảng trống nhưng còn đủ tên hạng mục
+- [ ] Tick "Ngày nghỉ" → ô số bị khóa; xuất PDF thấy bảng trống nhưng còn đủ tên hạng mục, mục 2.1/2.2 cũng trống, ngày vẫn **đúng 2 trang**
 - [ ] `📕 Thông tin quyển` → sửa bìa, thêm/xóa văn bản + cán bộ → Lưu → reload còn nguyên
 - [ ] `📄 Xuất PDF ngày này` → mở PDF: **đúng 2 trang**, trang 1 hạng mục 1–23, trang 2 lặp header + 24–38 + mục 4–7 + chữ ký nằm ngang
 - [ ] Lề PDF đo được 2cm cả 4 phía, không còn dòng "Công trình:"
 - [ ] Tên file dạng `NKTC - Phường … - T07-2026.pdf`
 - [ ] Kết thúc → PDF theo thứ tự BÌA TỔNG → bìa quyển → Tr1 → Tr2 → từng ngày, đối chiếu file `.xlsx`
 - [ ] Đổi mẫu cuốn cũ → Q8, chọn "Nạp lại hạng mục" và chọn "Không" — cả 2 nhánh không lỗi JS
+
+**Kế thừa ngày mới:**
+- [ ] Mẫu 2: nhập khối lượng + `Công nhân`/`Thiết bị`/`Môi trường` → bấm `>` → ngày mới hiện y hệt; thời tiết + ghi chú về mặc định, `Ngày nghỉ` bỏ tick
+- [ ] Mẫu 1 cũng kế thừa khối lượng (trước đây về 0) — ngày đầu cuốn vẫn lấy số mặc định của `DEFAULT_ITEMS` (1/2/133…), không phải 0
+- [ ] Nghỉ lễ dài: ngày 01 làm việc → 02, 03, 04 tick `Ngày nghỉ` và xóa `Công nhân` về 0 → tạo ngày 05 → kế thừa từ **ngày 01**
+- [ ] Cuốn chỉ toàn ngày nghỉ → tạo ngày mới về mặc định `p.items` + `Công nhân = 07`, không lỗi JS
+- [ ] Chèn ngày giữa: đã có 01 và 05, tạo 03 → kế thừa từ **01**
+- [ ] Sửa số ngày trước → ngày sau đã tạo giữ nguyên số của nó (không rò ngược)
+- [ ] Ngày 02 đổi tên hạng mục + `+ Thêm địa bàn` → ngày 03: tên mới khớp vị trí, cột địa bàn mới = 0, cột cũ giữ số
+
+**Kế thừa cuốn mới:**
+- [ ] `+ Cuốn mới` mở modal, ô ngày bấm ra lịch (không phải gõ tay), mặc định chọn cuốn đang mở
+- [ ] Cuốn A đã tùy chỉnh (đổi tên hạng mục, thêm địa bàn, sửa bìa, đổi chữ ký, tick ẩn dòng 0) → tạo B kế thừa A → B có đủ tất cả
+- [ ] B chỉ có **1 ngày**, `pagenum` bắt đầu lại theo `startPage` đã nhập — không nối tiếp số trang của A
+- [ ] Ngày cuối của A là ngày nghỉ → B vẫn lấy số của ngày làm việc trước đó
+- [ ] Sửa hạng mục/khối lượng/bìa trong B → cuốn A không đổi (deep copy)
+- [ ] Chọn "Tạo trắng từ mẫu" → về đúng mặc định template, `Công nhân = 07`
+- [ ] Chưa có cuốn nào → select chỉ còn nhóm "Tạo trắng từ mẫu"
+- [ ] Để trống ngày / số trang = 0 → alert, modal vẫn mở, không tạo cuốn rác; bấm Hủy / Esc → thoát sạch
+- [ ] Modal hiển thị đúng trên mobile 390px, chữ ≥ 16px, không scroll ngang
+
+**Xuất file (chạy sau MỌI thay đổi EXPORT_CSS):**
+- [ ] Bấm `📄 Xuất PDF ngày này` với **cả 3 mẫu** → không có alert "Không tạo được PDF"
+- [ ] Bấm `📕 Xuất PDF cả cuốn` → chạy trót lọt (đường này còn dựng bìa + Tr1 + Tr2)
+- [ ] Mở PDF: lưới bảng **đầy đủ**, không mất nét trong, còn viền ngoài phải/dưới
+- [ ] Mẫu 2/3 vẫn đúng 2 trang, mẫu 1 vẫn 1 trang
+
+> Kiểm bằng `page.screenshot()` của puppeteer là **chưa đủ** — nó dùng engine thật nên vẫn đẹp trong khi html2canvas đã hỏng. Phải gọi thẳng `exportDayAsPDF()` / `exportBookPDFOnly()`.
+
+**Bố cục thanh công cụ:**
+- [ ] 1440 / 1280 / 1100px → thanh dọc bên trái đúng 300px, **không nút nào tràn sang cột thứ hai**, trang nhật ký không bị đè, không cuộn ngang
+- [ ] 1099 / 1024 / 820 / 390px → thanh dọc ẩn hẳn, `.mobilebar` hiện, không cuộn ngang
+- [ ] Nút menu mở ngăn kéo; bấm nền mờ (dải bên phải) / nút đóng / `Esc` đều đóng
+- [ ] Bấm một nút trong ngăn kéo → thực thi **và** đóng; bấm `select` thì **không** đóng
+- [ ] Đổi ngày ở `.mobilebar` → `#datePicker` trong ngăn kéo cùng giá trị; cả hai có `min = startDate`
+- [ ] Mở ngăn kéo ở 800px rồi kéo rộng ra 1400px → không còn nền mờ kẹt lại
+- [ ] Nút menu và nút đóng đều ≥ 44×44px; nút đóng **không** bị kéo giãn hết bề ngang
+- [ ] Xuất PDF ngày này ở **cả hai** breakpoint → vẫn đúng 2 trang, lề 2cm, không mất phần bên trái
+- [ ] Ctrl+P → `.toolbar`, `.mobilebar`, nền mờ đều ẩn; `body` không còn padding
 
 **Chung:**
 - [ ] Tạo cuốn mới với ngày bắt đầu khác hôm nay → ngày đầu = trang `startPage`
