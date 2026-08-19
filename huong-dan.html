@@ -175,6 +175,7 @@
     <li><a href="#backup">Sao lưu / Khôi phục dữ liệu</a></li>
     <li><a href="#end">Kết thúc cuốn nhật ký (xuất Word + PDF)</a></li>
     <li><a href="#tips">Mẹo và xử lý sự cố</a></li>
+    <li><a href="#version">Phiên bản và cập nhật</a></li>
   </ol>
 </div>
 
@@ -222,10 +223,27 @@ có biểu tượng ngoài màn hình chính, và <strong>mở được cả khi
 </div>
 
 <h2 id="toolbar">3. Thanh công cụ</h2>
-<p>Thanh trên cùng chia làm <strong>4 hàng</strong>:</p>
+<p>Thanh công cụ nằm ở đâu tuỳ theo bề ngang màn hình:</p>
+<table class="steps">
+  <tr><th style="width:150px;">Máy tính<br><small>(màn rộng)</small></th><td>
+    Thanh công cụ là <strong>cột dọc cố định bên trái</strong>. Phần còn lại của màn hình
+    dành hết cho trang nhật ký. Cột này cuộn riêng nếu dài hơn màn hình.
+  </td></tr>
+  <tr><th>Điện thoại, máy tính bảng<br><small>(màn hẹp)</small></th><td>
+    Trên cùng chỉ còn một thanh mỏng: nút <span class="btn">☰</span> ·
+    <span class="btn">◀</span> · ô chọn ngày · <span class="btn">▶</span>.
+    Bấm <span class="btn">☰</span> để mở đầy đủ công cụ, bấm ra ngoài hoặc phím
+    <kbd>Esc</kbd> để đóng. Bấm một nút bất kỳ trong menu thì menu tự đóng luôn.
+  </td></tr>
+</table>
+<div class="callout">
+  Hai ô chọn ngày (trên thanh mỏng và trong menu) <strong>luôn khớp nhau</strong> —
+  đổi ở đâu cũng được.
+</div>
+<p>Các nút được chia thành <strong>4 nhóm</strong>:</p>
 
 <table class="steps">
-  <tr><th style="width:120px;">Hàng 1 — Cuốn</th><td>
+  <tr><th style="width:120px;">Nhóm 1 — Cuốn</th><td>
     <span class="btn">📒 Cuốn:</span> chọn cuốn đang xem (mỗi cuốn 1 công trình) ·
     <span class="btn">+ Cuốn mới</span> ·
     <span class="btn">✏️ Đổi tên</span> ·
@@ -233,16 +251,16 @@ có biểu tượng ngoài màn hình chính, và <strong>mở được cả khi
     <span class="btn">📕 Thông tin quyển</span> ·
     <span class="btn danger">🏁 Kết thúc</span>
   </td></tr>
-  <tr><th>Hàng 2 — Mẫu</th><td>
+  <tr><th>Nhóm 2 — Mẫu</th><td>
     <span class="btn">🧩 Mẫu:</span> chọn mẫu quyển cho cuốn đang mở (xem <a href="#templates">mục 5</a>)
   </td></tr>
-  <tr><th>Hàng 3 — Ngày</th><td>
+  <tr><th>Nhóm 3 — Ngày</th><td>
     <span class="btn">📅 Ngày:</span> chọn ngày để xem/sửa ·
     <span class="btn">◀ Hôm trước</span> · <span class="btn">Hôm sau ▶</span> ·
     <span class="btn">Hôm nay</span> ·
     <span class="btn">📚 Danh sách ngày</span>
   </td></tr>
-  <tr><th>Hàng 4 — Thao tác</th><td>
+  <tr><th>Nhóm 4 — Thao tác</th><td>
     <span class="btn primary">📄 Xuất PDF ngày này</span> ·
     <span class="btn">📕 Xuất PDF cả cuốn</span> ·
     <span class="btn">✏️ Sửa hạng mục</span> ·
@@ -257,13 +275,36 @@ có biểu tượng ngoài màn hình chính, và <strong>mở được cả khi
 </table>
 
 <h2 id="new-book">4. Tạo cuốn nhật ký mới</h2>
-<p>Khi mở công trình mới, bấm <span class="btn">+ Cuốn mới</span> và làm 4 bước:</p>
-<ol>
-  <li><strong>Chọn mẫu quyển:</strong> gõ số thứ tự của mẫu (xem <a href="#templates">mục 5</a>). Mặc định là mẫu mới nhất.</li>
-  <li><strong>Tên công trình:</strong> ví dụ <em>"Đường Lê Lợi - Q1 - 2026"</em>. Sau này có thể đổi qua nút <span class="btn">✏️ Đổi tên</span>.</li>
-  <li><strong>Ngày bắt đầu:</strong> điền theo định dạng <code>YYYY-MM-DD</code> (ví dụ <code>2026-05-21</code>). Đây sẽ là <strong>trang đầu tiên</strong> của cuốn.</li>
-  <li><strong>Số trang bắt đầu:</strong> mặc định <code>1</code>. Nếu cuốn này nối tiếp cuốn cũ (ví dụ cuốn cũ kết thúc ở trang 7), nhập <code>8</code>.</li>
-</ol>
+<p>Bấm <span class="btn">+ Cuốn mới</span>, một cửa sổ hiện ra với 4 ô:</p>
+<table class="steps">
+  <tr><th style="width:150px;">Khởi tạo từ</th><td>
+    Chọn một trong hai nhóm:
+    <ul style="margin:6px 0 0;">
+      <li><strong>Tạo trắng từ mẫu</strong> — dùng hạng mục và bìa mặc định của mẫu
+        (xem <a href="#templates">mục 5</a>).</li>
+      <li><strong>Kế thừa từ cuốn đã có</strong> — chép sang <em>toàn bộ</em> cấu hình của
+        cuốn cũ: mẫu quyển, danh sách hạng mục, khối lượng, tên địa bàn, thông tin bìa,
+        chữ ký. Rất tiện khi mở quyển tháng sau cho cùng một gói thầu.</li>
+    </ul>
+  </td></tr>
+  <tr><th>Tên cuốn</th><td>
+    Ví dụ <em>"Đường Lê Lợi - Q1 - 2026"</em>. Sau này đổi được bằng
+    <span class="btn">✏️ Đổi tên</span>.
+  </td></tr>
+  <tr><th>Ngày bắt đầu</th><td>
+    Bấm vào ô để <strong>chọn trên lịch</strong> (không phải gõ tay nữa).
+    Đây là <strong>trang đầu tiên</strong> của cuốn.
+  </td></tr>
+  <tr><th>Số trang đầu</th><td>
+    Mặc định <code>1</code>. Nếu cuốn này nối tiếp cuốn cũ (cuốn cũ kết thúc ở trang 7)
+    thì nhập <code>8</code>.
+  </td></tr>
+</table>
+<div class="callout warn">
+  <strong>Kế thừa KHÔNG chép ngày nào.</strong> Cuốn mới luôn là một quyển mới:
+  không mang theo nhật ký của cuốn cũ, và số trang bắt đầu lại từ số bạn nhập.
+  Chỉ có phần <em>cấu hình</em> được chép sang.
+</div>
 <div class="callout">
   <strong>Mẹo:</strong> Mỗi cuốn được lưu độc lập. Bạn có thể có nhiều cuốn cùng lúc cho nhiều công trình khác nhau — chỉ cần chuyển bằng dropdown <span class="btn">📒 Cuốn</span>.
 </div>
@@ -325,10 +366,10 @@ BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký
 <p>Khi mở cuốn, bạn sẽ thấy form nhật ký với các mục:</p>
 <ul>
   <li><strong>Tên công trình</strong> — tự điền từ tên cuốn, không sửa được trên form (đổi qua nút Đổi tên).</li>
-  <li><strong>Ngày tháng năm</strong> — tự đồng bộ theo date picker bên trên (không nhập tay).</li>
+  <li><strong>Ngày tháng năm</strong> — tự đồng bộ theo ô chọn ngày trên thanh công cụ (không nhập tay).</li>
   <li><strong>1. Tình hình thời tiết</strong> — 2 cột Sáng/Chiều, có thể bấm <span class="btn">🌡️ Cập nhật nhiệt độ</span> để tự lấy từ vị trí thực.</li>
   <li><strong>2. Nhân lực và thiết bị</strong> — số công nhân, nhân lực khác, thiết bị đang dùng.</li>
-  <li><strong>3. Bảng công việc</strong> — nhập <em>khối lượng</em> cho từng hạng mục trong ngày. Nếu muốn thêm/sửa hạng mục, xem <a href="#items">phần 6</a>.</li>
+  <li><strong>3. Bảng công việc</strong> — nhập <em>khối lượng</em> cho từng hạng mục trong ngày. Nếu muốn thêm/sửa hạng mục, xem <a href="#items">mục 9</a>.</li>
   <li><strong>4–5. Vệ sinh & An toàn</strong> — chọn Tốt / Bình thường / Kém.</li>
   <li><strong>6–7. Ghi chú</strong> — nhận xét của giám sát A, đề xuất của B.</li>
   <li><strong>Chữ ký</strong> — họ tên đại diện bên A và B (dùng chung cho các ngày trong cuốn, sửa lần đầu là xong).</li>
@@ -338,12 +379,34 @@ BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký
 <div class="callout">
   ✅ Dữ liệu <strong>tự động lưu</strong> sau mỗi lần gõ phím — không lo mất.
 </div>
+<h3>Ngày mới tự điền sẵn theo ngày hôm trước</h3>
+<p>Khi bạn mở một ngày chưa có nhật ký, phần mềm <strong>chép sẵn</strong> từ
+   <strong>ngày đi làm gần nhất</strong>, để khỏi phải gõ lại từ đầu:</p>
+<table class="steps">
+  <tr><th style="width:150px;">Có chép sẵn</th><td>
+    Khối lượng từng hạng mục · số công nhân · nhân lực khác · thiết bị thi công ·
+    mục 4 (vệ sinh môi trường) · mục 5 (an toàn lao động)
+  </td></tr>
+  <tr><th>Không chép</th><td>
+    Thời tiết và nhiệt độ (để tự lấy theo ngày thật) · ghi chú mục 6, 7 ·
+    ô <em>Ngày nghỉ</em> (luôn bỏ tích)
+  </td></tr>
+</table>
+<div class="callout">
+  <strong>Sau đợt nghỉ lễ:</strong> phần mềm <strong>bỏ qua các ngày nghỉ</strong> khi tìm
+  ngày để chép. Ví dụ nghỉ 30/4, 1/5, 2/5 thì ngày 3/5 vẫn lấy số liệu của ngày 29/4 —
+  không lấy nhầm ngày nghỉ trống trơn.
+</div>
+<div class="callout warn">
+  Số liệu chép sẵn chỉ là <strong>gợi ý cho nhanh</strong> — nhớ sửa lại cho đúng thực tế
+  ngày hôm đó. Sửa ngày nào chỉ ảnh hưởng ngày đó, không đụng tới các ngày khác.
+</div>
 
 <h2 id="navigation">8. Chuyển ngày và xem lịch sử</h2>
 <table class="steps">
   <tr><th>Thao tác</th><th>Cách làm</th></tr>
   <tr><td>Xem ngày khác</td><td>Chọn ngày trong ô <span class="btn">📅 Ngày</span></td></tr>
-  <tr><td>Tạo nhật ký ngày mới</td><td>Chọn ngày chưa có trong date picker → phần mềm tự tạo form trống cho ngày đó</td></tr>
+  <tr><td>Tạo nhật ký ngày mới</td><td>Chọn ngày chưa có trong ô ngày → phần mềm tự tạo, <strong>điền sẵn theo ngày đi làm gần nhất</strong> (xem <a href="#daily">mục 7</a>)</td></tr>
   <tr><td>Lùi/tới 1 ngày</td><td><span class="btn">◀ Hôm trước</span> / <span class="btn">Hôm sau ▶</span></td></tr>
   <tr><td>Về hôm nay</td><td><span class="btn">Hôm nay</span></td></tr>
   <tr><td>Xem tất cả ngày trong cuốn</td><td><span class="btn">📚 Danh sách ngày</span> — hiện danh sách kèm số trang &amp; khối lượng tổng. Gõ STT để mở nhanh.</td></tr>
@@ -533,6 +596,32 @@ nhờ vậy khổ giấy và lề luôn đúng, không phụ thuộc thiết l�
   <li>Một người ghi xong trong ngày → <span class="btn">📤 Xuất cuốn</span> gửi cho người tiếp theo.</li>
   <li>Người tiếp theo <span class="btn">📂 Tải file</span> để cập nhật.</li>
 </ol>
+
+<h2 id="version">16. Phiên bản và cập nhật</h2>
+<p>Số phiên bản hiện ở ngay dưới tiêu đề trên thanh công cụ, dạng
+   <em>Phiên bản 2026.08.19</em>. Khi báo lỗi cho đội phát triển, gửi kèm số này.</p>
+
+<h3>Khi có bản mới</h3>
+<p>Phần mềm tự kiểm tra và hiện một thanh nhỏ ở đáy màn hình:
+   <strong>"Đã có phiên bản mới"</strong> kèm 2 nút:</p>
+<table class="steps">
+  <tr><th style="width:150px;"><span class="btn primary">Tải lại ngay</span></th><td>
+    Nạp bản mới. <strong>An toàn</strong> — phần mềm lưu lại những gì bạn đang gõ dở
+    trước khi tải lại, không mất dữ liệu.
+  </td></tr>
+  <tr><th><span class="btn">Để sau</span></th><td>
+    Ẩn thanh báo, tiếp tục dùng bản hiện tại. Lần sau mở lại phần mềm sẽ tự dùng bản mới.
+  </td></tr>
+</table>
+<div class="callout">
+  Phần mềm <strong>không bao giờ tự tải lại</strong> giữa chừng — bạn đang gõ dở sẽ không
+  bị mất chữ. Việc tải lại luôn do bạn bấm.
+</div>
+<div class="callout warn">
+  <strong>Vẫn thấy bản cũ sau khi cập nhật?</strong> Đóng hẳn phần mềm rồi mở lại.
+  Nếu chạy trên trình duyệt, bấm <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>
+  (máy Mac: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>) để nạp lại hoàn toàn.
+</div>
 
 <hr style="border:none; border-top:1px solid #e2e8f0; margin:32px 0;">
 <p style="text-align:center; color:#64748b; font-size:13px;">
