@@ -269,7 +269,7 @@
     margin: 14px auto;
     padding: 15mm 15mm 15mm 20mm;   /* lề A4 mặc định: trên/phải/dưới 1,5cm — trái 2cm */
     box-shadow: 0 2px 14px rgba(0,0,0,0.12);
-    font-size: 13pt;
+    font-size: 12pt;
     line-height: 1.35;
     color: var(--ink);
   }
@@ -298,7 +298,7 @@
   /* Inputs: trông như viết tay khi in, ô gạch chân khi nhập */
   input[type="text"], input[type="number"], input[type="date"], textarea {
     font-family: 'Times New Roman', Times, serif;
-    font-size: 13pt;
+    font-size: 12pt;
     border: none;
     border-bottom: 1px dotted #999;
     background: transparent;
@@ -327,7 +327,7 @@
     text-align: center;
     vertical-align: middle;
   }
-  table th { font-weight: bold; font-size: 13pt; }
+  table th { font-weight: bold; font-size: 12pt; }
   table.weather td:first-child { text-align: left; font-style: italic; width: 26%; }
   table.weather input { text-align: center; }
 
@@ -840,9 +840,9 @@
     /* chốt lại bố cục bản in, không để media query nào khác đè */
     .signatures { display: flex !important; flex-direction: row !important; gap: 10mm; }
     .signatures .col { flex: 1; text-align: center; }
-    .page { font-size: 13pt; }
+    .page { font-size: 12pt; }
     .title { font-size: 16pt; }
-    table th, table td { font-size: 13pt; padding: 5px 7px; }
+    table th, table td { font-size: 12pt; padding: 5px 7px; }
     table.work td { font-size: 12pt; }
     table.work.multi th, table.work.multi td { font-size: 9.5pt; padding: 3px 4px; }
     textarea { overflow: hidden; resize: none; border: none !important; }
@@ -1010,7 +1010,7 @@
         <input type="text" id="bk_benA">
         <label for="bk_benB">Bên B</label>
         <input type="text" id="bk_benB">
-        <label for="bk_daiDienLienDanh">Đại diện liên danh</label>
+        <label for="bk_daiDienLienDanh">Đại diện liên danh <span style="font-weight:normal;color:#64748b">(bỏ trống nếu không có)</span></label>
         <input type="text" id="bk_daiDienLienDanh">
         <label for="bk_repAName">Đại diện bên A</label>
         <input type="text" id="bk_repAName" placeholder="Họ và tên">
@@ -1167,7 +1167,7 @@
     năm <input type="text" class="inline-input" id="year" style="width:50px;text-align:center" readonly>
   </div>
 
-  <label class="restday"><input type="checkbox" id="restDay" onchange="onRestDayChange()"> Ngày nghỉ — khối lượng in ra bằng 0</label>
+  <label class="restday"><input type="checkbox" id="restDay" onchange="onRestDayChange()"> Ngày nghỉ — khối lượng in ra dấu gạch</label>
 
   <div class="section-num">1. Tình hình thời tiết:</div>
   <table class="weather">
@@ -2667,10 +2667,11 @@ function downloadBlob(blob, filename) {
 function multilineHtml(s) { return escapeHtml(s || '').replace(/\n/g, '<br>'); }
 
 // 0 / rỗng → "-" với mẫu dùng dấu gạch (giống file Excel).
-// Ngày nghỉ → in số 0 (không để trống, cũng không đổi thành "-"): trang ngày
-// nghỉ phải nhìn y hệt trang ngày thường, chỉ khác là khối lượng bằng 0.
+// Ngày nghỉ → mọi ô khối lượng in dấu gạch ngang (không để trống, cũng không
+// in số 0): trang ngày nghỉ nhìn y hệt trang ngày thường, chỉ khác ở chỗ không
+// có khối lượng. Áp cho CẢ 3 mẫu, kể cả mẫu không bật zeroAsDash.
 function fmtQty(tpl, v, rest) {
-  if (rest) return '0';
+  if (rest) return '-';
   if (v === '' || v === null || v === undefined) return tpl.zeroAsDash ? '-' : '';
   if (tpl.zeroAsDash && Number(v) === 0) return '-';
   return String(v);
@@ -2913,6 +2914,12 @@ function bookPageRange(p) {
 function coverRow(label, value, justify) {
   return `<tr><td class="lbl">${escapeHtml(label)}</td><td class="val${justify ? ' just' : ''}">${escapeHtml(value)}</td></tr>`;
 }
+// Dong TUY CHON: bo trong trong "Thong tin quyen" thi khong in ra dong nao ca.
+// Chi dung cho o that su co the khong co (lien danh) - cac o bat buoc van in
+// nhan de nguoi dung dien tay len giay.
+function coverRowIf(label, value, justify) {
+  return String(value || '').trim() ? coverRow(label, value, justify) : '';
+}
 
 function buildCoverTongHTML(p) {
   const b = p.book;
@@ -2929,7 +2936,7 @@ function buildCoverTongHTML(p) {
       ${coverRow('Dự toán mua sắm:', b.duToan, true)}
       ${coverRow('Gói thầu:', b.goiThau, true)}
       ${coverRow('Đơn vị thi công:', b.benB)}
-      ${coverRow('Đại diện liên danh:', b.daiDienLienDanh)}
+      ${coverRowIf('Đại diện liên danh:', b.daiDienLienDanh)}
       ${coverRow('Chủ đầu tư:', b.benA)}
     </table>
     <table class="sign-table">
@@ -2968,7 +2975,7 @@ function buildCoverQuyenHTML(p) {
       ${coverRow('', b.diaBan)}
       ${coverRow('Bên A:', b.benA)}
       ${coverRow('Bên B:', b.benB)}
-      ${coverRow('Đại diện liên danh:', b.daiDienLienDanh)}
+      ${coverRowIf('Đại diện liên danh:', b.daiDienLienDanh)}
     </table>
     <table class="rep-table">
       <tr><td colspan="2">* Đại diện bên A:</td><td class="sig-col">Chữ ký</td></tr>
@@ -3079,7 +3086,7 @@ function exportCss(p) {
   const f = n => (Number(n) * ps.fontScale / 100).toFixed(2) + 'pt';
   const pad = [ps.mt, ps.mr, ps.mb, ps.ml].map(v => Number(v) + 'mm').join(' ');
   return `
-  body { font-family: 'Times New Roman', Times, serif; font-size: ${f(13)}; color: #000; margin: 0; background: #fff; }
+  body { font-family: 'Times New Roman', Times, serif; font-size: ${f(12)}; color: #000; margin: 0; background: #fff; }
   .page { background: #fff; width: 210mm; min-height: 297mm; padding: ${pad}; box-sizing: border-box; page-break-after: always; position: relative; }
   .page:last-child { page-break-after: auto; }
   .title { text-align: center; font-weight: bold; font-size: ${f(16)}; text-transform: uppercase; margin: 0 0 14px 0; letter-spacing: 0.3px; }
@@ -3098,7 +3105,7 @@ function exportCss(p) {
      of 0", còn gradient kích thước nguyên + color-stop lẻ thì mất sạch nét
      trong bảng. Muốn mảnh thật thì phải dựng trang ở bội số CSS px rồi thu nhỏ
      lúc xuất (nhân đôi mọi giá trị pt), không phải chỉnh vài con số ở đây. */
-  table th, table td { border: 0.5pt solid #000; padding: 5px 7px; vertical-align: middle; font-size: ${f(13)}; }
+  table th, table td { border: 0.5pt solid #000; padding: 5px 7px; vertical-align: middle; font-size: ${f(12)}; }
   table th { font-weight: bold; text-align: center; }
   /* khối chữ ký CUỐI TRANG NGÀY: chức danh + họ tên đều 13pt in đậm.
      Tên lớp phải khác .sign-role/.sign-name của trang bìa, không thì đè cỡ chữ bìa. */
@@ -3234,7 +3241,7 @@ function exportBookAsWord(p, scope, filename) {
 
 // Phiên bản hiển thị cho người dùng. ĐỔI CÙNG LÚC với VERSION trong sw.js —
 // hai chuỗi phải khớp, sw.js dùng nó làm khoá cache còn chỗ này để hiển thị.
-const APP_VERSION = '2026.08.23';
+const APP_VERSION = '2026.08.25';
 
 const PDF_SCALE = 2;              // html2canvas scale — dùng chung với phép tính chiều cao trang
 const PX_PER_MM = 96 / 25.4;      // 1mm CSS = 3.7795px

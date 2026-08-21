@@ -132,6 +132,7 @@ Helper dùng chung: `tplOf(p)`, `zonesOf(p)`, `qtyKeys(p)`, `getQ/setQ`, `blankQ
 
 Chỉ bật khi `tplOf(p).hasBook`. Chứa 5 phần: loại bìa · bìa quyển · bìa tổng · Tr1 (liệt kê văn bản) · Tr2 (danh sách cán bộ). Ghi vào `p.book`.
 
+- **Dòng "Đại diện liên danh" là tùy chọn** — dùng `coverRowIf()` thay `coverRow()` nên bỏ trống ô đó là **không in ra dòng nào** trên cả bìa tổng lẫn bìa quyển. Các ô còn lại vẫn dùng `coverRow()`: để trống thì **vẫn in nhãn** để người dùng điền tay lên giấy — đừng đổi hết sang `coverRowIf`.
 - **Không** dùng auto-save debounce — handler `input` bỏ qua mọi thứ trong `#bookModal`; lưu bằng nút `saveBook()`.
 - `collectBookForm()` phải được gọi trước mỗi lần re-render bảng động (`addDocRow`/`delDocRow`/`addStaffRow`/`delStaffRow`) để không mất chữ đang gõ.
 - Chuỗi `{MM}` / `{YYYY}` trong `congTacVH`/`congTacBD` được thay bằng tháng/năm của `p.startDate` lúc xuất (`bookCongTac`).
@@ -165,7 +166,7 @@ Chỉ bật khi `tplOf(p).hasBook`. Chứa 5 phần: loại bìa · bìa quyển
 - **Hai ô chọn ngày** (`#datePicker` trong thanh công cụ, `#datePickerTop` trên `.mobilebar`) cùng mang class **`.js-datepicker`**; `refreshDatePicker()` duyệt `querySelectorAll('.js-datepicker')` để đồng bộ cả `value` lẫn `min`. Thêm ô ngày mới thì chỉ cần gắn class này và thêm id vào filter auto-save.
 - **Auto-save debounce 800ms** trên `input` event của document, có filter để bỏ qua `#projectSelect`, `#templateSelect`, `#datePicker`, `#importFile`, `#forecastDays` và **mọi thứ trong `#bookModal`** (đều có handler riêng).
 - **Ẩn hạng mục khối lượng 0** (`p.hideZeroRows`) chỉ tác động lúc **xuất file** — `visibleItems()` lọc trong `workRowsHTML()`, màn hình vẫn hiện đủ dòng để nhập. Ngày nghỉ thì **không lọc** (bảng cố tình trống nhưng phải đủ tên hạng mục). STT in ra được đánh lại liên tục 1..N.
-- **Ngày nghỉ: bảng khối lượng in ra số `0`, KHÔNG để trống và cũng không đổi thành `-`.** `fmtQty(tpl, v, true)` trả thẳng `'0'` — trang ngày nghỉ phải nhìn y hệt trang ngày thường, chỉ khác ở chỗ khối lượng bằng 0. (Ngày thường ở mẫu `zeroAsDash` vẫn in `-` cho ô 0 như cũ.)
+- **Ngày nghỉ: mọi ô khối lượng in dấu `-`, KHÔNG để trống và cũng không in số `0`.** `fmtQty(tpl, v, true)` trả thẳng `'-'`, **áp cho cả 3 mẫu** kể cả mẫu không bật `zeroAsDash` — trang ngày nghỉ nhìn y hệt trang ngày thường, chỉ khác ở chỗ không có khối lượng.
 - **Ngày nghỉ lấy ngày LÀM VIỆC gần nhất làm chuẩn để lọc dòng.** Khi bật `hideZeroRows`, ngày nghỉ in ra 0 hết nên tự lọc theo số của chính nó là mất sạch dòng. `zeroRowRefEntry(p, e)` dò `prevWorkEntryOf` trước, không có thì nhìn TỚI ngày làm việc gần nhất phía sau, vẫn không có thì giữ đủ dòng. Nhờ vậy trang ngày nghỉ có **đúng số hạng mục và đúng số trang** như trang ngày thường. Khớp hạng mục theo vị trí, lệch thì dò theo tên — cùng cách với `inheritQty`.
 - **Ngày nghỉ khi xuất file vẫn bỏ trống mục 2** (2.1 nhân lực + 2.2 thiết bị) trong `entryBlocks`. Giữ **nguyên số dòng**, chỉ bỏ phần giá trị — trang A4 đang khít, thêm/bớt dòng là vỡ điểm ngắt trang. Màn hình nhập vẫn hiện đủ để sửa.
 - **Mục 4 và 5 in đủ 3 lựa chọn** Tốt / Bình thường / Kém, ô vuông vẽ bằng `border` + `transform` (`.opts .box`) chứ không dùng ký tự ☑ — tránh phụ thuộc font khi html2canvas rasterize.
@@ -190,7 +191,7 @@ Dòng `Công trình: …` **chỉ có trên màn hình**, không đưa vào `bui
 
 ## Cỡ chữ khi xuất
 
-`EXPORT_CSS` dùng **đúng số pt ghi trong ô Excel** (bìa 28/25/18/13pt · Tr1 16/14/13pt · Tr2 15/12pt · trang ngày 16/13pt, riêng bảng khối lượng 9,5pt cho vừa 9 cột). Nội dung có thể cao hơn 1 khổ A4 — bước tự thu nhỏ trong `renderPagesToPDF` sẽ co đều cả trang, nhờ vậy **tỉ lệ** giữa tiêu đề / tiêu mục / bảng vẫn giống quyển mẫu.
+`exportCss(p)` dùng **đúng số pt ghi trong ô Excel** cho các trang đầu quyển (bìa 28/25/18/13pt · Tr1 16/14/13pt · Tr2 15/12pt) — **đừng đổi mấy số này**. Riêng **trang ngày**: tiêu đề 16pt · thân **12pt** · khối chữ ký **13pt đậm** · bảng khối lượng theo `tableFontPt`. Thân trang ngày nằm ở `body` + `table th, table td`; mọi bảng của bìa/Tr1/Tr2 đều tự khai `font-size` (hoặc `inherit`) nên **không** đổi theo. Nội dung có thể cao hơn 1 khổ A4 — bước tự thu nhỏ trong `renderPagesToPDF` sẽ co đều cả trang, nhờ vậy **tỉ lệ** giữa tiêu đề / tiêu mục / bảng vẫn giống quyển mẫu.
 
 Đừng đổi các số pt này để "cho vừa trang" — cứ để bước thu nhỏ lo.
 
@@ -324,7 +325,7 @@ Muốn khỏi phải thu nhỏ thì giảm `splitAfter` hoặc bóp thêm `.page
 - [ ] Reload → chỗ ngắt còn nguyên; cuốn cũ có `splitAfter: [20,30]` mở lên vẫn đúng 3 trang
 
 **Ngày nghỉ:**
-- [ ] Bật `Ẩn hạng mục khối lượng = 0`, ngày thường còn N hạng mục → ngày nghỉ cũng **đúng N hạng mục, đúng số trang**, khối lượng in `0`
+- [ ] Bật `Ẩn hạng mục khối lượng = 0`, ngày thường còn N hạng mục → ngày nghỉ cũng **đúng N hạng mục, đúng số trang**, mọi ô khối lượng in `-` (cả mẫu 1)
 - [ ] Nghỉ 2–3 ngày liên tiếp → mọi ngày nghỉ đều lấy chuẩn từ ngày làm việc cuối cùng
 - [ ] Cuốn **mở đầu** bằng ngày nghỉ → lấy chuẩn từ ngày làm việc đầu tiên phía sau
 - [ ] Cuốn toàn ngày nghỉ → giữ đủ 38 dòng, không lỗi JS
