@@ -15,7 +15,7 @@ diary/
 ├── manifest.webmanifest  # PWA — tên app, icon, màu, start_url
 ├── sw.js                 # PWA — service worker (cache để chạy offline)
 ├── icon-192.png · icon-512.png · icon-maskable.png · apple-touch-icon.png
-├── NKTC-Gói thầu 2026-2029-Quận 8 (A.TÀI) đã cập nhật.xlsx   # Quyển mẫu gốc, nguồn của TEMPLATES.q8
+│  (quyển mẫu gốc .xlsx đã xoá khỏi repo ở commit 191acbe — lấy lại bằng `git show 78fa454:<tên file>`)
 ├── prompts/              # Prompt tự chứa cho từng thay đổi lớn (chạy lại / giao session khác)
 └── CLAUDE.md             # File này
 ```
@@ -41,6 +41,7 @@ appState = {
       templateId,  // 'lavipco' | 'q8' — khóa vào TEMPLATES
       zones,       // ['Phường Chánh Hưng', ...] — chỉ mẫu có địa bàn; sửa TÊN và SỐ LƯỢNG ở edit-mode
       hideZeroRows,// true = khi xuất, ẩn hạng mục có mọi cột khối lượng = 0
+      pageSetup,   // định dạng trang, chỉnh trong cửa sổ xem trước (xem PAGE_SETUP_DEFAULT)
       book,        // chỉ mẫu hasBook: dữ liệu bìa + Tr1 + Tr2 (xem Q8_BOOK_DEFAULT)
       items,       // template hạng mục, đồng bộ từ entry hiện tại (qua syncItemsStructureToProject)
       rep_a, rep_b,// chữ ký mặc định, sticky từ entry mới nhất
@@ -97,7 +98,9 @@ Field của template: `zones`, `colGroups[{label, prefix}]`, `itemsHeader`, `has
 
 Số trang mỗi ngày là **động**: `entryRowChunks(p, e)` chia dòng thật rồi `entryPageCount(p, e)` đếm. Bật `hideZeroRows` mà số hạng mục còn lại không vượt điểm cắt thì ngày đó tự rút còn 1 trang, `computePagenum` và `bookPageTotal` cộng dồn theo từng ngày nên số trang vẫn liên tục.
 
-**`splitAfter`** quyết định 1 ngày chiếm mấy trang: `null` = 1 trang · số = 2 trang, cắt sau hạng mục đó · mảng `[13, 26]` = 3 trang. `entryPageCount()`, số trang liên tục và dòng "Sổ này gồm … trang" đều tự suy ra từ nó. Hiện là **23** — đúng chỗ ngắt trang của file Excel gốc.
+**`splitAfter`** quyết định 1 ngày chiếm mấy trang: `null` = 1 trang · số = 2 trang, cắt sau hạng mục đó · mảng `[20, 30]` = 3 trang. `entryPageCount()`, số trang liên tục và dòng "Sổ này gồm … trang" đều tự suy ra từ nó.
+
+`splitPoints(p)` đọc **`p.pageSetup.splitAfter` trước**, rỗng mới rơi về template — người dùng chỉnh được trong cửa sổ xem trước. Mặc định của `q8`/`q8th` là `[20, 30]`: ở cỡ 11pt trang 1 chỉ ôm được 20 mục tên ngắn (nhóm *Tủ thường*), 18 mục *Tủ kết nối* tên dài phải chia tiếp 2 trang.
 
 Helper dùng chung: `tplOf(p)`, `zonesOf(p)`, `qtyKeys(p)`, `getQ/setQ`, `blankQ(p)`, `makeItem(p, name, unit)`, `deepCopy`.
 
@@ -185,7 +188,18 @@ CSS màn hình giữ nguyên, không đụng tới. Nếu cần chữ to hơn th
 
 ### Giới hạn vật lý đã đo
 
-38 hạng mục × 6 cột **không thể vừa 2 trang A4 ở cỡ ≥ 11pt**. Chiều cao nội dung 1 ngày ở cỡ 12pt là 329mm (trang 1) + 336mm (trang 2); Excel gốc nhét vừa nhờ lề 7mm/0mm (cao 290mm, rộng 189mm) và vẫn phải in ở 88% ⇒ chỉ đạt 10,6pt. Với lề 1,5cm/2cm của app (cao 267mm, rộng 170mm) thì trần là ~9,4pt. Muốn ≥ 11pt phải chuyển sang 3 trang/ngày (`splitAfter: [13, 26]`).
+38 hạng mục × 6 cột **không thể vừa 2 trang A4 ở cỡ ≥ 11pt**. Chiều cao nội dung 1 ngày ở cỡ 12pt là 329mm (trang 1) + 336mm (trang 2); Excel gốc nhét vừa nhờ lề 7mm/0mm (cao 290mm, rộng 189mm) và vẫn phải in ở 88% ⇒ chỉ đạt 10,6pt. Với lề của app (cao 267mm, rộng 175mm) thì trần cho 2 trang là ~9,4pt. Vì vậy mặc định 11pt đi kèm **3 trang/ngày** (`splitAfter: [20, 30]`).
+
+## Định dạng trang (`p.pageSetup`) & cửa sổ xem trước
+
+`PAGE_SETUP_DEFAULT` = `{ mt:15, mr:15, mb:15, ml:20, fontScale:100, tableFontPt:11, borderPt:0.4, splitAfter:null }` — lề mm (trên/phải/dưới/trái), % phóng cỡ chữ, cỡ chữ bảng khối lượng, nét kẻ, chỗ ngắt trang. Back-fill trong `ensureProjectMeta`.
+
+- **`EXPORT_CSS` giờ là hàm `exportCss(p)`** nội suy từ `pageSetup`. Trong đó `f(n)` nhân mọi cỡ chữ với `fontScale`; giá trị `< 3pt` (độ dày nét kẻ) **không** nhân — đó là lý do có ngưỡng 3 trong regex sinh CSS.
+- **`mountExportPages(host, html, p)`** dựng wrapper + chạy bước tự thu nhỏ. **Cửa sổ xem trước và bản xuất gọi chung hàm này** — đó là cái bảo đảm "xem trước = file tải về". Đừng nhân bản logic này ra chỗ khác.
+- **Vòng lặp tự thu nhỏ phải đo bằng `pg.offsetHeight`, KHÔNG dùng `getBoundingClientRect()`**: rect bị nhân theo `transform` của phần tử cha, mà khung xem trước lại `scale()` để thu cả trang cho vừa màn hình ⇒ đo bằng rect thì xem trước tính sai tỉ lệ thu.
+- `buildPagesHTML(p, scope)` với `scope` = `'day'` | `'book'` dùng chung cho xem trước, xuất PDF và xuất Word.
+- Modal `#previewModal`: tự ghi `p.pageSetup` + `persist()` mỗi lần đổi (debounce 250ms), **không** đi qua auto-save debounce của form (đã loại trong handler `input` cùng `#bookModal`, `#newBookModal`).
+- jsdom **không đo được** bước thu nhỏ (`offsetHeight` luôn 0 vì không có layout engine). Muốn kiểm `splitAfter` có vừa trang không thì phải mở xem trước trong trình duyệt thật — dòng trạng thái báo `⚠️ trang N thu còn X%`.
 
 ## Xuất PDF & tên file
 
@@ -201,7 +215,7 @@ Vì bỏ `windowWidth`, `EXPORT_CSS` phải tự ghi rõ `width`/`padding`/`font
 
 ### Ép mỗi `.page` vừa trọn 1 khổ A4
 
-`toPdf` cắt canvas theo chiều cao trang: `.page` cao hơn 297mm sẽ bị **cắt ngang giữa một dòng bảng** và mất lề dưới 2cm. Nên `renderPagesToPDF` làm 2 việc:
+`toPdf` cắt canvas theo chiều cao trang: `.page` cao hơn 297mm sẽ bị **cắt ngang giữa một dòng bảng** và mất lề dưới. Nên `renderPagesToPDF` làm 2 việc:
 
 - wrapper cố định `210mm × PAGE_H_PX; overflow:hidden` ⇒ html2pdf không bao giờ cắt được đôi.
 
@@ -211,7 +225,7 @@ Vì bỏ `windowWidth`, `EXPORT_CSS` phải tự ghi rõ `width`/`padding`/`font
   const PAGE_H_PX = Math.floor(Math.floor(CANVAS_W * 297 / 210) / PDF_SCALE) - 0.5;  // 1121.5px ≈ 296.73mm
   ```
   Đổi `PDF_SCALE` thì `PAGE_H_PX` tự tính lại (đã thử scale 1 / 1.5 / 2 / 3 / 4 đều ra đúng 1 trang). Cái giá là ảnh hụt đáy 0.25mm ⇒ lề dưới thực tế 20.25mm.
-- vòng lặp đo `getBoundingClientRect().height`, nếu quá 297mm thì nới `width`/`min-height`/`padding` lên `1/k` rồi `transform: scale(k)` — chữ nhỏ đi đều, **lề vẫn đúng 2cm**. Hội tụ sau 1 vòng, có `console.info` báo phần trăm đã thu.
+- vòng lặp đo `getBoundingClientRect().height`, nếu quá 297mm thì nới `width`/`min-height`/`padding` lên `1/k` rồi `transform: scale(k)` — chữ nhỏ đi đều, **lề vẫn đúng**. Hội tụ sau 1 vòng, có `console.info` báo phần trăm đã thu.
 
 Muốn khỏi phải thu nhỏ thì giảm `splitAfter` hoặc bóp thêm `.page.compact` trong `EXPORT_CSS` (class `compact` chỉ gắn cho mẫu có `splitAfter`).
 - Tên file: `bookFileBase(p, dateISO)` → `NKTC - <địa bàn> - T<MM>-<YYYY>`. Địa bàn = `zonesOf(p).join(', ')`, mẫu không có zones thì lấy `p.name`. Dùng cho cả `.pdf`, `.doc` và `.json`.
@@ -223,7 +237,7 @@ Muốn khỏi phải thu nhỏ thì giảm `splitAfter` hoặc bóp thêm `.page
 - **Đừng tách file.** Single-file đơn giản hơn để mobile/offline dùng. Nếu cần thêm util lớn, cân nhắc inline trước.
 - **Đừng thêm framework.** Vanilla JS đủ dùng. Đừng React/Vue/build step.
 - **Không dùng `window.print()`** — PDF dựng bằng jsPDF (qua html2pdf) trong `renderPagesToPDF()`. Mọi thay đổi layout phải test bằng nút `📄 Xuất PDF ngày này`.
-- **Lề A4 = 2cm** cả 4 phía, đặt ở `padding: 20mm` của `.page` (cả CSS màn hình lẫn `EXPORT_CSS`); jsPDF dùng `margin: 0`. Riêng bản Word thì lề do `@page WordSection1 { margin: 2cm }` lo, nên `buildWordHTML` phải override `.page { padding: 0 }` để không cộng dồn thành 4cm.
+- **Lề mặc định: trên/phải/dưới 1,5cm — trái 2cm** (trái rộng hơn để chừa gáy đóng sổ), khai trong `PAGE_SETUP_DEFAULT` và lặp lại ở CSS màn hình + `@media print`. jsPDF dùng `margin: 0` — lề nằm trong `padding` của `.page`. Riêng bản Word thì lề do `@page WordSection1` lo, nên `buildWordHTML` phải override `.page { padding: 0 }` để không cộng dồn.
 - **Media query mobile phải viết `@media screen and (max-width: 820px)`** — thiếu chữ `screen` thì style mobile đè lên bản in (A4 dọc chỉ ~794px CSS).
 - **Đừng viết thẻ đóng HTML nguyên văn trong chuỗi JS** (`buildWordHTML`) — dùng `<\/body>`. Live Server chèn script auto-reload vào thẻ đóng body đầu tiên nó thấy, nếu thẻ đó nằm trong `<script>` thì cả app vỡ.
 - **Vietnamese diacritics** ở mọi nơi (filename sanitize, escape, search). Đừng strip.
@@ -254,7 +268,7 @@ Muốn khỏi phải thu nhỏ thì giảm `splitAfter` hoặc bóp thêm `.page
 - [ ] Tick "Ngày nghỉ" → ô số bị khóa; xuất PDF thấy bảng trống nhưng còn đủ tên hạng mục, mục 2.1/2.2 cũng trống, ngày vẫn **đúng 2 trang**
 - [ ] `📕 Thông tin quyển` → sửa bìa, thêm/xóa văn bản + cán bộ → Lưu → reload còn nguyên
 - [ ] `📄 Xuất PDF ngày này` → mở PDF: **đúng 2 trang**, trang 1 hạng mục 1–23, trang 2 lặp header + 24–38 + mục 4–7 + chữ ký nằm ngang
-- [ ] Lề PDF đo được 2cm cả 4 phía, không còn dòng "Công trình:"
+- [ ] Lề PDF đo được trên/phải/dưới 1,5cm — trái 2cm, không còn dòng "Công trình:"
 - [ ] Tên file dạng `NKTC - Phường … - T07-2026.pdf`
 - [ ] Kết thúc → PDF theo thứ tự BÌA TỔNG → bìa quyển → Tr1 → Tr2 → từng ngày, đối chiếu file `.xlsx`
 - [ ] Đổi mẫu cuốn cũ → Q8, chọn "Nạp lại hạng mục" và chọn "Không" — cả 2 nhánh không lỗi JS
@@ -303,7 +317,7 @@ Muốn khỏi phải thu nhỏ thì giảm `splitAfter` hoặc bóp thêm `.page
 - [ ] Đổi ngày ở `.mobilebar` → `#datePicker` trong ngăn kéo cùng giá trị; cả hai có `min = startDate`
 - [ ] Mở ngăn kéo ở 800px rồi kéo rộng ra 1400px → không còn nền mờ kẹt lại
 - [ ] Nút menu và nút đóng đều ≥ 44×44px; nút đóng **không** bị kéo giãn hết bề ngang
-- [ ] Xuất PDF ngày này ở **cả hai** breakpoint → vẫn đúng 2 trang, lề 2cm, không mất phần bên trái
+- [ ] Xem trước + xuất PDF ở **cả hai** breakpoint → đúng số trang, lề đúng, không mất phần bên trái
 - [ ] Ctrl+P → `.toolbar`, `.mobilebar`, nền mờ đều ẩn; `body` không còn padding
 
 **Chung:**
