@@ -240,7 +240,8 @@ có biểu tượng ngoài màn hình chính, và <strong>mở được cả khi
     <span class="btn">📅 Ngày:</span> chọn ngày để xem/sửa ·
     <span class="btn">◀ Hôm trước</span> · <span class="btn">Hôm sau ▶</span> ·
     <span class="btn">Hôm nay</span> ·
-    <span class="btn">📚 Danh sách ngày</span>
+    <span class="btn">📚 Danh sách ngày</span> ·
+    <span class="btn danger">🗑️ Xóa trang này</span>
   </td></tr>
   <tr><th>Hàng 4 — Thao tác</th><td>
     <span class="btn primary">👁️ Xem trước ngày này</span> ·
@@ -332,8 +333,9 @@ BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký
   <li><strong>4–5. Vệ sinh & An toàn</strong> — chọn Tốt / Bình thường / Kém.</li>
   <li><strong>6–7. Ghi chú</strong> — nhận xét của giám sát A, đề xuất của B.</li>
   <li><strong>Chữ ký</strong> — họ tên đại diện bên A và B (dùng chung cho các ngày trong cuốn, sửa lần đầu là xong).</li>
-  <li><strong>Ngày nghỉ</strong> — ô tích ngay dưới dòng ngày tháng. Khi bật, các ô khối lượng bị khóa và
-    khi in/xuất file thì bảng để trống (vẫn còn đủ tên hạng mục) — giống trang "ngày nghỉ" trong quyển mẫu.</li>
+  <li><strong>Ngày nghỉ</strong> — ô tích ngay dưới dòng ngày tháng. Khi bật, các ô khối lượng bị khóa;
+    khi in/xuất file thì trang ngày nghỉ nhìn <strong>y hệt trang ngày thường</strong> — đủ tên hạng mục, đủ số trang —
+    chỉ khác là <strong>mọi khối lượng in ra bằng 0</strong>. Riêng mục 2.1 (nhân lực) và 2.2 (thiết bị) vẫn để trống.</li>
 </ul>
 <div class="callout">
   ✅ Dữ liệu <strong>tự động lưu</strong> sau mỗi lần gõ phím — không lo mất.
@@ -346,8 +348,29 @@ BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký
   <tr><td>Tạo nhật ký ngày mới</td><td>Chọn ngày chưa có trong date picker → phần mềm tự tạo form trống cho ngày đó</td></tr>
   <tr><td>Lùi/tới 1 ngày</td><td><span class="btn">◀ Hôm trước</span> / <span class="btn">Hôm sau ▶</span></td></tr>
   <tr><td>Về hôm nay</td><td><span class="btn">Hôm nay</span></td></tr>
-  <tr><td>Xem tất cả ngày trong cuốn</td><td><span class="btn">📚 Danh sách ngày</span> — hiện danh sách kèm số trang &amp; khối lượng tổng. Gõ STT để mở nhanh.</td></tr>
+  <tr><td>Xem tất cả ngày trong cuốn</td><td><span class="btn">📚 Danh sách ngày</span> — hiện danh sách kèm số trang &amp; khối lượng tổng. Gõ STT để mở nhanh, gõ <code>x</code> + STT (ví dụ <code>x3</code>) để xóa ngày đó.</td></tr>
+  <tr><td>Xóa ngày đang mở</td><td><span class="btn danger">🗑️ Xóa trang này</span> — xem mục dưới</td></tr>
 </table>
+
+<h3>Xóa một trang (một ngày)</h3>
+<p>Mỗi ngày chiếm 1–3 trang của quyển. Khi lỡ tạo nhầm một ngày (chỉ cần bấm sang ngày khác là phần mềm đã tự tạo form trống), dùng <span class="btn danger">🗑️ Xóa trang này</span> để bỏ hẳn ngày đó.</p>
+<table class="steps">
+  <tr><td>Xóa ngày <strong>đang mở</strong></td><td>Bấm <span class="btn danger">🗑️ Xóa trang này</span> → xác nhận</td></tr>
+  <tr><td>Xóa <strong>ngày khác</strong></td><td><span class="btn">📚 Danh sách ngày</span> → gõ <code>x</code> kèm STT của ngày đó, ví dụ <code>x3</code></td></tr>
+</table>
+<p>Hộp xác nhận cho biết trước ngày nào sắp mất, nó đang là <strong>trang mấy</strong>, và <strong>bao nhiêu ngày</strong> phía sau sẽ bị dồn lên.</p>
+<div class="callout">
+  <strong>Số trang tự đánh lại.</strong> Xóa một ngày giữa cuốn thì mọi ngày sau đó dồn lên, số trang in trên giấy vẫn <strong>liên tục</strong>, và dòng "Sổ này gồm … trang" trên bìa cũng tự trừ theo. Không phải sửa gì thêm.
+</div>
+<div class="callout warn">
+  <strong>Không lấy lại được.</strong> Xóa là mất toàn bộ khối lượng, nhân lực, ghi chú của ngày đó. Nếu chưa chắc, bấm <span class="btn">📤 Xuất cuốn</span> lưu file JSON trước.
+  <br>Vài lưu ý nhỏ:
+  <ul>
+    <li>Xóa ngày <strong>đầu cuốn</strong> thì ngày kế tiếp lùi về đúng <span class="btn">📄 Trang bắt đầu</span> đã đặt. Ngày bắt đầu của cuốn <em>không</em> đổi — chọn lại ngày đó trong ô <span class="btn">📅 Ngày</span> là tạo lại được.</li>
+    <li>Nếu cuốn chỉ còn <strong>đúng một ngày</strong>, xóa sẽ dọn sạch nội dung và giữ lại một trang trắng cho chính ngày đó (một cuốn luôn phải có ít nhất một trang).</li>
+    <li>Muốn bỏ <em>cả cuốn</em> chứ không phải một ngày thì dùng <span class="btn danger">🏁 Kết thúc</span> (<a href="#end">mục 14</a>) — nó xuất file trước rồi mới xóa.</li>
+  </ul>
+</div>
 <div class="callout warn">
   <strong>Lưu ý số trang:</strong> Số trang ở cuối form là <strong>tự động</strong>, không sửa tay. Cách tính: ngày bắt đầu = trang <code>startPage</code>, ngày tiếp theo trong cuốn = trang <code>startPage+1</code>, v.v. Nếu cần đổi trang đầu, dùng nút <span class="btn">📄 Trang bắt đầu</span>.
 </div>
@@ -462,10 +485,10 @@ nhờ vậy khổ giấy và lề luôn đúng, không phụ thuộc thiết l�
   <tr><th>Bảng — pt</th><td>
     Riêng cỡ chữ của bảng khối lượng. Mặc định <strong>11pt</strong>.
   </td></tr>
-  <tr><th>Bảng — mục/trang</th><td>
-    Cắt trang sau hạng mục số mấy. Nhiều số cách nhau bằng dấu phẩy thì thành nhiều trang —
-    ví dụ <code>20, 30</code> nghĩa là trang 1 có mục 1–20, trang 2 có 21–30, trang 3 có phần còn lại.
-    Bỏ trống là dùng theo mẫu.
+  <tr><th><span class="btn">✂ Ngắt sau</span></th><td>
+    Danh sách chỗ cắt trang — xem phần <a href="#print-single">“Chọn chỗ ngắt trang”</a> ngay dưới.
+    Số là hạng mục trong bảng (<code>20, 30</code> = trang 1 có mục 1–20, trang 2 có 21–30, trang 3 phần còn lại);
+    <code>s1…s7</code> là các mục ngoài bảng. Bỏ trống = theo mẫu · <span class="btn">Bỏ hết</span> = cả ngày 1 trang.
   </td></tr>
   <tr><th>Nét kẻ</th><td>Mảnh / Vừa / Đậm cho bảng khối lượng.</td></tr>
   <tr><th><span class="btn">↺ Mặc định</span></th><td>Trả mọi thông số về ban đầu.</td></tr>
@@ -474,7 +497,7 @@ nhờ vậy khổ giấy và lề luôn đúng, không phụ thuộc thiết l�
 <div class="callout warn">
   <strong>Cỡ chữ và số trang ràng buộc nhau.</strong> Chữ càng to thì càng ít hạng mục lọt một trang.
   Nếu dòng trạng thái báo <em>“⚠️ trang 3 thu còn 92%”</em> nghĩa là trang đó bị nhồi quá nên phần mềm
-  phải thu nhỏ cho vừa giấy — hãy <strong>giảm số mục mỗi trang</strong> hoặc giảm cỡ chữ cho tới khi
+  phải thu nhỏ cho vừa giấy — hãy <strong>thêm một chỗ ngắt trang</strong> hoặc giảm cỡ chữ cho tới khi
   hiện <em>“vừa khít, không phải thu nhỏ ✓”</em>.
 </div>
 <div class="callout">
@@ -488,6 +511,23 @@ nhờ vậy khổ giấy và lề luôn đúng, không phụ thuộc thiết l�
 </div>
 <div class="callout warn">
   Cần <strong>Internet</strong> khi xuất PDF vì thư viện jsPDF tải từ CDN.
+</div>
+
+
+<h3>Chọn chỗ ngắt trang — bấm vào dòng bất kỳ</h3>
+<p>Trong khung xem trước, <strong>rê chuột lên dòng nào cũng thấy nó sáng lên</strong>. Bấm vào đó là trang được cắt ngay <em>sau</em> dòng ấy; dòng vừa chọn có gạch đỏ ở mép dưới. Bấm lại lần nữa để bỏ.</p>
+<p>Ngắt được ở <strong>mọi dòng</strong>, không riêng bảng khối lượng:</p>
+<table class="steps">
+  <tr><td>Trong bảng khối lượng</td><td>Bấm vào dòng hạng mục muốn kết thúc trang</td></tr>
+  <tr><td>Ngoài bảng</td><td>Mục 1 (thời tiết) · 2.1 (nhân lực) · 2.2 (thiết bị) · 3 · 4 · 5 · 6 · 7 — bấm vào chính dòng đó</td></tr>
+  <tr><td>Bảng chữ ký</td><td>Không bấm được — ngắt sau chữ ký thì không còn gì để sang trang</td></tr>
+</table>
+<p>Ô <span class="btn">✂ Ngắt sau</span> trên thanh chỉnh cho biết đang ngắt ở đâu và gõ tay được (ví dụ <code>20, 30</code> hoặc <code>20, s4</code>). Nút <span class="btn">Bỏ hết</span> dồn cả ngày vào <strong>một trang</strong>; để ô trống là quay về mặc định của mẫu.</p>
+<div class="callout">
+  <strong>Số trang tự tính lại.</strong> Thêm hay bớt chỗ ngắt thì số trang mỗi ngày đổi theo, số trang in trên giấy vẫn liên tục và dòng "Sổ này gồm … trang" trên bìa cũng khớp. Chỗ ngắt áp cho <strong>mọi ngày</strong> của cuốn.
+</div>
+<div class="callout warn">
+  Nếu dòng trạng thái báo <strong>"⚠️ trang N thu còn X%"</strong> thì trang đó dài quá một tờ A4 và đang bị co nhỏ. Thêm một chỗ ngắt trong trang ấy, hoặc giảm cỡ chữ, là hết.
 </div>
 
 <h2 id="backup">13. Sao lưu / Khôi phục dữ liệu</h2>

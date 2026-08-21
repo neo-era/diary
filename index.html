@@ -460,6 +460,16 @@
     content: attr(data-label); position: absolute; left: 0; right: 0; bottom: -13px;
     text-align: center; font-family: -apple-system, sans-serif; font-size: 9pt; color: #e2e8f0;
   }
+  /* Chọn chỗ ngắt trang: bấm vào DÒNG BẤT KỲ trong xem trước — cả dòng bảng
+     khối lượng lẫn các mục ngoài bảng. CSS này chỉ có trên màn hình, không nằm
+     trong exportCss ⇒ bản PDF/Word không dính vệt màu nào. */
+  .pv-scale [data-blk] { cursor: pointer; }
+  .pv-scale [data-blk]:hover { background: rgba(37,99,235,0.14); }
+  .pv-scale tr[data-blk]:hover > td { background: rgba(37,99,235,0.14); }
+  .pv-scale [data-blk].brk { box-shadow: inset 0 -3px 0 -1px #b91c1c; }
+  .pv-scale tr[data-blk].brk > td { box-shadow: inset 0 -3px 0 -1px #b91c1c; }
+  .pv-hint { color: #2563eb; }
+  .pv-brk-list { color: #b91c1c; }
 
   /* ==== CHECKBOX MỤC 4-5 ==== */
   .checks { margin: 4px 0 4px 0; padding-left: 6mm; display: flex; gap: 28px; flex-wrap: wrap; }
@@ -476,8 +486,7 @@
   }
   .signatures .col { flex: 1; text-align: center; }
   .signatures .label { font-weight: bold; text-transform: uppercase; margin-bottom: 56px; }
-  .signatures .name { border-top: 1px dotted transparent; padding-top: 4px; }
-  .signatures input { text-align: center; }
+  .signatures input { text-align: center; font-weight: bold; font-size: 13pt; }
 
   .page-num { text-align: center; margin-top: 18px; font-size: 11pt; color: #444; }
 
@@ -890,6 +899,7 @@
     <button onclick="nextDay()">Hôm sau ▶</button>
     <button onclick="todayDay()">Hôm nay</button>
     <button onclick="listEntries()">📚 Danh sách ngày</button>
+    <button class="danger" onclick="deleteEntry()">🗑️ Xóa trang này</button>
   </div>
   <div class="toolbar-row">
     <button class="primary" onclick="openPreview('day')">👁️ Xem trước ngày này</button>
@@ -1117,7 +1127,11 @@
       <div class="pv-group">
         <span class="pv-lbl">Bảng</span>
         <label>pt<input type="number" id="pv_tableFontPt" min="6" max="16" step="0.5"></label>
-        <label>mục/trang<input type="text" id="pv_splitAfter" style="width:74px" placeholder="vd 12, 24"></label>
+      </div>
+      <div class="pv-group">
+        <span class="pv-lbl">✂ Ngắt sau</span>
+        <input type="text" id="pv_splitAfter" style="width:170px" placeholder="bấm vào dòng bên dưới">
+        <button class="book-mini-btn" onclick="clearSplits()">Bỏ hết</button>
       </div>
       <div class="pv-group">
         <span class="pv-lbl">Nét kẻ</span>
@@ -1153,7 +1167,7 @@
     năm <input type="text" class="inline-input" id="year" style="width:50px;text-align:center" readonly>
   </div>
 
-  <label class="restday"><input type="checkbox" id="restDay" onchange="onRestDayChange()"> Ngày nghỉ — để trống bảng khối lượng</label>
+  <label class="restday"><input type="checkbox" id="restDay" onchange="onRestDayChange()"> Ngày nghỉ — khối lượng in ra bằng 0</label>
 
   <div class="section-num">1. Tình hình thời tiết:</div>
   <table class="weather">
@@ -1595,35 +1609,70 @@ function ensureProjectMeta(p) {
   if (!p.pageSetup) p.pageSetup = deepCopy(PAGE_SETUP_DEFAULT);
 }
 
-// splitAfter: null = 1 trang/ngày · số = 2 trang · mảng [a,b] = 3 trang…
+// ====== KHỐI NỘI DUNG CỦA MỘT TRANG NGÀY ======
+// Trang ngày được dựng thành một dãy KHỐI; ranh giới giữa 2 khối là chỗ ngắt
+// trang hợp lệ. Khóa của khối chính là giá trị lưu trong pageSetup.splitAfter:
+//   SỐ    = ngắt sau hạng mục có STT đó  (giữ nguyên định dạng cũ [20, 30])
+//   CHUỖI = ngắt sau một mục NGOÀI bảng khối lượng
+// Nhờ vậy dữ liệu cũ đọc lên vẫn đúng, không phải migrate.
+const BLK_LABELS = {
+  title: 'tiêu đề + ngày',
+  s1:  'mục 1 — thời tiết',
+  s2:  'mục 2.1 — nhân lực',
+  s2b: 'mục 2.2 — thiết bị',
+  s3:  'mục 3 — diễn biến thi công',
+  s4:  'mục 4 — vệ sinh môi trường',
+  s5:  'mục 5 — an toàn',
+  s6:  'mục 6 — nhận xét bên A',
+  s7:  'mục 7 — kiến nghị bên B'
+};
+// thứ tự xuất hiện trên trang; '#' là chỗ của các dòng bảng khối lượng
+const BLK_ORDER = ['title', 's1', 's2', 's2b', 's3', '#', 's4', 's5', 's6', 's7'];
+function isNumKey(k) { return /^\d+$/.test(String(k)); }
+function normKey(k) { return isNumKey(k) ? Number(k) : String(k); }
+function blkLabel(k) { return isNumKey(k) ? 'hạng mục ' + k : (BLK_LABELS[k] || String(k)); }
+function splitRank(k) {
+  return isNumKey(k) ? [BLK_ORDER.indexOf('#'), Number(k)] : [BLK_ORDER.indexOf(String(k)), 0];
+}
+function sortSplits(arr) {
+  return arr.slice().sort((a, b) => {
+    const x = splitRank(a), y = splitRank(b);
+    return (x[0] - y[0]) || (x[1] - y[1]);
+  });
+}
+
+// splitAfter: null/'' = theo mẫu · [] = KHÔNG ngắt (cả ngày 1 trang)
+// · số hoặc mảng khóa = ngắt sau đúng những khối đó
 function splitPoints(p) {
   const ov = pageSetupOf(p).splitAfter;                 // cuốn tự quy định
   const s = (ov === null || ov === undefined || ov === '') ? tplOf(p).splitAfter : ov;
-  if (!s) return [];
-  return (Array.isArray(s) ? s : [s]).filter(n => n > 0);
+  if (s === null || s === undefined || s === '') return [];
+  return [].concat(s).map(normKey)
+    .filter(k => typeof k === 'number' ? k > 0 : Object.prototype.hasOwnProperty.call(BLK_LABELS, k));
 }
 
-// Chia các dòng bảng của 1 ngày thành từng trang. Nếu ẩn bớt dòng khối lượng 0
-// mà số hạng mục còn lại không vượt điểm cắt thì ngày đó chỉ còn 1 trang —
-// nên số trang phải suy ra từ ĐÂY, không phải từ splitAfter.
-function entryRowChunks(p, e) {
-  const rows = workRowsHTML(p, e);
-  const pts = splitPoints(p);
-  if (!pts.length) return [rows];
-  const cuts = [...new Set(
-    pts.map(n => rows.findIndex(r => r.n && r.n > n)).filter(i => i > 0)
-  )].sort((a, b) => a - b);
-  if (!cuts.length) return [rows];
-  const chunks = [];
-  let prev = 0;
-  cuts.forEach(i => { chunks.push(rows.slice(prev, i)); prev = i; });
-  chunks.push(rows.slice(prev));
-  return chunks;
+// Chia 1 ngày thành các trang. Điểm ngắt trỏ tới hạng mục đã bị ẩn (khối lượng
+// 0) thì tự bỏ qua ⇒ ngày đó rút bớt trang. Vì vậy số trang phải suy ra từ ĐÂY,
+// không phải đếm splitAfter.
+function entryPages(p, e) {
+  const blocks = entryBlocks(p, e);
+  const pts = new Set(splitPoints(p).map(String));
+  const pages = [];
+  let cur = [];
+  blocks.forEach((b, i) => {
+    cur.push(b);
+    // ngắt sau khối cuối cùng thì vô nghĩa — bỏ qua, không đẻ ra trang trắng
+    if (b.k !== null && b.k !== undefined && pts.has(String(b.k)) && i < blocks.length - 1) {
+      pages.push(cur); cur = [];
+    }
+  });
+  if (cur.length) pages.push(cur);
+  return pages;
 }
 
 // Số trang VẬT LÝ mà 1 ngày chiếm
 function entryPageCount(p, e) {
-  return e ? entryRowChunks(p, e).length : splitPoints(p).length + 1;
+  return e ? entryPages(p, e).length : splitPoints(p).length + 1;
 }
 // Số trang đầu quyển được đánh số: Tr1 (liệt kê văn bản) + Tr2 (danh sách cán bộ).
 // Các trang bìa không đánh số, đúng như quyển mẫu.
@@ -2617,9 +2666,11 @@ function downloadBlob(blob, filename) {
 }
 function multilineHtml(s) { return escapeHtml(s || '').replace(/\n/g, '<br>'); }
 
-// 0 / rỗng → "-" với mẫu dùng dấu gạch (giống file Excel); ngày nghỉ → luôn để trống
+// 0 / rỗng → "-" với mẫu dùng dấu gạch (giống file Excel).
+// Ngày nghỉ → in số 0 (không để trống, cũng không đổi thành "-"): trang ngày
+// nghỉ phải nhìn y hệt trang ngày thường, chỉ khác là khối lượng bằng 0.
 function fmtQty(tpl, v, rest) {
-  if (rest) return '';
+  if (rest) return '0';
   if (v === '' || v === null || v === undefined) return tpl.zeroAsDash ? '-' : '';
   if (tpl.zeroAsDash && Number(v) === 0) return '-';
   return String(v);
@@ -2649,13 +2700,36 @@ function isZeroItem(p, it) {
   return qtyKeys(p).every(k => !Number(getQ(it, k)));
 }
 
+// Ngày nghỉ in ra khối lượng = 0 hết nên KHÔNG tự lọc theo số của chính nó được
+// (lọc thì mất sạch dòng). Lấy ngày LÀM VIỆC gần nhất làm chuẩn, nhờ vậy trang
+// ngày nghỉ có ĐÚNG số hạng mục như trang ngày thường.
+function zeroRowRefEntry(p, e) {
+  if (!e.restDay) return e;
+  const prev = prevWorkEntryOf(p, e.date);
+  if (prev) return prev;
+  // cuốn mở đầu bằng ngày nghỉ → nhìn TỚI ngày làm việc gần nhất phía sau
+  const ds = Object.keys(p.entries || {}).filter(k => k > e.date).sort();
+  for (const d of ds) if (p.entries[d] && !p.entries[d].restDay) return p.entries[d];
+  return null;
+}
+
 // Lọc bỏ hạng mục khối lượng = 0 (khi bật p.hideZeroRows), đồng thời bỏ luôn
-// dòng nhóm không còn hạng mục nào. Ngày nghỉ thì KHÔNG lọc — bảng cố tình để
-// trống nhưng vẫn phải đủ tên hạng mục.
+// dòng nhóm không còn hạng mục nào.
 function visibleItems(p, e) {
   const all = e.items || [];
-  if (!p.hideZeroRows || e.restDay) return all;
-  const keep = all.map(it => it.group !== undefined ? false : !isZeroItem(p, it));
+  if (!p.hideZeroRows) return all;
+  const ref = zeroRowRefEntry(p, e);
+  if (!ref) return all;                 // cuốn chưa có ngày làm việc nào → giữ đủ dòng
+  const src = ref.items || [];
+  // khớp theo vị trí, lệch thì dò theo tên — cùng cách với inheritQty
+  const byName = new Map();
+  src.forEach(it => { if (it.group === undefined && !byName.has(it.name)) byName.set(it.name, it); });
+  const keep = all.map((it, i) => {
+    if (it.group !== undefined) return false;
+    const at = src[i];
+    const s = (at && at.group === undefined && at.name === it.name) ? at : byName.get(it.name);
+    return !isZeroItem(p, s || it);
+  });
   all.forEach((it, i) => {
     if (it.group === undefined) return;
     for (let j = i + 1; j < all.length && all[j].group === undefined; j++) {
@@ -2679,7 +2753,7 @@ function workRowsHTML(p, e) {
     }
     stt++;
     const tds = keys.map(k => `<td style="text-align:center;">${escapeHtml(fmtQty(tpl, getQ(it, k), rest))}</td>`).join('');
-    return { n: stt, html: `<tr><td style="text-align:center;">${stt}</td><td>${escapeHtml(it.name)}</td><td style="text-align:center;">${escapeHtml(it.unit)}</td>${tds}</tr>` };
+    return { n: stt, html: `<tr data-blk="${stt}"><td style="text-align:center;">${stt}</td><td>${escapeHtml(it.name)}</td><td style="text-align:center;">${escapeHtml(it.unit)}</td>${tds}</tr>` };
   });
 }
 
@@ -2691,70 +2765,105 @@ function buildWorkTableHTML(p, rows) {
 // Mục 4 và 5: in ra ĐỦ 3 lựa chọn, đánh dấu ô đang chọn (ô vuông vẽ bằng CSS
 // nên không phụ thuộc font có ký tự ☑ hay không)
 const RATE_OPTIONS = ['Tốt', 'Bình thường', 'Kém'];
-function rateOptionsHTML(value) {
-  return '<div class="opts">' + RATE_OPTIONS.map(o =>
+function rateOptionsHTML(value, blk) {
+  return `<div class="opts"${blk ? ` data-blk="${blk}"` : ''}>` + RATE_OPTIONS.map(o =>
     `<span class="opt"><i class="box${o === value ? ' on' : ''}"></i>${escapeHtml(o)}</span>`
   ).join('') + '</div>';
 }
 
-function buildEntryHTML(p, e) {
-  const tpl = tplOf(p);
-  const pn = computePagenum(p, e.date);
+// Dựng dãy KHỐI của một trang ngày. data-blk gắn vào PHẦN TỬ CUỐI của mỗi khối
+// (không bọc thêm div để khỏi đụng vào layout) — cửa sổ xem trước bắt click trên
+// chính thuộc tính này để người dùng chọn chỗ ngắt trang.
+function entryBlocks(p, e) {
+  const B = [];
+  const at = k => ` data-blk="${k}"`;
 
-  // Dòng "Công trình:" chỉ hiển thị trên màn hình để biết đang sửa cuốn nào — không xuất ra file
-  const head = `<h1 class="title">Nhật ký thi công hàng ngày</h1>
-    <div class="date-line">Ngày ${e.day} tháng ${e.month} năm ${e.year}${e.restDay ? ' <em>(ngày nghỉ)</em>' : ''}</div>
-    <div class="section-num">1. Tình hình thời tiết:</div>
-    <table class="weather">
-      <tr><th></th><th>Sáng</th><th>Chiều</th></tr>
-      <tr><td>Thời tiết</td><td style="text-align:center;">${escapeHtml(e.w_morning)}</td><td style="text-align:center;">${escapeHtml(e.w_afternoon)}</td></tr>
-      <tr><td>Nhiệt độ</td><td style="text-align:center;">${escapeHtml(e.t_morning)}</td><td style="text-align:center;">${escapeHtml(e.t_afternoon)}</td></tr>
-    </table>
-    <div class="section-num">2. Nhân lực và thiết bị thi công:</div>
-    <div class="subsection">2.1. Nhân lực:</div>
-    <div style="padding-left:10mm">- Công nhân: ${e.restDay ? '' : escapeHtml(e.workers) + ' người'}</div>
-    <div style="padding-left:10mm">- Nhân lực khác: ${e.restDay ? '' : escapeHtml(e.workers_other)}</div>
-    <div class="subsection">2.2. Thiết bị thi công:</div>
-    <div style="padding-left:10mm">${e.restDay ? '' : escapeHtml(e.equipment)}</div>
-    <div class="section-num">3. Tình hình diễn biến thi công, nghiệm thu công việc:</div>
-    <div class="subsection">3.1. Diễn biến thi công, nghiệm thu công việc:</div>`;
+  B.push({ k: 'title', html:
+    `<h1 class="title">Nhật ký thi công hàng ngày</h1>
+     <div class="date-line"${at('title')}>Ngày ${e.day} tháng ${e.month} năm ${e.year}${e.restDay ? ' <em>(ngày nghỉ)</em>' : ''}</div>` });
 
-  const tail = `<div class="section-num">4. Công tác vệ sinh môi trường:</div>
-    ${rateOptionsHTML(e.env)}
-    <div class="section-num">5. Công tác an toàn lao động, an toàn giao thông:</div>
-    ${rateOptionsHTML(e.safe)}
-    <div class="section-num">6. Nhận xét và yêu cầu của giám sát bên A:</div>
-    <div class="note-line">${multilineHtml(e.note_a)}</div>
-    <div class="note-line"></div>
-    <div class="section-num">7. Những kiến nghị đề xuất của bên B:</div>
-    <div class="note-line">${multilineHtml(e.note_b)}</div>
-    <div class="note-line"></div>
-    <table style="width:100%; margin-top:24px; border:none;">
+  B.push({ k: 's1', html:
+    `<div class="section-num">1. Tình hình thời tiết:</div>
+     <table class="weather"${at('s1')}>
+       <tr><th></th><th>Sáng</th><th>Chiều</th></tr>
+       <tr><td>Thời tiết</td><td style="text-align:center;">${escapeHtml(e.w_morning)}</td><td style="text-align:center;">${escapeHtml(e.w_afternoon)}</td></tr>
+       <tr><td>Nhiệt độ</td><td style="text-align:center;">${escapeHtml(e.t_morning)}</td><td style="text-align:center;">${escapeHtml(e.t_afternoon)}</td></tr>
+     </table>` });
+
+  // Ngày nghỉ để trống phần giá trị nhưng GIỮ NGUYÊN số dòng — trang A4 đang
+  // khít, thêm/bớt dòng là vỡ điểm ngắt trang.
+  B.push({ k: 's2', html:
+    `<div class="section-num">2. Nhân lực và thiết bị thi công:</div>
+     <div class="subsection">2.1. Nhân lực:</div>
+     <div style="padding-left:10mm">- Công nhân: ${e.restDay ? '' : escapeHtml(e.workers) + ' người'}</div>
+     <div style="padding-left:10mm"${at('s2')}>- Nhân lực khác: ${e.restDay ? '' : escapeHtml(e.workers_other)}</div>` });
+
+  B.push({ k: 's2b', html:
+    `<div class="subsection">2.2. Thiết bị thi công:</div>
+     <div style="padding-left:10mm"${at('s2b')}>${e.restDay ? '' : escapeHtml(e.equipment)}</div>` });
+
+  B.push({ k: 's3', html:
+    `<div class="section-num">3. Tình hình diễn biến thi công, nghiệm thu công việc:</div>
+     <div class="subsection"${at('s3')}>3.1. Diễn biến thi công, nghiệm thu công việc:</div>` });
+
+  // mỗi hạng mục = 1 khối, khóa là STT; dòng NHÓM không cho ngắt sau (ngắt ngay
+  // dưới tên nhóm là để tiêu đề nhóm mồ côi ở cuối trang)
+  workRowsHTML(p, e).forEach(r => B.push({ k: r.n, row: true, html: r.html }));
+
+  B.push({ k: 's4', html:
+    `<div class="section-num">4. Công tác vệ sinh môi trường:</div>${rateOptionsHTML(e.env, 's4')}` });
+  B.push({ k: 's5', html:
+    `<div class="section-num">5. Công tác an toàn lao động, an toàn giao thông:</div>${rateOptionsHTML(e.safe, 's5')}` });
+  B.push({ k: 's6', html:
+    `<div class="section-num">6. Nhận xét và yêu cầu của giám sát bên A:</div>
+     <div class="note-line">${multilineHtml(e.note_a)}</div>
+     <div class="note-line"${at('s6')}></div>` });
+  B.push({ k: 's7', html:
+    `<div class="section-num">7. Những kiến nghị đề xuất của bên B:</div>
+     <div class="note-line">${multilineHtml(e.note_b)}</div>
+     <div class="note-line"${at('s7')}></div>` });
+
+  // chữ ký luôn khép lại trang cuối — không đặt data-blk vì ngắt sau nó là vô nghĩa
+  B.push({ k: null, html:
+    `<table style="width:100%; margin-top:24px; border:none;">
       <tr>
         <td style="width:50%; text-align:center; border:none; vertical-align:top;">
-          <div style="font-weight:bold; text-transform:uppercase;">Đại diện bên A</div>
+          <div class="daysign-role">Đại diện bên A</div>
           <div style="height:56px;"></div>
-          <div>${escapeHtml(e.rep_a || '')}</div>
+          <div class="daysign-name">${escapeHtml(e.rep_a || '')}</div>
         </td>
         <td style="width:50%; text-align:center; border:none; vertical-align:top;">
-          <div style="font-weight:bold; text-transform:uppercase;">Đại diện bên B</div>
+          <div class="daysign-role">Đại diện bên B</div>
           <div style="height:56px;"></div>
-          <div>${escapeHtml(e.rep_b || '')}</div>
+          <div class="daysign-name">${escapeHtml(e.rep_b || '')}</div>
         </td>
       </tr>
-    </table>`;
+    </table>` });
 
-  // số trang đánh liên tục cả quyển; mỗi trang vật lý một số
-  const foot = n => `<div class="page-num">trang ${n}</div>`;
+  return B;
+}
 
-  // Mẫu có splitAfter: 1 ngày cắt sau các hạng mục đã chỉ định, mỗi trang tiếp theo
-  // lặp lại dòng tiêu đề bảng — như quyển mẫu Excel. Nếu ẩn bớt dòng khối lượng 0
-  // mà không còn đủ hạng mục để cắt thì entryRowChunks tự trả về 1 trang.
-  const chunks = entryRowChunks(p, e);
+// Ghép các khối của MỘT trang. Các khối dòng bảng liền nhau gộp lại thành một
+// <table> — nhờ vậy trang nào có dòng khối lượng cũng tự lặp lại tiêu đề bảng,
+// đúng như quyển mẫu Excel.
+function pageBlocksHTML(p, blocks) {
+  let out = '', rows = [];
+  const flush = () => { if (rows.length) { out += buildWorkTableHTML(p, rows); rows = []; } };
+  blocks.forEach(b => {
+    if (b.row) rows.push(b);
+    else { flush(); out += b.html; }
+  });
+  flush();
+  return out;
+}
+
+function buildEntryHTML(p, e) {
+  const pn = computePagenum(p, e.date);
+  // Dòng "Công trình:" chỉ hiển thị trên màn hình để biết đang sửa cuốn nào — không xuất ra file
+  const pages = entryPages(p, e);
   const cls = splitPoints(p).length ? 'page compact' : 'page';
-  return chunks.map((chunk, i) =>
-    `<div class="${cls}">${i === 0 ? head : ''}${buildWorkTableHTML(p, chunk)}` +
-    `${i === chunks.length - 1 ? tail : ''}${foot(pn + i)}</div>`
+  return pages.map((blocks, i) =>
+    `<div class="${cls}">${pageBlocksHTML(p, blocks)}<div class="page-num">trang ${pn + i}</div></div>`
   ).join('\n');
 }
 
@@ -2991,6 +3100,10 @@ function exportCss(p) {
      lúc xuất (nhân đôi mọi giá trị pt), không phải chỉnh vài con số ở đây. */
   table th, table td { border: 0.5pt solid #000; padding: 5px 7px; vertical-align: middle; font-size: ${f(13)}; }
   table th { font-weight: bold; text-align: center; }
+  /* khối chữ ký CUỐI TRANG NGÀY: chức danh + họ tên đều 13pt in đậm.
+     Tên lớp phải khác .sign-role/.sign-name của trang bìa, không thì đè cỡ chữ bìa. */
+  .daysign-role, .daysign-name { font-weight: bold; font-size: ${f(13)}; }
+  .daysign-role { text-transform: uppercase; }
   table.work th, table.work td { border: ${ps.borderPt}pt solid #000; }
   table.work td { font-size: ${f(12)}; }
 
@@ -3121,7 +3234,7 @@ function exportBookAsWord(p, scope, filename) {
 
 // Phiên bản hiển thị cho người dùng. ĐỔI CÙNG LÚC với VERSION trong sw.js —
 // hai chuỗi phải khớp, sw.js dùng nó làm khoá cache còn chỗ này để hiển thị.
-const APP_VERSION = '2026.08.21';
+const APP_VERSION = '2026.08.23';
 
 const PDF_SCALE = 2;              // html2canvas scale — dùng chung với phép tính chiều cao trang
 const PX_PER_MM = 96 / 25.4;      // 1mm CSS = 3.7795px
@@ -3369,11 +3482,62 @@ function listEntries() {
     return `${i+1}. ${d}  · tr.${pn}${e.restDay ? '  · NGHỈ' : ''}  ·  ${totalQty} ${(e.items||[]).find(x=>!x.group)?.unit || ''}`;
   });
   const pick = prompt(
-    `📚 ${p.name} — ${dates.length} ngày (bắt đầu ${p.startDate}, trang ${p.startPage})\n\n${lines.join('\n')}\n\nNhập STT để mở (hoặc bỏ qua):`
+    `📚 ${p.name} — ${dates.length} ngày (bắt đầu ${p.startDate}, trang ${p.startPage})\n\n${lines.join('\n')}\n\nNhập STT để mở, hoặc x + STT để xóa (ví dụ: x3):`
   );
   if (!pick) return;
-  const idx = parseInt(pick, 10) - 1;
-  if (idx >= 0 && idx < dates.length) changeDate(dates[idx]);
+  const del = /^x\s*(\d+)$/i.exec(pick.trim());
+  const idx = (del ? parseInt(del[1], 10) : parseInt(pick, 10)) - 1;
+  if (!(idx >= 0 && idx < dates.length)) return;
+  if (del) deleteEntry(dates[idx]);
+  else changeDate(dates[idx]);
+}
+
+// Xóa hẳn một ngày (= 1–3 trang của quyển) khỏi cuốn. Không phải đánh lại số
+// trang: computePagenum tính từ danh sách entries nên các ngày sau tự dồn lên.
+// Bỏ trống dateISO = xóa ngày đang mở.
+function deleteEntry(dateISO) {
+  const p = getProject();
+  if (!p) return;
+  const d = dateISO || appState.currentDate;
+  const e = p.entries[d];
+  if (!e) { flash('Ngày này chưa có dữ liệu'); return; }
+
+  const dates = Object.keys(p.entries).sort();
+  const pn = computePagenum(p, d);
+  const cnt = entryPageCount(p, e);
+  const after = dates.filter(x => x > d).length;
+  const lone = dates.length === 1;
+
+  let msg = `Xóa ngày ${dmyOf(d)} — ${cnt > 1 ? 'trang ' + pn + '–' + (pn + cnt - 1) : 'trang ' + pn}?`
+          + `\n\nToàn bộ khối lượng, nhân lực, ghi chú của ngày này sẽ mất.`;
+  if (after) msg += `\n\n${after} ngày sau đó sẽ dồn lên, số trang tự đánh lại.`;
+  if (lone) msg += `\n\nĐây là ngày duy nhất của cuốn — xóa xong sẽ tạo lại một trang trắng cho chính ngày này.`;
+  if (!confirm(msg)) return;
+
+  clearTimeout(window._sv);
+  collectForm();          // giữ chữ đang gõ của ngày ĐANG mở (không phải ngày sắp xóa)
+  delete p.entries[d];
+  persist();
+
+  if (d === appState.currentDate) {
+    // Phải nhảy sang một ngày ĐÃ CÓ: changeDate gọi ensureEntry nên quay lại
+    // chính ngày vừa xóa sẽ dựng entry mới (đúng ý khi đó là ngày duy nhất).
+    // appState.currentDate vẫn trỏ tới ngày đã xóa ⇒ collectForm() bên trong
+    // changeDate tự no-op, không để form cũ ghi đè ngày đích.
+    const left = Object.keys(p.entries).sort();
+    changeDate(left.filter(x => x < d).pop() || left.find(x => x > d) || d);
+  } else {
+    renderForm();         // số trang của ngày đang mở có thể đã đổi
+    refreshProjectSelect();
+    persist();
+  }
+  flash(lone ? 'Đã xóa dữ liệu ngày này' : `Đã xóa ngày ${dmyOf(d)}`);
+}
+
+// 'YYYY-MM-DD' → 'DD/MM/YYYY' — chỉ dùng cho câu thông báo
+function dmyOf(iso) {
+  const t = String(iso || '').split('-');
+  return t.length === 3 ? `${t[2]}/${t[1]}/${t[0]}` : String(iso || '');
 }
 
 function flash(msg) {
@@ -3644,6 +3808,12 @@ if (_initIsFresh && appState.currentDate === todayISO()) {
 document.querySelectorAll('#previewModal .pv-bar input, #previewModal .pv-bar select')
   .forEach(el => el.addEventListener('input', onPreviewChange));
 
+// chọn chỗ ngắt trang bằng cách bấm thẳng vào dòng trong khung xem trước
+document.getElementById('pvScale').addEventListener('click', (ev) => {
+  const el = ev.target && ev.target.closest && ev.target.closest('[data-blk]');
+  if (el) toggleSplitAt(el.dataset.blk);
+});
+
 document.addEventListener('input', (ev) => {
   if (!ev.target) return;
   if (['projectSelect', 'templateSelect', 'datePicker', 'datePickerTop', 'importFile', 'forecastDays'].includes(ev.target.id)) return;
@@ -3725,10 +3895,15 @@ function fillPreviewControls(p) {
   });
   const sa = ps.splitAfter;
   const sIn = document.getElementById('pv_splitAfter');
-  sIn.value = sa === null || sa === undefined || sa === '' ? '' : [].concat(sa).join(', ');
+  sIn.value = (sa === null || sa === undefined || sa === '')
+    ? ''                                        // theo mẫu
+    : ([].concat(sa).length ? [].concat(sa).join(', ') : '—');   // [] = không ngắt
   const tplSa = tplOf(p).splitAfter;
   sIn.placeholder = tplSa ? 'mẫu: ' + [].concat(tplSa).join(', ') : 'cả ngày 1 trang';
-  sIn.title = 'Cắt trang sau hạng mục số mấy. Nhiều số cách nhau bằng dấu phẩy = nhiều trang. Bỏ trống = theo mẫu.';
+  sIn.title = 'Chỗ ngắt trang. Số = sau hạng mục có STT đó; '
+            + Object.keys(BLK_LABELS).join('/') + ' = sau mục ngoài bảng.\n'
+            + 'Dễ nhất là bấm thẳng vào dòng muốn ngắt ở khung xem trước.\n'
+            + 'Bỏ trống = theo mẫu · "—" = cả ngày gói 1 trang.';
   document.getElementById('pv_fontScaleOut').textContent = ps.fontScale + '%';
 }
 
@@ -3748,13 +3923,17 @@ function collectPreviewControls() {
   ps.fontScale = clampNum(ps.fontScale, 60, 150);
   ps.tableFontPt = clampNum(ps.tableFontPt, 5, 20);
 
-  // "12, 24" → [12, 24] · "23" → 23 · rỗng → null (lấy theo mẫu)
+  // "12, 24" → [12, 24] · "20, s4" → [20, 's4'] · rỗng → null (theo mẫu)
+  // · gõ gì đó nhưng không có khóa nào hợp lệ ("—") → [] = KHÔNG ngắt trang
   const raw = document.getElementById('pv_splitAfter').value.trim();
   if (!raw) {
     ps.splitAfter = null;
   } else {
-    const nums = raw.split(/[^0-9]+/).filter(Boolean).map(Number).filter(n => n > 0);
-    ps.splitAfter = !nums.length ? null : (nums.length === 1 ? nums[0] : nums);
+    const keys = raw.split(/[^0-9a-zA-Z]+/).filter(Boolean).map(t => normKey(t.toLowerCase()))
+      .filter(k => typeof k === 'number'
+        ? k > 0
+        : Object.prototype.hasOwnProperty.call(BLK_LABELS, k));
+    ps.splitAfter = sortSplits([...new Set(keys.map(String))].map(normKey));
   }
   p.pageSetup = ps;
   document.getElementById('pv_fontScaleOut').textContent = ps.fontScale + '%';
@@ -3780,12 +3959,48 @@ function renderPreview() {
   host.style.transform = `scale(${sc})`;
   host.style.height = (host.scrollHeight * sc) + 'px';
 
+  // tô đỏ những dòng đang là chỗ ngắt trang (khóa giống nhau thì mọi ngày đều tô)
+  const pts = splitPoints(p);
+  const set = new Set(pts.map(String));
+  host.querySelectorAll('[data-blk]').forEach(el => el.classList.toggle('brk', set.has(el.dataset.blk)));
+
   const shrunk = wrappers.map((w, i) => ({ i: i + 1, k: Number(w.dataset.shrink) }))
                          .filter(x => x.k < 100);
   const st = document.getElementById('pvStatus');
   st.innerHTML = `Tổng <b>${n}</b> trang A4` + (shrunk.length
-    ? ` · <span class="warn">⚠️ ${shrunk.map(x => `trang ${x.i} thu còn ${x.k}%`).join(', ')} — giảm số mục/trang hoặc cỡ chữ để khỏi bị thu</span>`
-    : ' · vừa khít, không phải thu nhỏ ✓');
+    ? ` · <span class="warn">⚠️ ${shrunk.map(x => `trang ${x.i} thu còn ${x.k}%`).join(', ')} — bớt chỗ ngắt trang hoặc giảm cỡ chữ để khỏi bị thu</span>`
+    : ' · vừa khít, không phải thu nhỏ ✓')
+    + (pts.length ? ` · <span class="pv-brk-list">✂ ngắt sau: ${pts.map(blkLabel).join(' · ')}</span>` : '')
+    + ` · <span class="pv-hint">bấm vào dòng bất kỳ để ngắt trang tại đó</span>`;
+}
+
+// Bấm vào một dòng trong xem trước = thêm/bỏ chỗ ngắt trang ngay sau dòng đó.
+// Khóa lấy từ data-blk, áp cho MỌI ngày của cuốn (pageSetup là thiết lập cấp cuốn).
+function toggleSplitAt(key) {
+  const p = getProject();
+  if (!p) return;
+  const k = normKey(key);
+  const cur = splitPoints(p);                    // đang áp dụng — có thể là của mẫu
+  const i = cur.findIndex(x => String(x) === String(k));
+  if (i >= 0) cur.splice(i, 1); else cur.push(k);
+  const ps = pageSetupOf(p);
+  ps.splitAfter = sortSplits(cur);               // [] = không ngắt, KHÁC null = theo mẫu
+  p.pageSetup = ps;
+  persist();
+  fillPreviewControls(p);
+  renderPreview();
+}
+
+// Bỏ hết chỗ ngắt → cả ngày gói trong 1 trang (không rơi về mặc định của mẫu)
+function clearSplits() {
+  const p = getProject();
+  if (!p) return;
+  const ps = pageSetupOf(p);
+  ps.splitAfter = [];
+  p.pageSetup = ps;
+  persist();
+  fillPreviewControls(p);
+  renderPreview();
 }
 
 function onPreviewChange() {
