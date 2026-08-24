@@ -37,7 +37,8 @@ appState = {
     [projectId]: {
       id, name, createdAt, endedAt,
       startDate,   // 'YYYY-MM-DD', ngày = trang đầu tiên
-      startPage,   // số trang của ngày bắt đầu (sticky base cho computePagenum)
+      startPage,   // số trang của TRANG ĐẦU TIÊN được đánh số (bìa quyển với mẫu có bìa,
+                   //   ngày bắt đầu với mẫu không bìa) — sticky base cho computePagenum
       templateId,  // 'lavipco' | 'q8' — khóa vào TEMPLATES
       zones,       // ['Phường Chánh Hưng', ...] — chỉ mẫu có địa bàn; sửa TÊN và SỐ LƯỢNG ở edit-mode
       hideZeroRows,// true = khi xuất, ẩn hạng mục có mọi cột khối lượng = 0
@@ -132,6 +133,8 @@ Helper dùng chung: `tplOf(p)`, `zonesOf(p)`, `qtyKeys(p)`, `getQ/setQ`, `blankQ
 
 Chỉ bật khi `tplOf(p).hasBook`. Chứa 5 phần: loại bìa · bìa quyển · bìa tổng · Tr1 (liệt kê văn bản) · Tr2 (danh sách cán bộ). Ghi vào `p.book`.
 
+- **Tr1 và Tr2 đều có khối ký ở cuối**, dựng chung bằng `sheetSignHTML(b, signer, topLine)`. Khác nhau ở dòng nghiêng đầu khối: Tr1 là `Từ … đến …`, Tr2 là `<nơi ký>, ngày … tháng … năm …`. Người ký: `docsSignerB` / `staffSignerB`; `staffSignerB` bỏ trống thì lấy `book.repB.name` (đại diện bên B ở bìa quyển).
+- **Đơn vị đứng tên ký = `signOrg(b)` = `daiDienLienDanh || benB`.** Bên B là liên danh thì công ty đại diện mới là bên ký, đúng như quyển mẫu; không khai liên danh thì rơi về chính bên B.
 - **Dòng "Đại diện liên danh" là tùy chọn** — dùng `coverRowIf()` thay `coverRow()` nên bỏ trống ô đó là **không in ra dòng nào** trên cả bìa tổng lẫn bìa quyển. Các ô còn lại vẫn dùng `coverRow()`: để trống thì **vẫn in nhãn** để người dùng điền tay lên giấy — đừng đổi hết sang `coverRowIf`.
 - **Không** dùng auto-save debounce — handler `input` bỏ qua mọi thứ trong `#bookModal`; lưu bằng nút `saveBook()`.
 - `collectBookForm()` phải được gọi trước mỗi lần re-render bảng động (`addDocRow`/`delDocRow`/`addStaffRow`/`delStaffRow`) để không mất chữ đang gõ.
@@ -153,7 +156,8 @@ Chỉ bật khi `tplOf(p).hasBook`. Chứa 5 phần: loại bìa · bìa quyển
 ## Nguyên tắc thiết kế cần biết
 
 - **1 cuốn = 1 công trình. 1 entry = 1 ngày.** Không trộn.
-- **`pagenum` là computed**, không lưu user-editable. `computePagenum(p, dateISO)` = `startPage` + số trang đầu quyển + tổng `entryPageCount()` của các ngày trước đó. Ô `#pagenum` là `readonly`.
+- **`pagenum` là computed**, không lưu user-editable. `computePagenum(p, dateISO)` = `startPage` + `frontMatterPages(p)` + tổng `entryPageCount()` của các ngày trước đó. Ô `#pagenum` là `readonly`.
+- **Bìa quyển ĐƯỢC đánh số và là trang đầu tiên** — đúng như quyển mẫu in ra. `FRONT_MATTER = ['cover', 'docs', 'staff']` ⇒ với `startPage = 1`: bìa quyển `Trang 1` · Tr1 (liệt kê văn bản) `Trang 2` · Tr2 (cán bộ) `Trang 3` · ngày đầu `trang 4`. **BÌA TỔNG không đánh số** — nó là bìa của cả gói thầu, không thuộc số trang của quyển này, nên bật/tắt `showCoverTong` không làm lệch số trang. Cả 3 trang đầu quyển lấy số qua `frontPageNum(p, which)`; đừng ghi cứng `startPage + 1` ở từng chỗ.
 - **Date picker giới hạn `min=startDate`** để không tạo entry trước ngày bắt đầu cuốn (sẽ làm lệch số trang).
 - **`_isNew` flag** trên entry: dùng nội bộ để biết entry vừa tạo lần đầu → trigger auto-fetch nhiệt độ nếu ngày là hôm nay. Phải `delete` trước khi `persist()` để không leak vào localStorage.
 - **`items` global var** là tham chiếu tới `currentEntry.items`. `renderTable()` đọc từ đây. `syncItemsStructureToProject()` đẩy thay đổi name/unit/group/add/del sang `project.items` (template) nhưng KHÔNG đẩy qty (qty là số liệu hàng ngày).
@@ -185,7 +189,7 @@ Chỉ bật khi `tplOf(p).hasBook`. Chứa 5 phần: loại bìa · bìa quyển
 3. `exportBookAsWord(p)` — sync, blob `application/msword` + UTF-8 BOM + namespace MS Office, đuôi `.doc`
 4. `await exportBookAsPDF(p)` — render mỗi entry vào container ẩn `position:absolute; left:-99999px`, dùng html2pdf với `pagebreak: { mode: ['css','legacy'] }` và CSS `.page { page-break-after: always }`
 
-Cả 2 đường xuất đều bắt đầu bằng `buildBookPagesHTML(p)` (rỗng với mẫu không có bìa) rồi mới đến các entry. Thứ tự trang: BÌA TỔNG → bìa quyển → Tr1 → Tr2 → từng ngày. Sửa layout trang ngày thì sửa `workTheadHTML()` / `workRowsHTML()` / `buildEntryHTML()` — dùng chung cho cả Word lẫn PDF.
+Cả 2 đường xuất đều bắt đầu bằng `buildBookPagesHTML(p)` (rỗng với mẫu không có bìa) rồi mới đến các entry. Thứ tự trang: BÌA TỔNG *(không số)* → bìa quyển *(Trang 1)* → Tr1 *(Trang 2)* → Tr2 *(Trang 3)* → từng ngày. Sửa layout trang ngày thì sửa `workTheadHTML()` / `workRowsHTML()` / `buildEntryHTML()` — dùng chung cho cả Word lẫn PDF.
 
 Dòng `Công trình: …` **chỉ có trên màn hình**, không đưa vào `buildEntryHTML`.
 
@@ -298,10 +302,16 @@ Muốn khỏi phải thu nhỏ thì giảm `splitAfter` hoặc bóp thêm `.page
 - [ ] Mục 4, 5 trong PDF in đủ Tốt / Bình thường / Kém, đúng 1 ô được tick
 - [ ] Tick "Ngày nghỉ" → ô số bị khóa; xuất PDF thấy bảng trống nhưng còn đủ tên hạng mục, mục 2.1/2.2 cũng trống, ngày vẫn **đúng 2 trang**
 - [ ] `📕 Thông tin quyển` → sửa bìa, thêm/xóa văn bản + cán bộ → Lưu → reload còn nguyên
+- [ ] Tr2 có khối ký cuối trang: nơi ký + ngày (nghiêng) → `ĐẠI DIỆN BÊN B` + đơn vị → chừa chỗ ký → họ tên
+- [ ] Bỏ trống `Người ký trang 2` → lấy đại diện bên B ở bìa quyển; nhập tay → hiện đúng tên đã nhập
+- [ ] Có `Đại diện liên danh` → cả Tr1 lẫn Tr2 ký tên công ty đó; bỏ trống → ký tên Bên B
 - [ ] `📄 Xuất PDF ngày này` → mở PDF: **đúng 2 trang**, trang 1 hạng mục 1–23, trang 2 lặp header + 24–38 + mục 4–7 + chữ ký nằm ngang
 - [ ] Lề PDF đo được trên/phải/dưới 1,5cm — trái 2cm, không còn dòng "Công trình:"
 - [ ] Tên file dạng `NKTC - Phường … - T07-2026.pdf`
 - [ ] Kết thúc → PDF theo thứ tự BÌA TỔNG → bìa quyển → Tr1 → Tr2 → từng ngày, đối chiếu file `.xlsx`
+- [ ] Bìa quyển in `Trang 1`, Tr1 `Trang 2`, Tr2 `Trang 3`, ngày đầu `trang 4`; BÌA TỔNG không có số
+- [ ] Tắt BÌA TỔNG → số trang các trang còn lại **không đổi**
+- [ ] Đổi `📄 Trang bắt đầu` = 25 → bìa quyển `Trang 25`, dòng "Sổ này gồm … từ 25 đến …" khớp
 - [ ] Đổi mẫu cuốn cũ → Q8, chọn "Nạp lại hạng mục" và chọn "Không" — cả 2 nhánh không lỗi JS
 
 **Kế thừa ngày mới:**

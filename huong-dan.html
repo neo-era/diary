@@ -310,7 +310,8 @@ có biểu tượng ngoài màn hình chính, và <strong>mở được cả khi
   <li><strong>Bìa tổng</strong> — đơn vị + chức danh + người ký của 2 bên, nơi ký.</li>
   <li><strong>Trang 1 — Liệt kê các văn bản liên quan</strong> — thêm/xóa từng dòng
     (văn bản số ngày, cơ quan phát hành, ngày nhận, tóm tắt nội dung).</li>
-  <li><strong>Trang 2 — Danh sách cán bộ kỹ thuật, giám sát</strong> — thêm/xóa từng người, chọn thuộc Bên A hay Bên B.</li>
+  <li><strong>Trang 2 — Danh sách cán bộ kỹ thuật, giám sát</strong> — thêm/xóa từng người, chọn thuộc Bên A hay Bên B,
+    kèm ô <em>Người ký trang 2</em> cho khối ký cuối trang (bỏ trống thì lấy đại diện bên B ghi ở bìa quyển).</li>
 </ol>
 <div class="callout warn">
   <strong>Nhớ bấm <span class="btn primary">💾 Lưu thông tin quyển</span></strong> trước khi đóng — phần này
@@ -319,6 +320,11 @@ có biểu tượng ngoài màn hình chính, và <strong>mở được cả khi
 <p>Các trang này <strong>không hiện trên màn hình chính</strong>. Chúng chỉ được ghép vào đầu file
 khi bấm <span class="btn danger">🏁 Kết thúc</span>, theo thứ tự:
 BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký.</p>
+<div class="callout">
+  <strong>Cách đánh số trang.</strong> Bìa quyển chính là <strong>Trang 1</strong>, rồi trang liệt kê văn bản là Trang 2,
+  danh sách cán bộ là Trang 3, ngày nhật ký đầu tiên là trang 4 — đúng như quyển mẫu.
+  <em>BÌA TỔNG không được đánh số</em> (nó là bìa của cả gói thầu), nên bật hay tắt nó cũng không làm lệch số trang.
+</div>
 <p>Chỗ ghi <em>“Công tác: … tháng {MM} năm {YYYY}”</em> sẽ tự thay bằng tháng/năm của
 <strong>ngày bắt đầu cuốn</strong> khi xuất file.</p>
 <div class="callout">
@@ -377,7 +383,10 @@ BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký
   </ul>
 </div>
 <div class="callout warn">
-  <strong>Lưu ý số trang:</strong> Số trang ở cuối form là <strong>tự động</strong>, không sửa tay. Cách tính: ngày bắt đầu = trang <code>startPage</code>, ngày tiếp theo trong cuốn = trang <code>startPage+1</code>, v.v. Nếu cần đổi trang đầu, dùng nút <span class="btn">📄 Trang bắt đầu</span>.
+  <strong>Lưu ý số trang:</strong> Số trang ở cuối form là <strong>tự động</strong>, không sửa tay.
+  Với mẫu có trang bìa, <span class="btn">📄 Trang bắt đầu</span> là số của <strong>bìa quyển</strong>;
+  ba trang đầu quyển chiếm 3 số, ngày nhật ký đầu tiên nhận số thứ 4. Mẫu không có bìa thì nó là số của ngày đầu tiên.
+  Mỗi ngày có thể chiếm 1–3 trang tùy chỗ ngắt trang, phần mềm cộng dồn đúng theo đó.
 </div>
 
 <h2 id="items">9. Sửa danh sách hạng mục</h2>

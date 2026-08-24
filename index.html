@@ -1093,6 +1093,10 @@
         <tbody id="bk_staffBody"></tbody>
       </table>
       <button class="book-mini-btn" style="margin-top:8px" onclick="addStaffRow()">+ Thêm cán bộ</button>
+      <div class="book-grid" style="margin-top:10px">
+        <label for="bk_staffSignerB">Người ký trang 2 <span style="font-weight:normal;color:#64748b">(bỏ trống = đại diện bên B ở bìa)</span></label>
+        <input type="text" id="bk_staffSignerB">
+      </div>
     </div>
 
     <div class="book-actions">
@@ -1373,7 +1377,8 @@ const Q8_BOOK_DEFAULT = {
     { ref: "Số 4843/TTGTHTKT-CXCS1 ngày 23/7/2026", issuer: "Trung tâm Quản lý Giao thông và Hạ tầng kỹ thuật TP. Hồ Chí Minh", received: "23/7/2026", summary: "Giao khối lượng kế hoạch thực hiện Quý III năm 2026" },
   ],
   docsSignerB: "Nguyễn Thành Nam",
-  // Trang 2 — danh sách cán bộ
+  // Trang 2 — danh sách cán bộ (staffSignerB bỏ trống ⇒ lấy đại diện bên B ở bìa quyển)
+  staffSignerB: "",
   staff: [
     { side: "B", name: "Ông Nguyễn Thành Nam", title: "Trưởng phòng KHVT", duty: "Chỉ huy trưởng", note: "" },
     { side: "B", name: "Ông Phạm Tấn Việt", title: "", duty: "Phụ trách kỹ thuật thi công", note: "" },
@@ -1674,9 +1679,16 @@ function entryPages(p, e) {
 function entryPageCount(p, e) {
   return e ? entryPages(p, e).length : splitPoints(p).length + 1;
 }
-// Số trang đầu quyển được đánh số: Tr1 (liệt kê văn bản) + Tr2 (danh sách cán bộ).
-// Các trang bìa không đánh số, đúng như quyển mẫu.
-function frontMatterPages(p) { return (tplOf(p).hasBook && p.book) ? 2 : 0; }
+// Số trang đầu quyển ĐƯỢC đánh số, theo đúng quyển mẫu in ra:
+//   bìa quyển = Trang 1 · Tr1 (liệt kê văn bản) = Trang 2 · Tr2 (cán bộ) = Trang 3
+// BÌA TỔNG đứng trước nhưng KHÔNG đánh số — nó là bìa của cả gói thầu, không
+// thuộc số trang của quyển này.
+const FRONT_MATTER = ['cover', 'docs', 'staff'];
+function frontMatterPages(p) { return (tplOf(p).hasBook && p.book) ? FRONT_MATTER.length : 0; }
+// Số trang in trên một trang đầu quyển ('cover' | 'docs' | 'staff')
+function frontPageNum(p, which) {
+  return (Number(p.startPage) || 1) + FRONT_MATTER.indexOf(which);
+}
 
 // Số trang của TRANG ĐẦU TIÊN của ngày dateISO — đánh liên tục cả quyển:
 //   startPage → Tr1, +1 → Tr2, rồi mỗi ngày chiếm entryPageCount trang.
@@ -2524,7 +2536,7 @@ function closeBook() {
 
 const BOOK_TEXT_FIELDS = ['duToan','goiThau','diaDiem','congTac','diaBan','benA','benB','daiDienLienDanh',
   'soTrang','trangTu','trangDen','quyenSo','tongSoQuyen',
-  'donViB','chucDanhB','nguoiKyB','donViA','chucDanhA','nguoiKyA','noiKy','docsSignerB'];
+  'donViB','chucDanhB','nguoiKyB','donViA','chucDanhA','nguoiKyA','noiKy','docsSignerB','staffSignerB'];
 
 function renderBookForm() {
   const p = getProject();
@@ -2986,14 +2998,21 @@ function buildCoverQuyenHTML(p) {
     <div class="cover-note">(Sổ này gồm ${escapeHtml(pr.soTrang)} trang, đánh số thứ tự từ ${escapeHtml(pr.trangTu)} đến ${escapeHtml(pr.trangDen)} có đóng dấu giáp lai)</div>
     <div class="cover-note">Quyển số: ${escapeHtml(b.quyenSo || '……..')} / tổng số ${escapeHtml(b.tongSoQuyen || '…….')} quyển.</div>
     <div class="cover-month bottom">THÁNG ${mm} NĂM ${yyyy}</div>
+    <div class="page-num">Trang ${frontPageNum(p, 'cover')}</div>
   </div>`;
 }
 
 // Khối ký cuối trang Tr1/Tr2 — trong Excel nằm ở ô merge C:E nên lệch về nửa phải trang
-function sheetSignHTML(b, signer, range) {
+// Đơn vị đứng tên ký thay bên B. Khi bên B là một liên danh thì công ty đại
+// diện liên danh mới là bên ký — đúng như quyển mẫu. Không khai liên danh thì
+// rơi về chính bên B.
+function signOrg(b) {
+  return (b.daiDienLienDanh || '').trim() || b.benB || '';
+}
+function sheetSignHTML(b, signer, topLine) {
   return `<div class="sheet-foot">
-      ${range ? `<div class="range">${range}</div>` : ''}
-      <div class="rep">Đại diện bên B<br>${escapeHtml(b.benB)}</div>
+      ${topLine ? `<div class="range">${topLine}</div>` : ''}
+      <div class="rep">Đại diện bên B<br>${escapeHtml(signOrg(b))}</div>
       <div class="rep-gap"></div>
       <div class="rep-name">${escapeHtml(signer || '')}</div>
     </div>`;
@@ -3027,7 +3046,7 @@ function buildDocsHTML(p) {
       <tbody>${rows}</tbody>
     </table>
     ${sheetSignHTML(b, b.docsSignerB, `Từ ${viDate(p.startDate || todayISO())} đến ${viDate(lastEntryDate(p))}`)}
-    <div class="page-num">Trang ${Number(p.startPage) || 1}</div>
+    <div class="page-num">Trang ${frontPageNum(p, 'docs')}</div>
   </div>`;
 }
 
@@ -3066,7 +3085,9 @@ function buildStaffHTML(p) {
         ${sideRows('A', 'II', 'Đại diện bên A:')}
       </tbody>
     </table>
-    <div class="page-num">Trang ${(Number(p.startPage) || 1) + 1}</div>
+    ${sheetSignHTML(b, b.staffSignerB || (b.repB && b.repB.name) || '',
+                    `${escapeHtml(b.noiKy || '')}, ${viDate(p.startDate || todayISO())}`)}
+    <div class="page-num">Trang ${frontPageNum(p, 'staff')}</div>
   </div>`;
 }
 
@@ -3241,7 +3262,7 @@ function exportBookAsWord(p, scope, filename) {
 
 // Phiên bản hiển thị cho người dùng. ĐỔI CÙNG LÚC với VERSION trong sw.js —
 // hai chuỗi phải khớp, sw.js dùng nó làm khoá cache còn chỗ này để hiển thị.
-const APP_VERSION = '2026.08.25';
+const APP_VERSION = '2026.08.27';
 
 const PDF_SCALE = 2;              // html2canvas scale — dùng chung với phép tính chiều cao trang
 const PX_PER_MM = 96 / 25.4;      // 1mm CSS = 3.7795px
