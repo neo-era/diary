@@ -171,7 +171,7 @@
     <li><a href="#items">Sửa danh sách hạng mục</a></li>
     <li><a href="#weather">Tự động lấy nhiệt độ</a></li>
     <li><a href="#forecast">Dự báo thời tiết những ngày tới</a></li>
-    <li><a href="#print-single">Xuất PDF</a></li>
+    <li><a href="#print-single">Xem trước và xuất file</a></li>
     <li><a href="#backup">Sao lưu / Khôi phục dữ liệu</a></li>
     <li><a href="#end">Kết thúc cuốn nhật ký (xuất Word + PDF)</a></li>
     <li><a href="#tips">Mẹo và xử lý sự cố</a></li>
@@ -258,11 +258,12 @@ có biểu tượng ngoài màn hình chính, và <strong>mở được cả khi
     <span class="btn">📅 Ngày:</span> chọn ngày để xem/sửa ·
     <span class="btn">◀ Hôm trước</span> · <span class="btn">Hôm sau ▶</span> ·
     <span class="btn">Hôm nay</span> ·
-    <span class="btn">📚 Danh sách ngày</span>
+    <span class="btn">📚 Danh sách ngày</span> ·
+    <span class="btn danger">🗑️ Xóa trang này</span>
   </td></tr>
   <tr><th>Nhóm 4 — Thao tác</th><td>
-    <span class="btn primary">📄 Xuất PDF ngày này</span> ·
-    <span class="btn">📕 Xuất PDF cả cuốn</span> ·
+    <span class="btn primary">👁️ Xem trước ngày này</span> ·
+    <span class="btn">👁️ Xem trước cả cuốn</span> ·
     <span class="btn">✏️ Sửa hạng mục</span> ·
     <span class="btn">💾 Lưu</span> ·
     <span class="btn">📂 Tải file</span> ·
@@ -361,6 +362,16 @@ có biểu tượng ngoài màn hình chính, và <strong>mở được cả khi
 khi bấm <span class="btn danger">🏁 Kết thúc</span>, theo thứ tự:
 BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký.</p>
 <div class="callout">
+  <strong>Liên danh nhiều công ty.</strong> Ô <em>Bên B</em> gõ được nhiều dòng — bấm Enter để mỗi công ty một dòng.
+  Nếu để nguyên một dòng kiểu <code>Liên danh A - B</code> thì phần mềm <strong>tự tách</strong> khi in ra.
+  Tên đơn vị bình thường có dấu gạch (ví dụ <em>Công ty TNHH Xây dựng - Thương mại</em>) thì giữ nguyên, không bị cắt.
+  Áp cho cả bìa tổng, bìa quyển lẫn khối ký cuối Trang 2 / Trang 3.
+</div>
+<div class="callout">
+  <strong>Không có liên danh?</strong> Để trống ô <em>Đại diện liên danh</em> là dòng đó <strong>biến mất hẳn</strong>
+  khỏi cả bìa tổng lẫn bìa quyển, không để lại dòng trống. Các ô khác thì ngược lại — bỏ trống vẫn in nhãn ra để bạn điền tay lên giấy.
+</div>
+<div class="callout">
   <strong>Cách đánh số trang.</strong> Bìa quyển chính là <strong>Trang 1</strong>, rồi trang liệt kê văn bản là Trang 2,
   danh sách cán bộ là Trang 3, ngày nhật ký đầu tiên là trang 4 — đúng như quyển mẫu.
   <em>BÌA TỔNG không được đánh số</em> (nó là bìa của cả gói thầu), nên bật hay tắt nó cũng không làm lệch số trang.
@@ -379,8 +390,9 @@ BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký
   <li><strong>4–5. Vệ sinh & An toàn</strong> — chọn Tốt / Bình thường / Kém.</li>
   <li><strong>6–7. Ghi chú</strong> — nhận xét của giám sát A, đề xuất của B.</li>
   <li><strong>Chữ ký</strong> — họ tên đại diện bên A và B (dùng chung cho các ngày trong cuốn, sửa lần đầu là xong).</li>
-  <li><strong>Ngày nghỉ</strong> — ô tích ngay dưới dòng ngày tháng. Khi bật, các ô khối lượng bị khóa và
-    khi in/xuất file thì bảng để trống (vẫn còn đủ tên hạng mục) — giống trang "ngày nghỉ" trong quyển mẫu.</li>
+  <li><strong>Ngày nghỉ</strong> — ô tích ngay dưới dòng ngày tháng. Khi bật, các ô khối lượng bị khóa;
+    khi in/xuất file thì trang ngày nghỉ nhìn <strong>y hệt trang ngày thường</strong> — đủ tên hạng mục, đủ số trang —
+    chỉ khác là <strong>mọi ô khối lượng in ra dấu gạch ngang</strong>. Riêng mục 2.1 (nhân lực) và 2.2 (thiết bị) vẫn để trống.</li>
 </ul>
 <div class="callout">
   ✅ Dữ liệu <strong>tự động lưu</strong> sau mỗi lần gõ phím — không lo mất.
@@ -415,8 +427,28 @@ BÌA TỔNG → bìa quyển → trang 1 → trang 2 → từng ngày nhật ký
   <tr><td>Tạo nhật ký ngày mới</td><td>Chọn ngày chưa có trong ô ngày → phần mềm tự tạo, <strong>điền sẵn theo ngày đi làm gần nhất</strong> (xem <a href="#daily">mục 7</a>)</td></tr>
   <tr><td>Lùi/tới 1 ngày</td><td><span class="btn">◀ Hôm trước</span> / <span class="btn">Hôm sau ▶</span></td></tr>
   <tr><td>Về hôm nay</td><td><span class="btn">Hôm nay</span></td></tr>
-  <tr><td>Xem tất cả ngày trong cuốn</td><td><span class="btn">📚 Danh sách ngày</span> — hiện danh sách kèm số trang &amp; khối lượng tổng. Gõ STT để mở nhanh.</td></tr>
+  <tr><td>Xem tất cả ngày trong cuốn</td><td><span class="btn">📚 Danh sách ngày</span> — hiện danh sách kèm số trang &amp; khối lượng tổng. Gõ STT để mở nhanh, gõ <code>x</code> + STT (ví dụ <code>x3</code>) để xóa ngày đó.</td></tr>
+  <tr><td>Xóa ngày đang mở</td><td><span class="btn danger">🗑️ Xóa trang này</span> — xem mục dưới</td></tr>
 </table>
+
+<h3>Xóa một trang (một ngày)</h3>
+<p>Mỗi ngày chiếm 1–3 trang của quyển. Khi lỡ tạo nhầm một ngày (chỉ cần bấm sang ngày khác là phần mềm đã tự tạo form trống), dùng <span class="btn danger">🗑️ Xóa trang này</span> để bỏ hẳn ngày đó.</p>
+<table class="steps">
+  <tr><td>Xóa ngày <strong>đang mở</strong></td><td>Bấm <span class="btn danger">🗑️ Xóa trang này</span> → xác nhận</td></tr>
+  <tr><td>Xóa <strong>ngày khác</strong></td><td><span class="btn">📚 Danh sách ngày</span> → gõ <code>x</code> kèm STT của ngày đó, ví dụ <code>x3</code></td></tr>
+</table>
+<p>Hộp xác nhận cho biết trước ngày nào sắp mất, nó đang là <strong>trang mấy</strong>, và <strong>bao nhiêu ngày</strong> phía sau sẽ bị dồn lên.</p>
+<div class="callout">
+  <strong>Số trang tự đánh lại.</strong> Xóa một ngày giữa cuốn thì mọi ngày sau đó dồn lên, số trang in trên giấy vẫn <strong>liên tục</strong>, và dòng "Sổ này gồm … trang" trên bìa cũng tự trừ theo.
+</div>
+<div class="callout warn">
+  <strong>Không lấy lại được.</strong> Xóa là mất toàn bộ khối lượng, nhân lực, ghi chú của ngày đó. Nếu chưa chắc, bấm <span class="btn">📤 Xuất cuốn</span> lưu file JSON trước.
+  <ul>
+    <li>Xóa ngày <strong>đầu cuốn</strong> thì ngày kế tiếp lùi về đúng <span class="btn">📄 Trang bắt đầu</span> đã đặt. Ngày bắt đầu của cuốn <em>không</em> đổi — chọn lại ngày đó trong ô <span class="btn">📅 Ngày</span> là tạo lại được.</li>
+    <li>Nếu cuốn chỉ còn <strong>đúng một ngày</strong>, xóa sẽ dọn sạch nội dung và giữ lại một trang trắng cho chính ngày đó.</li>
+    <li>Muốn bỏ <em>cả cuốn</em> thì dùng <span class="btn danger">🏁 Kết thúc</span> (<a href="#end">mục 14</a>) — nó xuất file trước rồi mới xóa.</li>
+  </ul>
+</div>
 <div class="callout warn">
   <strong>Lưu ý số trang:</strong> Số trang ở cuối form là <strong>tự động</strong>, không sửa tay.
   Với mẫu có trang bìa, <span class="btn">📄 Trang bắt đầu</span> là số của <strong>bìa quyển</strong>;
@@ -504,31 +536,64 @@ STT đánh lại liên tục từ 1. <strong>Màn hình nhập liệu vẫn hi�
   Open-Meteo cung cấp dữ liệu tối đa 16 ngày. Càng xa hôm nay thì độ chính xác càng giảm — tốt nhất xem 3-7 ngày tới.
 </div>
 
-<h2 id="print-single">12. Xuất PDF</h2>
-<p>Phần mềm <strong>tự dựng file PDF</strong> (thư viện jsPDF), không đi qua hộp thoại in của trình duyệt nữa —
-nhờ vậy khổ giấy và lề luôn đúng, không phụ thuộc thiết lập máy in của từng máy.</p>
+<h2 id="print-single">12. Xem trước và xuất file</h2>
+<p>Trước khi tải file về, bấm <span class="btn primary">👁️ Xem trước ngày này</span> hoặc
+<span class="btn">👁️ Xem trước cả cuốn</span> để thấy <strong>đúng từng trang A4 như file sẽ tải về</strong> —
+xem trước và bản xuất dùng chung một bộ dựng trang, không phải hai đường khác nhau.</p>
+<p>Cửa sổ xem trước có sẵn nút <span class="btn primary">📄 Xuất PDF</span> và
+<span class="btn">📝 Xuất Word</span> ở dưới cùng. Phần mềm tự dựng PDF bằng thư viện jsPDF,
+không đi qua hộp thoại in của trình duyệt, nên khổ giấy và lề luôn đúng trên mọi máy.</p>
+
+<h3>Chỉnh định dạng trang ngay trong xem trước</h3>
+<p>Thanh trên cùng của cửa sổ xem trước chỉnh được các thông số sau; mỗi lần đổi là trang dựng lại ngay
+và <strong>lưu riêng cho từng cuốn</strong>:</p>
 <table class="steps">
-  <tr><th style="width:190px;"><span class="btn primary">📄 Xuất PDF ngày này</span></th><td>
-    Tải về PDF của <strong>riêng ngày đang mở</strong>.
+  <tr><th style="width:150px;">Lề (mm)</th><td>
+    Trên / phải / dưới / trái. Mặc định <strong>1,5 · 1,5 · 1,5 · 2,0 cm</strong> — lề trái rộng hơn để chừa gáy đóng sổ.
   </td></tr>
-  <tr><th><span class="btn">📕 Xuất PDF cả cuốn</span></th><td>
-    Tải về PDF <strong>toàn bộ cuốn</strong> (kèm trang bìa nếu mẫu có) mà <em>không</em> xóa cuốn —
-    khác với <span class="btn danger">🏁 Kết thúc</span>.
+  <tr><th>Cỡ chữ (%)</th><td>
+    Phóng to / thu nhỏ <strong>đều toàn trang</strong>, giữ nguyên tỉ lệ giữa tiêu đề, tiêu mục và bảng.
   </td></tr>
+  <tr><th>Bảng — pt</th><td>
+    Riêng cỡ chữ của bảng khối lượng. Mặc định <strong>11pt</strong>. (Thân trang ngày là 12pt.)
+  </td></tr>
+  <tr><th><span class="btn">✂ Ngắt sau</span></th><td>
+    Danh sách chỗ cắt trang — xem phần dưới. Số là hạng mục trong bảng
+    (<code>20, 30</code> = trang 1 có mục 1–20, trang 2 có 21–30, trang 3 phần còn lại);
+    <code>s1…s7</code> là các mục ngoài bảng. Bỏ trống = theo mẫu ·
+    <span class="btn">Bỏ hết</span> = cả ngày gói trong 1 trang.
+  </td></tr>
+  <tr><th>Nét kẻ</th><td>Mảnh / Vừa / Đậm cho bảng khối lượng.</td></tr>
+  <tr><th><span class="btn">↺ Mặc định</span></th><td>Trả mọi thông số về ban đầu.</td></tr>
+</table>
+
+<h3>Chọn chỗ ngắt trang — bấm vào dòng bất kỳ</h3>
+<p>Trong khung xem trước, <strong>rê chuột lên dòng nào cũng thấy nó sáng lên</strong>.
+Bấm vào đó là trang được cắt ngay <em>sau</em> dòng ấy; dòng vừa chọn có gạch đỏ ở mép dưới. Bấm lại lần nữa để bỏ.</p>
+<table class="steps">
+  <tr><td>Trong bảng khối lượng</td><td>Bấm vào dòng hạng mục muốn kết thúc trang</td></tr>
+  <tr><td>Ngoài bảng</td><td>Mục 1 (thời tiết) · 2.1 (nhân lực) · 2.2 (thiết bị) · 3 · 4 · 5 · 6 · 7 — bấm vào chính dòng đó</td></tr>
+  <tr><td>Bảng chữ ký</td><td>Không bấm được — ngắt sau chữ ký thì không còn gì để sang trang</td></tr>
 </table>
 <div class="callout">
-  <strong>Định dạng file PDF:</strong> A4 dọc, <strong>lề 2cm</strong> cả 4 phía.
-  Với mẫu Quận 8, <strong>mỗi ngày chiếm đúng 2 trang</strong>: trang 1 là mục 1–3 và hạng mục 1–23,
-  trang 2 lặp lại dòng tiêu đề bảng rồi đến hạng mục 24–38 và mục 4–7 + chữ ký — đúng như quyển mẫu.
-  Dòng <em>“Công trình: …”</em> chỉ hiện trên màn hình để bạn biết đang sửa cuốn nào, <strong>không in ra file</strong>.
+  <strong>Số trang tự tính lại.</strong> Thêm hay bớt chỗ ngắt thì số trang mỗi ngày đổi theo,
+  số trang in trên giấy vẫn liên tục và dòng "Sổ này gồm … trang" trên bìa cũng khớp.
+  Chỗ ngắt áp cho <strong>mọi ngày</strong> của cuốn.
+</div>
+<div class="callout warn">
+  <strong>Cỡ chữ và số trang ràng buộc nhau.</strong> Chữ càng to thì càng ít hạng mục lọt một trang.
+  Nếu dòng trạng thái báo <em>"⚠️ trang 3 thu còn 92%"</em> nghĩa là trang đó bị nhồi quá nên phần mềm
+  phải thu nhỏ cho vừa giấy — hãy <strong>thêm một chỗ ngắt trang</strong> hoặc giảm cỡ chữ cho tới khi
+  dòng trạng thái báo <em>"vừa khít, không phải thu nhỏ ✓"</em>.
 </div>
 <div class="callout">
   <strong>Tên file</strong> đặt theo dạng <code>NKTC - &lt;địa bàn&gt; - T&lt;tháng&gt;-&lt;năm&gt;</code>, ví dụ
   <code>NKTC - Phường Chánh Hưng, Phường Phú Định, Phường Bình Đông - T07-2026.pdf</code>.
-  File PDF của một ngày có thêm hậu tố <code> - ngay 01</code>. Mẫu không có địa bàn thì dùng tên cuốn.
+  File của một ngày có thêm hậu tố <code> - ngay 01</code>. Mẫu không có địa bàn thì dùng tên cuốn.
+  Dòng <em>"Công trình: …"</em> chỉ hiện trên màn hình, <strong>không in ra file</strong>.
 </div>
 <div class="callout warn">
-  Cần <strong>Internet</strong> khi xuất PDF vì thư viện jsPDF tải từ CDN.
+  Cần <strong>Internet</strong> khi xuất PDF vì thư viện jsPDF tải từ CDN. Xuất Word thì không cần.
 </div>
 
 <h2 id="backup">13. Sao lưu / Khôi phục dữ liệu</h2>
@@ -608,7 +673,7 @@ nhờ vậy khổ giấy và lề luôn đúng, không phụ thuộc thiết l�
 
 <h2 id="version">16. Phiên bản và cập nhật</h2>
 <p>Số phiên bản hiện ở ngay dưới tiêu đề trên thanh công cụ, dạng
-   <em>Phiên bản 2026.08.19</em>. Khi báo lỗi cho đội phát triển, gửi kèm số này.</p>
+   <em>Phiên bản 2026.08.28</em>. Khi báo lỗi cho đội phát triển, gửi kèm số này.</p>
 
 <h3>Khi có bản mới</h3>
 <p>Phần mềm tự kiểm tra và hiện một thanh nhỏ ở đáy màn hình:

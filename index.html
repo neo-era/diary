@@ -1008,8 +1008,8 @@
         <textarea id="bk_diaBan"></textarea>
         <label for="bk_benA">Bên A</label>
         <input type="text" id="bk_benA">
-        <label for="bk_benB">Bên B</label>
-        <input type="text" id="bk_benB">
+        <label for="bk_benB">Bên B <span style="font-weight:normal;color:#64748b">(liên danh: Enter để mỗi công ty một dòng)</span></label>
+        <textarea id="bk_benB" rows="2"></textarea>
         <label for="bk_daiDienLienDanh">Đại diện liên danh <span style="font-weight:normal;color:#64748b">(bỏ trống nếu không có)</span></label>
         <input type="text" id="bk_daiDienLienDanh">
         <label for="bk_repAName">Đại diện bên A</label>
@@ -2923,14 +2923,32 @@ function bookPageRange(p) {
 
 // Một dòng "Nhãn | Nội dung" của khối thông tin trên bìa (khớp cột B|D của BÌA TỔNG
 // và cột C|E của bìa quyển trong file Excel — nhãn ~22% bề ngang, nội dung canh đều)
+// Tên đơn vị: liên danh thì MỖI CÔNG TY MỘT DÒNG.
+//  1. Người dùng tự xuống dòng (Enter trong ô nhập) → in đúng như đã gõ.
+//  2. Không có xuống dòng → tự cắt ở dấu gạch ngang, nhưng CHỈ khi chuỗi mở đầu
+//     bằng "Liên danh" — tên đơn vị thường cũng có thể chứa dấu gạch, cắt bừa
+//     là vỡ những dòng khác trên bìa.
+function orgLines(text) {
+  const t = String(text || '');
+  if (/[\r\n]/.test(t)) return multilineHtml(t);
+  if (!/^\s*li[êe]n\s+danh\b/i.test(t)) return escapeHtml(t);
+  const parts = t.split(/\s+[-–—]\s+/).filter(x => x.trim());
+  return parts.length > 1
+    ? parts.map((x, i) => escapeHtml(i ? '- ' + x.trim() : x.trim())).join('<br>')
+    : escapeHtml(t);
+}
+
+function coverRowHTML(label, html, justify) {
+  return `<tr><td class="lbl">${escapeHtml(label)}</td><td class="val${justify ? ' just' : ''}">${html}</td></tr>`;
+}
 function coverRow(label, value, justify) {
-  return `<tr><td class="lbl">${escapeHtml(label)}</td><td class="val${justify ? ' just' : ''}">${escapeHtml(value)}</td></tr>`;
+  return coverRowHTML(label, escapeHtml(value), justify);
 }
 // Dong TUY CHON: bo trong trong "Thong tin quyen" thi khong in ra dong nao ca.
 // Chi dung cho o that su co the khong co (lien danh) - cac o bat buoc van in
 // nhan de nguoi dung dien tay len giay.
 function coverRowIf(label, value, justify) {
-  return String(value || '').trim() ? coverRow(label, value, justify) : '';
+  return String(value || '').trim() ? coverRowHTML(label, orgLines(value), justify) : '';
 }
 
 function buildCoverTongHTML(p) {
@@ -2947,7 +2965,7 @@ function buildCoverTongHTML(p) {
     <table class="cover-info">
       ${coverRow('Dự toán mua sắm:', b.duToan, true)}
       ${coverRow('Gói thầu:', b.goiThau, true)}
-      ${coverRow('Đơn vị thi công:', b.benB)}
+      ${coverRowHTML('Đơn vị thi công:', orgLines(b.benB))}
       ${coverRowIf('Đại diện liên danh:', b.daiDienLienDanh)}
       ${coverRow('Chủ đầu tư:', b.benA)}
     </table>
@@ -2986,7 +3004,7 @@ function buildCoverQuyenHTML(p) {
       ${coverRow('Công tác:', bookCongTac(p))}
       ${coverRow('', b.diaBan)}
       ${coverRow('Bên A:', b.benA)}
-      ${coverRow('Bên B:', b.benB)}
+      ${coverRowHTML('Bên B:', orgLines(b.benB))}
       ${coverRowIf('Đại diện liên danh:', b.daiDienLienDanh)}
     </table>
     <table class="rep-table">
@@ -3012,7 +3030,7 @@ function signOrg(b) {
 function sheetSignHTML(b, signer, topLine) {
   return `<div class="sheet-foot">
       ${topLine ? `<div class="range">${topLine}</div>` : ''}
-      <div class="rep">Đại diện bên B<br>${escapeHtml(signOrg(b))}</div>
+      <div class="rep">Đại diện bên B<br>${orgLines(signOrg(b))}</div>
       <div class="rep-gap"></div>
       <div class="rep-name">${escapeHtml(signer || '')}</div>
     </div>`;
@@ -3262,7 +3280,7 @@ function exportBookAsWord(p, scope, filename) {
 
 // Phiên bản hiển thị cho người dùng. ĐỔI CÙNG LÚC với VERSION trong sw.js —
 // hai chuỗi phải khớp, sw.js dùng nó làm khoá cache còn chỗ này để hiển thị.
-const APP_VERSION = '2026.08.27';
+const APP_VERSION = '2026.08.28';
 
 const PDF_SCALE = 2;              // html2canvas scale — dùng chung với phép tính chiều cao trang
 const PX_PER_MM = 96 / 25.4;      // 1mm CSS = 3.7795px

@@ -135,6 +135,10 @@ Chỉ bật khi `tplOf(p).hasBook`. Chứa 5 phần: loại bìa · bìa quyển
 
 - **Tr1 và Tr2 đều có khối ký ở cuối**, dựng chung bằng `sheetSignHTML(b, signer, topLine)`. Khác nhau ở dòng nghiêng đầu khối: Tr1 là `Từ … đến …`, Tr2 là `<nơi ký>, ngày … tháng … năm …`. Người ký: `docsSignerB` / `staffSignerB`; `staffSignerB` bỏ trống thì lấy `book.repB.name` (đại diện bên B ở bìa quyển).
 - **Đơn vị đứng tên ký = `signOrg(b)` = `daiDienLienDanh || benB`.** Bên B là liên danh thì công ty đại diện mới là bên ký, đúng như quyển mẫu; không khai liên danh thì rơi về chính bên B.
+- **Tên liên danh in mỗi công ty một dòng** qua `orgLines(text)`, dùng ở `Đơn vị thi công` (bìa tổng), `Bên B` + `Đại diện liên danh` (bìa quyển) và khối ký Tr1/Tr2. Hai đường:
+  1. Có ký tự xuống dòng → `multilineHtml()`, in đúng chỗ người dùng gõ Enter (ô `bk_benB` là `<textarea>` chính vì vậy).
+  2. Không có → **chỉ khi** chuỗi mở đầu bằng `Liên danh` mới cắt ở ` - `, các dòng sau thêm tiền tố `- `. Đừng bỏ điều kiện này: tên đơn vị bình thường (`Công ty TNHH Xây dựng - Thương mại Sài Gòn`) cũng có dấu gạch, cắt bừa là vỡ các dòng khác trên bìa.
+- **`coverRow` escape, `coverRowHTML` thì không.** Dòng nào cần `<br>` phải đi qua `coverRowHTML(label, orgLines(v))`; `orgLines` tự escape từng mảnh nên vẫn an toàn.
 - **Dòng "Đại diện liên danh" là tùy chọn** — dùng `coverRowIf()` thay `coverRow()` nên bỏ trống ô đó là **không in ra dòng nào** trên cả bìa tổng lẫn bìa quyển. Các ô còn lại vẫn dùng `coverRow()`: để trống thì **vẫn in nhãn** để người dùng điền tay lên giấy — đừng đổi hết sang `coverRowIf`.
 - **Không** dùng auto-save debounce — handler `input` bỏ qua mọi thứ trong `#bookModal`; lưu bằng nút `saveBook()`.
 - `collectBookForm()` phải được gọi trước mỗi lần re-render bảng động (`addDocRow`/`delDocRow`/`addStaffRow`/`delStaffRow`) để không mất chữ đang gõ.
@@ -304,7 +308,10 @@ Muốn khỏi phải thu nhỏ thì giảm `splitAfter` hoặc bóp thêm `.page
 - [ ] `📕 Thông tin quyển` → sửa bìa, thêm/xóa văn bản + cán bộ → Lưu → reload còn nguyên
 - [ ] Tr2 có khối ký cuối trang: nơi ký + ngày (nghiêng) → `ĐẠI DIỆN BÊN B` + đơn vị → chừa chỗ ký → họ tên
 - [ ] Bỏ trống `Người ký trang 2` → lấy đại diện bên B ở bìa quyển; nhập tay → hiện đúng tên đã nhập
-- [ ] Có `Đại diện liên danh` → cả Tr1 lẫn Tr2 ký tên công ty đó; bỏ trống → ký tên Bên B
+- [ ] Có `Đại diện liên danh` → cả Tr1 lẫn Tr2 ký tên công ty đó; bỏ trống → ký tên Bên B, tách mỗi công ty một dòng
+- [ ] `Bên B` = `Liên danh A - B` (dữ liệu cũ, một dòng) → bìa tổng + bìa quyển in 2 dòng, dòng 2 có tiền tố `-`
+- [ ] Gõ Enter trong ô `Bên B` → in đúng chỗ đã gõ; lưu + reload còn nguyên xuống dòng
+- [ ] `Bên B` KHÔNG mở đầu bằng "Liên danh" nhưng có dấu gạch → **không** bị cắt; dòng `Gói thầu`/`Địa điểm` cũng không đổi
 - [ ] `📄 Xuất PDF ngày này` → mở PDF: **đúng 2 trang**, trang 1 hạng mục 1–23, trang 2 lặp header + 24–38 + mục 4–7 + chữ ký nằm ngang
 - [ ] Lề PDF đo được trên/phải/dưới 1,5cm — trái 2cm, không còn dòng "Công trình:"
 - [ ] Tên file dạng `NKTC - Phường … - T07-2026.pdf`
