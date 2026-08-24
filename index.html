@@ -3144,14 +3144,19 @@ function exportCss(p) {
      of 0", còn gradient kích thước nguyên + color-stop lẻ thì mất sạch nét
      trong bảng. Muốn mảnh thật thì phải dựng trang ở bội số CSS px rồi thu nhỏ
      lúc xuất (nhân đôi mọi giá trị pt), không phải chỉnh vài con số ở đây. */
-  table th, table td { border: 0.5pt solid #000; padding: 5px 7px; vertical-align: middle; font-size: ${f(12)}; }
+  /* CAN LE trong bang PHAI ghi ro o day: container xuat PDF nam trong document
+     that nen CSS man hinh (table td { text-align:center }) van lot vao, con file
+     Word thi khong co CSS do ⇒ khong khai ro la PDF mot kieu, Word mot kieu. */
+  table th, table td { border: 0.5pt solid #000; padding: 5px 7px; vertical-align: middle;
+                       text-align: center; font-size: ${f(12)}; }
   table th { font-weight: bold; text-align: center; }
   /* khối chữ ký CUỐI TRANG NGÀY: chức danh + họ tên đều 13pt in đậm.
      Tên lớp phải khác .sign-role/.sign-name của trang bìa, không thì đè cỡ chữ bìa. */
   .daysign-role, .daysign-name { font-weight: bold; font-size: ${f(13)}; }
   .daysign-role { text-transform: uppercase; }
   table.work th, table.work td { border: ${ps.borderPt}pt solid #000; }
-  table.work td { font-size: ${f(12)}; }
+  /* ten hang muc can trai; STT / don vi / cac o khoi luong tu khai inline center */
+  table.work td { font-size: ${f(12)}; text-align: left; }
 
   /* CỠ CHỮ: dùng đúng số pt ghi trong ô Excel. Nội dung có thể cao hơn 1 trang,
      nhưng renderPagesToPDF sẽ thu nhỏ đều toàn trang cho vừa A4 — nhờ vậy tỉ lệ
@@ -3236,7 +3241,8 @@ function exportCss(p) {
   table.doc-table, table.doc-table td { font-size: ${f(13)}; }
   table.doc-table th { font-size: ${f(14)}; }
   table.staff-table, table.staff-table th, table.staff-table td { font-size: ${f(12)}; }
-  table.doc-table td, table.staff-table td { vertical-align: middle; padding: 4px 6px; }
+  /* Tr1 / Tr2: noi dung can trai nhu quyen mau, chi cot STT (va Ngay nhan) canh giua */
+  table.doc-table td, table.staff-table td { vertical-align: middle; padding: 4px 6px; text-align: left; }
   table.doc-table td.tt, table.doc-table td.ct, table.staff-table td.tt { text-align: center; }
   table.doc-table tr.blank td { height: 17mm; }
   table.staff-table tr.blank td { height: 11mm; }
@@ -3280,7 +3286,7 @@ function exportBookAsWord(p, scope, filename) {
 
 // Phiên bản hiển thị cho người dùng. ĐỔI CÙNG LÚC với VERSION trong sw.js —
 // hai chuỗi phải khớp, sw.js dùng nó làm khoá cache còn chỗ này để hiển thị.
-const APP_VERSION = '2026.08.28';
+const APP_VERSION = '2026.08.29';
 
 const PDF_SCALE = 2;              // html2canvas scale — dùng chung với phép tính chiều cao trang
 const PX_PER_MM = 96 / 25.4;      // 1mm CSS = 3.7795px

@@ -199,6 +199,8 @@ Dòng `Công trình: …` **chỉ có trên màn hình**, không đưa vào `bui
 
 ## Cỡ chữ khi xuất
 
+**Căn lề trong bảng phải khai RÕ trong `exportCss`.** Container xuất PDF nằm trong document thật nên CSS màn hình (`table td { text-align: center }`) vẫn lọt vào, còn file `.doc` thì không có CSS đó ⇒ không khai rõ là **PDF một kiểu, Word một kiểu**. Mặc định `center`; căn trái ở: tên hạng mục (`table.work td`), toàn bộ Tr1/Tr2 trừ cột STT và *Ngày nhận* (`td.tt` / `td.ct`), cột trái bảng thời tiết. Các ô số của bảng khối lượng tự khai `style="text-align:center"` inline nên luôn thắng.
+
 `exportCss(p)` dùng **đúng số pt ghi trong ô Excel** cho các trang đầu quyển (bìa 28/25/18/13pt · Tr1 16/14/13pt · Tr2 15/12pt) — **đừng đổi mấy số này**. Riêng **trang ngày**: tiêu đề 16pt · thân **12pt** · khối chữ ký **13pt đậm** · bảng khối lượng theo `tableFontPt`. Thân trang ngày nằm ở `body` + `table th, table td`; mọi bảng của bìa/Tr1/Tr2 đều tự khai `font-size` (hoặc `inherit`) nên **không** đổi theo. Nội dung có thể cao hơn 1 khổ A4 — bước tự thu nhỏ trong `renderPagesToPDF` sẽ co đều cả trang, nhờ vậy **tỉ lệ** giữa tiêu đề / tiêu mục / bảng vẫn giống quyển mẫu.
 
 Đừng đổi các số pt này để "cho vừa trang" — cứ để bước thu nhỏ lo.
