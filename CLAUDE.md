@@ -110,6 +110,7 @@ Trang ngày dựng bằng `entryBlocks(p, e)` → một dãy **khối**; ranh gi
 | `'s2'` / `'s2b'` | mục 2.1 (nhân lực) / 2.2 (thiết bị) |
 | `'s3'` | mục 3 + 3.1 |
 | **số** | hạng mục có STT đó trong bảng khối lượng |
+| `'s3b'` | mục **3.2 Những thay đổi so với hồ sơ dự toán** — khối ngay dưới bảng khối lượng |
 | `'s4'` … `'s7'` | mục 4 / 5 / 6 / 7 |
 
 Bảng chữ ký **không** có khóa — ngắt sau nó là vô nghĩa. Dòng **nhóm** cũng không (`k: null`), tránh để tên nhóm mồ côi cuối trang.
@@ -117,6 +118,7 @@ Bảng chữ ký **không** có khóa — ngắt sau nó là vô nghĩa. Dòng *
 - **Số vẫn là định dạng cũ** ⇒ `[20, 30]` trong localStorage và trong template đọc lên vẫn đúng, không phải migrate.
 - `splitAfter`: `null`/`''` = **theo mẫu** · `[]` = **không ngắt** (cả ngày 1 trang) · mảng khóa = ngắt đúng những chỗ đó. Phân biệt `null` với `[]` là điều kiện để người dùng ép mẫu `q8` về 1 trang/ngày — đừng gộp hai giá trị này lại.
 - `entryPages()` **bỏ qua** khóa trỏ tới khối không tồn tại (hạng mục đã bị ẩn vì khối lượng 0) và khóa rơi vào khối cuối cùng ⇒ không đẻ ra trang trắng.
+- **Mục 3.2 nằm NGOÀI bảng khối lượng** — một khối `.subsection` riêng ngay dưới bảng, dùng chung lớp với mục 3.1 nên tự khớp cỡ chữ / nghiêng / thụt lề. Vì là khối riêng nên luôn in ra, không dính bộ lọc `hideZeroRows` và không đổi theo `restDay`.
 - `pageBlocksHTML()` gộp các khối dòng liền nhau thành một `<table>`, nên trang nào có dòng khối lượng cũng tự lặp lại `thead`.
 - `data-blk` gắn vào **phần tử CUỐI** của mỗi khối, không bọc thêm `div` — bọc thêm là đụng vào margin/layout của trang đang khít. Thuộc tính này đi cả vào bản xuất nhưng vô hại: CSS làm nó sáng lên chỉ nằm trong `.pv-scale` (CSS màn hình), không có trong `exportCss`.
 - **Chọn bằng cách bấm**: `#pvScale` bắt click (delegate, bind 1 lần lúc khởi động) → `toggleSplitAt(el.dataset.blk)`. Toggle tính từ `splitPoints(p)` (tức là những gì ĐANG áp dụng, kể cả của mẫu) nên lần bấm đầu tiên trên cuốn chưa tùy chỉnh sẽ "đông cứng" luôn danh sách của mẫu — đúng ý, vì từ đó cuốn tự quy định.
@@ -236,11 +238,33 @@ CSS màn hình giữ nguyên, không đụng tới. Nếu cần chữ to hơn th
 
 - **Khối chữ ký cuối trang ngày** dùng `.daysign-role` / `.daysign-name` (13pt in đậm, vẫn đi qua `f()` nên `fontScale` phóng được). **Không** đặt tên `.sign-role` / `.sign-name` — hai lớp đó trang bìa đang dùng, đè vào là hỏng cỡ chữ bìa.
 - **`EXPORT_CSS` giờ là hàm `exportCss(p)`** nội suy từ `pageSetup`. Trong đó `f(n)` nhân mọi cỡ chữ với `fontScale`; giá trị `< 3pt` (độ dày nét kẻ) **không** nhân — đó là lý do có ngưỡng 3 trong regex sinh CSS.
+- **Font PHẢI khai ngay trên `.page`, không được để thừa kế từ `body`.** Cửa sổ xem trước dựng trang **bên trong `.modal-body`** (font giao diện sans-serif); chỉ khai ở `body` thì xem trước ra font khác hẳn file xuất — chữ rộng hơn, dòng ngắt nhiều hơn, trang cao lên và báo *"thu còn X%"* oan trong khi bản PDF thật vừa khít. Đã trả giá một lần: trang ngày báo 91/72/85% mà thực ra 100%.
 - **`mountExportPages(host, html, p)`** dựng wrapper + chạy bước tự thu nhỏ. **Cửa sổ xem trước và bản xuất gọi chung hàm này** — đó là cái bảo đảm "xem trước = file tải về". Đừng nhân bản logic này ra chỗ khác.
 - **Vòng lặp tự thu nhỏ phải đo bằng `pg.offsetHeight`, KHÔNG dùng `getBoundingClientRect()`**: rect bị nhân theo `transform` của phần tử cha, mà khung xem trước lại `scale()` để thu cả trang cho vừa màn hình ⇒ đo bằng rect thì xem trước tính sai tỉ lệ thu.
 - `buildPagesHTML(p, scope)` với `scope` = `'day'` | `'book'` dùng chung cho xem trước, xuất PDF và xuất Word.
 - Modal `#previewModal`: tự ghi `p.pageSetup` + `persist()` mỗi lần đổi (debounce 250ms), **không** đi qua auto-save debounce của form (đã loại trong handler `input` cùng `#bookModal`, `#newBookModal`).
-- jsdom **không đo được** bước thu nhỏ (`offsetHeight` luôn 0 vì không có layout engine). Muốn kiểm `splitAfter` có vừa trang không thì phải mở xem trước trong trình duyệt thật — dòng trạng thái báo `⚠️ trang N thu còn X%`.
+- ### `⚖️ Chia trang tự động`
+
+`autoFitSplits()` tự đặt `splitAfter` sao cho **không trang nào phải thu nhỏ**:
+
+- Đo bằng `fitHeight(p, blocks)` — dựng khối vào `fitHost(p)` (một `.page` đặt ngoài màn hình, `min-height: 0`, **không** `display:none` vì không có layout thì không đo được) rồi đọc `offsetHeight`.
+- `fitCount()` **chia đôi** để tìm số khối nhiều nhất còn vừa A4 — ~6 lần đo thay vì 50.
+- Lùi về khối gần nhất **có khóa**: dòng nhóm (`k = null`) không ngắt sau được, tránh để tên nhóm mồ côi cuối trang.
+- Chuẩn để đo là `heaviestEntry(p)` — ngày nhiều dòng bảng nhất, vì `splitAfter` áp cho **mọi ngày**.
+
+### Trang bìa / Tr1 / Tr2 vừa A4 bằng cách hạ CỠ CHỮ, không thu cả trang
+
+Mấy trang này chỉ có đúng một trang, không cắt đôi được. Danh sách địa bàn dài (27 phường lặp ở *Dự toán* / *Gói thầu* / *Địa điểm*) đẩy bìa quyển cao hơn A4 tới ~425px. Trước đây phải `transform: scale(0.71)` cả trang — tiêu đề tụt từ 25pt xuống 18pt và html2canvas phải rasterize qua scale.
+
+Giờ `mountExportPages` xử lý riêng trang nào có class `cover` / `sheet`: hạ biến CSS **`--fs`** từng nấc 2% (100% → 50%) cho tới khi `offsetHeight <= PAGE_H_PX`. Chỉ khi xuống đáy mà vẫn tràn mới rơi về thu cả trang như cũ.
+
+- Trong `exportCss`, **mọi cỡ chữ của các trang này** khai bằng `fv(n)` = `calc(var(--fs, 1) * Npt)` — **kể cả tiêu đề lớn**. Đừng giữ tiêu đề ở `f(n)`: 25pt đứng cạnh thân 9,4pt làm tỉ lệ vỡ hẳn so với quyển mẫu, nhìn như hai trang khác nhau.
+- Khoảng cách cố định theo mm cũng phải co: `hv(mm)` cho `sign-gap` 28mm, `rep-gap` 22mm, `tr.blank td` 17/11mm và các `margin` quanh tiêu đề bìa. Không co mấy chỗ này thì hạ cỡ chữ mấy cũng vẫn tràn.
+- Kết quả đo thật: BÌA TỔNG `--fs 0.90`, bìa quyển `0.76`, Tr1 `0.92`, Tr2 `1.00` ⇒ **mọi trang 100%, không trang nào bị thu**, và **tỉ lệ tiêu đề/thân khớp đúng quyển mẫu** (2,15 · 1,92 · 1,23 · 1,25).
+- **`exportCss(p, true)` trả bản `plain`** — thay `calc(var(...))` bằng số pt thẳng. `buildWordHTML` **bắt buộc** dùng bản này: Word không hiểu `var()`/`calc()`, gặp là bỏ luôn khai báo `font-size` ⇒ vỡ cỡ chữ trang bìa.
+- Đã kiểm html2canvas render nổi `calc(var())`: cả 4 trang đầu quyển ra canvas 794×1122 với 5–7% pixel có mực (không trắng).
+
+jsdom **không đo được** bước thu nhỏ (`offsetHeight` luôn 0 vì không có layout engine). Muốn kiểm `autoFitSplits` hay số phần trăm thu nhỏ thì phải chạy **trình duyệt thật** (puppeteer-core + Chrome cài sẵn) — nhưng nhớ: kiểm **nét kẻ** thì puppeteer lại vô dụng, phải đi qua html2canvas. Muốn kiểm `splitAfter` có vừa trang không thì phải mở xem trước trong trình duyệt thật — dòng trạng thái báo `⚠️ trang N thu còn X%`.
 
 ## Xuất PDF & tên file
 

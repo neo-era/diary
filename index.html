@@ -385,7 +385,7 @@
   table.work.multi th, table.work.multi td { font-size: 10pt; padding: 2px 3px; border: 0.4pt solid var(--line); }
   /* bề ngang do renderTableHead() đặt theo % — đừng ghi cứng mm ở đây,
      số cột đổi theo số địa bàn */
-  table.work th.zone { font-size: 9.5pt; font-weight: normal; }
+  table.work th.zone { font-size: 9.5pt; font-weight: bold; }
   table.work th.zone .zone-input { font-size: 9.5pt; text-align: center; display: none; }
   body.edit-mode table.work th.zone .zone-text { display: none; }
   body.edit-mode table.work th.zone .zone-input { display: inline-block; }
@@ -1145,6 +1145,7 @@
           <option value="1.5">Đậm</option>
         </select>
       </div>
+      <button class="book-mini-btn" onclick="autoFitSplits()" title="Tự đặt chỗ ngắt trang sao cho không trang nào bị thu nhỏ">⚖️ Chia trang tự động</button>
       <button class="book-mini-btn" onclick="resetPageSetup()">↺ Mặc định</button>
     </div>
 
@@ -1626,13 +1627,14 @@ const BLK_LABELS = {
   s2:  'mục 2.1 — nhân lực',
   s2b: 'mục 2.2 — thiết bị',
   s3:  'mục 3 — diễn biến thi công',
+  s3b: 'mục 3.2 — thay đổi so với dự toán',
   s4:  'mục 4 — vệ sinh môi trường',
   s5:  'mục 5 — an toàn',
   s6:  'mục 6 — nhận xét bên A',
   s7:  'mục 7 — kiến nghị bên B'
 };
 // thứ tự xuất hiện trên trang; '#' là chỗ của các dòng bảng khối lượng
-const BLK_ORDER = ['title', 's1', 's2', 's2b', 's3', '#', 's4', 's5', 's6', 's7'];
+const BLK_ORDER = ['title', 's1', 's2', 's2b', 's3', '#', 's3b', 's4', 's5', 's6', 's7'];
 function isNumKey(k) { return /^\d+$/.test(String(k)); }
 function normKey(k) { return isNumKey(k) ? Number(k) : String(k); }
 function blkLabel(k) { return isNumKey(k) ? 'hạng mục ' + k : (BLK_LABELS[k] || String(k)); }
@@ -2768,6 +2770,7 @@ function workRowsHTML(p, e) {
     const tds = keys.map(k => `<td style="text-align:center;">${escapeHtml(fmtQty(tpl, getQ(it, k), rest))}</td>`).join('');
     return { n: stt, html: `<tr data-blk="${stt}"><td style="text-align:center;">${stt}</td><td>${escapeHtml(it.name)}</td><td style="text-align:center;">${escapeHtml(it.unit)}</td>${tds}</tr>` };
   });
+  return rows;
 }
 
 function buildWorkTableHTML(p, rows) {
@@ -2822,6 +2825,11 @@ function entryBlocks(p, e) {
   // mỗi hạng mục = 1 khối, khóa là STT; dòng NHÓM không cho ngắt sau (ngắt ngay
   // dưới tên nhóm là để tiêu đề nhóm mồ côi ở cuối trang)
   workRowsHTML(p, e).forEach(r => B.push({ k: r.n, row: true, html: r.html }));
+
+  // Mục 3.2 nằm NGOÀI bảng khối lượng, ngay dưới bảng — cùng lớp .subsection
+  // với mục 3.1 nên tự khớp cỡ chữ / kiểu nghiêng / thụt lề.
+  B.push({ k: 's3b', html:
+    `<div class="subsection"${at('s3b')}>3.2. Những thay đổi so với hồ sơ dự toán (nếu có):</div>` });
 
   B.push({ k: 's4', html:
     `<div class="section-num">4. Công tác vệ sinh môi trường:</div>${rateOptionsHTML(e.env, 's4')}` });
@@ -3009,9 +3017,9 @@ function buildCoverQuyenHTML(p) {
     </table>
     <table class="rep-table">
       <tr><td colspan="2">* Đại diện bên A:</td><td class="sig-col">Chữ ký</td></tr>
-      <tr><td>${escapeHtml(b.repA.name)}</td><td>Chức vụ: ${escapeHtml(b.repA.role)}</td><td class="sig-col">...............</td></tr>
+      <tr><td>- ${escapeHtml(b.repA.name)}</td><td>Chức vụ: ${escapeHtml(b.repA.role)}</td><td class="sig-col"><span class="dotline"></span></td></tr>
       <tr><td colspan="2">* Đại diện bên B:</td><td class="sig-col"></td></tr>
-      <tr><td>${escapeHtml(b.repB.name)}</td><td>Chức vụ: ${escapeHtml(b.repB.role)}</td><td class="sig-col">...............</td></tr>
+      <tr><td>- ${escapeHtml(b.repB.name)}</td><td>Chức vụ: ${escapeHtml(b.repB.role)}</td><td class="sig-col"><span class="dotline"></span></td></tr>
     </table>
     <div class="cover-note">(Sổ này gồm ${escapeHtml(pr.soTrang)} trang, đánh số thứ tự từ ${escapeHtml(pr.trangTu)} đến ${escapeHtml(pr.trangDen)} có đóng dấu giáp lai)</div>
     <div class="cover-note">Quyển số: ${escapeHtml(b.quyenSo || '……..')} / tổng số ${escapeHtml(b.tongSoQuyen || '…….')} quyển.</div>
@@ -3120,13 +3128,26 @@ function buildBookPagesHTML(p) {
 // CSS bản xuất — sinh theo thiết lập trang của cuốn (p.pageSetup).
 // f() nhân mọi cỡ chữ với fontScale; độ dày nét kẻ (< 3pt) KHÔNG nhân.
 // Dùng chung cho cả cửa sổ xem trước lẫn file PDF/Word ⇒ xem trước đúng bằng bản xuất.
-function exportCss(p) {
+// plain = true → không dùng var()/calc() (bản .doc: Word không hiểu hai thứ này,
+// gặp là bỏ luôn khai báo font-size ⇒ vỡ cỡ chữ trang bìa).
+function exportCss(p, plain) {
   const ps = pageSetupOf(p);
   const f = n => (Number(n) * ps.fontScale / 100).toFixed(2) + 'pt';
+  // fv/hv = giá trị CO ĐƯỢC theo biến --fs, dùng cho phần THÂN của trang bìa /
+  // Tr1 / Tr2. mountExportPages hạ --fs cho tới khi trang vừa A4 — nhờ vậy các
+  // trang này KHÔNG phải thu cả trang bằng transform. Tiêu đề lớn giữ nguyên cỡ.
+  const fv = n => plain ? f(n) : `calc(var(--fs, 1) * ${f(n)})`;
+  const hv = mm => plain ? mm + 'mm' : `calc(var(--fs, 1) * ${mm}mm)`;
   const pad = [ps.mt, ps.mr, ps.mb, ps.ml].map(v => Number(v) + 'mm').join(' ');
   return `
   body { font-family: 'Times New Roman', Times, serif; font-size: ${f(12)}; color: #000; margin: 0; background: #fff; }
-  .page { background: #fff; width: 210mm; min-height: 297mm; padding: ${pad}; box-sizing: border-box; page-break-after: always; position: relative; }
+  /* Font PHAI khai ngay tren .page, khong duoc de thua ke tu body: cua so xem
+     truoc dung trang BEN TRONG .modal-body (font giao dien sans-serif) nen chi
+     khai o body la xem truoc dung font khac han file xuat — chu rong hon, dong
+     bi ngat nhieu hon, trang do cao len va bao "thu con X%" oan. */
+  .page { background: #fff; width: 210mm; min-height: 297mm; padding: ${pad}; box-sizing: border-box;
+          page-break-after: always; position: relative;
+          font-family: 'Times New Roman', Times, serif; font-size: ${f(12)}; color: #000; }
   .page:last-child { page-break-after: auto; }
   .title { text-align: center; font-weight: bold; font-size: ${f(16)}; text-transform: uppercase; margin: 0 0 14px 0; letter-spacing: 0.3px; }
   .project-line { text-align: center; font-weight: bold; font-style: italic; margin: 0 0 10px 0; font-size: ${f(14)}; }
@@ -3169,7 +3190,7 @@ function exportCss(p) {
   /* bảng khối lượng nhiều địa bàn */
   table.work.multi { font-size: ${f(ps.tableFontPt)}; }
   table.work.multi th, table.work.multi td { padding: 2px 3px; font-size: ${f(ps.tableFontPt)}; line-height: 1.2; }
-  table.work.multi th.zone { font-weight: normal; font-size: ${f(ps.tableFontPt - 1)}; }
+  table.work.multi th.zone { font-weight: bold; font-size: ${f(ps.tableFontPt - 1)}; }
   /* trang của mẫu 2-trang-mỗi-ngày: bóp khoảng cách dọc để nội dung vừa A4,
      đỡ phải nhờ tới bước tự thu nhỏ trong renderPagesToPDF */
   .page.compact .title { margin-bottom: 8px; }
@@ -3180,14 +3201,14 @@ function exportCss(p) {
   .page.compact table.weather th, .page.compact table.weather td { padding: 3px 6px; }
   /* ==== TRANG BÌA (dựng theo sheet BÌA TỔNG-G2 / Biavh-Q8: chữ ${f(13)} đậm,
          nhãn chiếm ~22% bề ngang, nội dung canh đều) ==== */
-  .cover { text-align: center; font-size: ${f(13)}; }
+  .cover { text-align: center; font-size: ${fv(13)}; }
   .cover .nation, .cover .nation-sub { font-weight: bold; font-size: inherit; }
   .cover .nation-sub { border-bottom: 0.5pt solid #000; display: inline-block; padding: 0 12px 2px; margin-top: 2mm; }
   .cover .cover-title { font-weight: bold; line-height: 1.25; }
-  .cover .cover-title.big { font-size: ${f(28)}; margin: 14mm 0 5mm; }   /* BÌA TỔNG: B6 = ${f(28)} */
-  .cover .cover-title.mid { font-size: ${f(25)}; margin: 12mm 0 5mm; }   /* bìa quyển: C7/C8 = ${f(25)} */
-  .cover .cover-month { font-weight: bold; font-size: ${f(18)}; margin: 2mm 0 6mm; }  /* BÌA TỔNG: B7 = ${f(18)} */
-  .cover .cover-month.bottom { font-size: ${f(13)}; margin-top: 12mm; }  /* bìa quyển: B27 = ${f(13)} */
+  .cover .cover-title.big { font-size: ${fv(28)}; margin: ${hv(14)} 0 ${hv(5)}; }  /* BÌA TỔNG: B6 = ${f(28)} */
+  .cover .cover-title.mid { font-size: ${fv(25)}; margin: ${hv(12)} 0 ${hv(5)}; }  /* bìa quyển: C7/C8 = ${f(25)} */
+  .cover .cover-month { font-weight: bold; font-size: ${fv(18)}; margin: 2mm 0 6mm; } /* BÌA TỔNG: B7 = ${f(18)} */
+  .cover .cover-month.bottom { font-size: ${fv(13)}; margin-top: ${hv(12)}; } /* bìa quyển: B27 = ${f(13)} */
   table.cover-info { width: 100%; border-collapse: collapse; margin: 6mm 0 0; }
   table.cover-info td { border: none; padding: 2.5mm 0 0; vertical-align: top;
                         font-size: inherit; font-weight: bold; text-align: left; }
@@ -3195,7 +3216,12 @@ function exportCss(p) {
   table.cover-info td.val.just { text-align: justify; }
   .cover table.rep-table { border: none; margin-top: 8mm; }
   .cover table.rep-table td { border: none; text-align: left; padding: 2mm 4px 0; font-size: inherit; }
-  .cover table.rep-table td.sig-col { text-align: center; width: 32mm; }
+  .cover table.rep-table td.sig-col { text-align: center; width: 64mm; }
+  /* Dòng chấm chỗ ký vẽ bằng border, KHÔNG gõ cứng chuỗi "......" — đổi bề ngang
+     cột là dòng kẻ tự dài theo, khỏi phải đếm lại số dấu chấm. */
+  .cover table.rep-table td.sig-col .dotline {
+    display: block; border-bottom: 1pt dotted #000; height: 1.1em; width: 100%;
+  }
   .cover .cover-note { text-align: center; margin-top: 5mm; font-size: inherit; }
   .cover table.sign-table { border: none; margin-top: 8mm; }
   .cover table.sign-table td { border: none; text-align: center; vertical-align: top;
@@ -3208,7 +3234,7 @@ function exportCss(p) {
   .cover .sign-role { font-weight: bold; line-height: 1.3; }
   /* khoảng chừa ký + hàng tên là các HÀNG RIÊNG của bảng, để 2 tên luôn nằm
      ngang nhau dù khối bên trái/phải lệch số dòng (Excel: cả hai đều ở dòng 25) */
-  .cover table.sign-table td.sign-gap { height: 28mm; }
+  .cover table.sign-table td.sign-gap { height: ${hv(28)}; }
   .cover table.sign-table td.sign-name { font-weight: bold; vertical-align: bottom; }
   /* Mục 4-5: in đủ 3 lựa chọn, ô vuông vẽ bằng border nên không phụ thuộc font */
   .opts { padding-left: 6mm; margin: 2mm 0; }
@@ -3234,23 +3260,23 @@ function exportCss(p) {
      Số trang nằm sát đáy giấy — trong Excel đó là footer "Trang 1" / "Trang 2". */
   .sheet-title { text-align: center; font-weight: bold; text-transform: uppercase;
                  line-height: 1.35; margin: 0 0 7mm; }
-  .sheet.docs { font-size: ${f(13)}; }                  /* Tr1: thân ${f(13)} */
-  .sheet.staff { font-size: ${f(12)}; }                 /* Tr2: thân ${f(12)} */
-  .sheet.docs .sheet-title { font-size: ${f(16)}; }     /* Tr1: A1/A2 = ${f(16)} */
-  .sheet.staff .sheet-title { font-size: ${f(15)}; }    /* Tr2: B2/B3 = ${f(15)} */
-  table.doc-table, table.doc-table td { font-size: ${f(13)}; }
-  table.doc-table th { font-size: ${f(14)}; }
-  table.staff-table, table.staff-table th, table.staff-table td { font-size: ${f(12)}; }
+  .sheet.docs { font-size: ${fv(13)}; }                 /* Tr1: thân ${f(13)} */
+  .sheet.staff { font-size: ${fv(12)}; }                /* Tr2: thân ${f(12)} */
+  .sheet.docs .sheet-title { font-size: ${fv(16)}; }    /* Tr1: A1/A2 = ${f(16)} */
+  .sheet.staff .sheet-title { font-size: ${fv(15)}; }   /* Tr2: B2/B3 = ${f(15)} */
+  table.doc-table, table.doc-table td { font-size: ${fv(13)}; }
+  table.doc-table th { font-size: ${fv(14)}; }
+  table.staff-table, table.staff-table th, table.staff-table td { font-size: ${fv(12)}; }
   /* Tr1 / Tr2: noi dung can trai nhu quyen mau, chi cot STT (va Ngay nhan) canh giua */
   table.doc-table td, table.staff-table td { vertical-align: middle; padding: 4px 6px; text-align: left; }
   table.doc-table td.tt, table.doc-table td.ct, table.staff-table td.tt { text-align: center; }
-  table.doc-table tr.blank td { height: 17mm; }
-  table.staff-table tr.blank td { height: 11mm; }
+  table.doc-table tr.blank td { height: ${hv(17)}; }
+  table.staff-table tr.blank td { height: ${hv(11)}; }
   table.staff-table tr.grp td { font-weight: bold; }
   .sheet-foot { width: 70%; margin-left: 30%; text-align: center; }
-  .sheet-foot .range { font-size: ${f(14)}; font-style: italic; margin: 7mm 0 3mm; }  /* Tr1: C16 = ${f(14)} */
+  .sheet-foot .range { font-size: ${fv(14)}; font-style: italic; margin: 7mm 0 3mm; }  /* Tr1: C16 = ${f(14)} */
   .sheet-foot .rep { font-weight: bold; text-transform: uppercase; line-height: 1.35; }
-  .sheet-foot .rep-gap { height: 22mm; }
+  .sheet-foot .rep-gap { height: ${hv(22)}; }
   .sheet-foot .rep-name { font-weight: bold; font-style: italic; }
 `;
 }
@@ -3269,7 +3295,7 @@ function buildWordHTML(p, scope) {
 <style>
 @page WordSection1 { size: 21cm 29.7cm; margin: ${[psw.mt, psw.mr, psw.mb, psw.ml].map(v => v + "mm").join(" ")}; mso-page-orientation: portrait; }
 div.WordSection1 { page: WordSection1; }
-${exportCss(p)}
+${exportCss(p, true)}
 /* Trong Word lề đã do @page lo — bỏ padding của .page để khỏi cộng dồn thành 4cm */
 div.WordSection1 .page { width: auto; padding: 0; min-height: 0; }
 <\/style>
@@ -3286,7 +3312,7 @@ function exportBookAsWord(p, scope, filename) {
 
 // Phiên bản hiển thị cho người dùng. ĐỔI CÙNG LÚC với VERSION trong sw.js —
 // hai chuỗi phải khớp, sw.js dùng nó làm khoá cache còn chỗ này để hiển thị.
-const APP_VERSION = '2026.08.29';
+const APP_VERSION = '2026.09.06';
 
 const PDF_SCALE = 2;              // html2canvas scale — dùng chung với phép tính chiều cao trang
 const PX_PER_MM = 96 / 25.4;      // 1mm CSS = 3.7795px
@@ -3358,6 +3384,17 @@ function mountExportPages(host, pagesHTML, p) {
   // Cách thu: nới khung lên 1/k rồi scale(k) ngược lại → chữ nhỏ đi đều, lề vẫn đúng.
   wrappers.forEach((w, i) => {
     const pg = w.querySelector('.page');
+    // Trang bìa / Tr1 / Tr2 chỉ có ĐÚNG MỘT trang, không cắt đôi được. Thay vì
+    // thu cả trang bằng transform, hạ cỡ chữ phần THÂN từng nấc cho tới khi vừa:
+    // chữ vẫn nét (html2canvas không phải rasterize qua scale), lề vẫn đúng,
+    // tiêu đề lớn giữ nguyên. Chỉ khi xuống tới đáy mà vẫn tràn mới thu cả trang.
+    if (pg.classList.contains('cover') || pg.classList.contains('sheet')) {
+      pg.style.minHeight = '0';
+      for (let s = 100; s >= 50; s -= 2) {
+        pg.style.setProperty('--fs', (s / 100).toFixed(2));
+        if (pg.offsetHeight <= PAGE_H_PX) break;
+      }
+    }
     pg.style.minHeight = PAGE_H_PX + 'px';
     let k = 1;
     for (let n = 0; n < 8; n++) {
@@ -4041,6 +4078,93 @@ function toggleSplitAt(key) {
   persist();
   fillPreviewControls(p);
   renderPreview();
+}
+
+// ====== TỰ CHIA TRANG SAO CHO KHÔNG TRANG NÀO BỊ THU NHỎ ======
+// Bước tự thu nhỏ trong mountExportPages chỉ là lưới an toàn; muốn chữ đúng cỡ
+// đã chọn thì phải cắt trang trước khi tràn. Chỉ đo được trong TRÌNH DUYỆT THẬT
+// (jsdom không có layout engine ⇒ offsetHeight luôn 0).
+
+// Khung đo dùng lại nhiều lần: một .page cao tự do, đặt ngoài màn hình.
+// KHÔNG dùng display:none — không có layout thì không đo được gì.
+let _fitHost = null;
+function fitHost(p) {
+  if (!_fitHost) {
+    _fitHost = document.createElement('div');
+    _fitHost.style.cssText = 'position:fixed; left:-99999px; top:0; width:210mm; visibility:hidden;';
+    _fitHost.innerHTML = '<style></style><div class="page"></div>';
+    document.body.appendChild(_fitHost);
+  }
+  _fitHost.querySelector('style').textContent = exportCss(p);
+  const pg = _fitHost.querySelector('.page');
+  pg.style.minHeight = '0';        // đè min-height:297mm của exportCss để đo chiều cao THẬT
+  return pg;
+}
+// Chiều cao thật của một trang gồm đúng những khối này
+function fitHeight(p, blocks) {
+  const pg = fitHost(p);
+  pg.className = splitPoints(p).length ? 'page compact' : 'page';
+  pg.innerHTML = pageBlocksHTML(p, blocks);
+  return pg.offsetHeight;
+}
+// Số khối nhiều nhất (tính từ đầu) còn vừa một khổ A4 — tìm bằng chia đôi,
+// ~6 lần đo cho 50 khối thay vì 50.
+function fitCount(p, blocks) {
+  if (fitHeight(p, blocks) <= PAGE_H_PX) return blocks.length;
+  let lo = 1, hi = blocks.length, best = 1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (fitHeight(p, blocks.slice(0, mid)) <= PAGE_H_PX) { best = mid; lo = mid + 1; }
+    else hi = mid - 1;
+  }
+  return best;
+}
+
+function autoFitSplits() {
+  const p = getProject();
+  if (!p) return;
+  // Chỗ ngắt áp cho MỌI ngày nên phải đo theo ngày NHIỀU DÒNG NHẤT
+  const e = heaviestEntry(p);
+  if (!e) { flash('Cuốn này chưa có ngày nào'); return; }
+
+  const all = entryBlocks(p, e);
+  const keys = [];
+  let i = 0;
+  for (let guard = 0; i < all.length && guard < 60; guard++) {
+    const rest = all.slice(i);
+    const n = fitCount(p, rest);
+    if (i + n >= all.length) break;          // phần còn lại vừa 1 trang → xong
+    // Lùi về khối gần nhất CÓ khóa: dòng nhóm (k = null) không ngắt sau được,
+    // ngắt ngay dưới tên nhóm là để tiêu đề nhóm mồ côi cuối trang.
+    let cut = n;
+    while (cut > 1 && (rest[cut - 1].k === null || rest[cut - 1].k === undefined)) cut--;
+    const k = rest[cut - 1].k;
+    if (k === null || k === undefined) break;  // không còn chỗ cắt hợp lệ
+    keys.push(k);
+    i += cut;
+  }
+
+  const ps = pageSetupOf(p);
+  ps.splitAfter = sortSplits(keys);           // [] = cả ngày vừa 1 trang
+  p.pageSetup = ps;
+  persist();
+  fillPreviewControls(p);
+  renderPreview();
+
+  const n = entryPageCount(p, e);
+  flash(keys.length ? `Đã chia ${n} trang/ngày, không phải thu nhỏ ✓` : 'Cả ngày vừa 1 trang ✓');
+}
+
+// Ngày có nhiều dòng bảng nhất — chuẩn để tính chỗ ngắt cho cả cuốn
+function heaviestEntry(p) {
+  const ds = Object.keys(p.entries || {}).sort();
+  if (!ds.length) return null;
+  let best = p.entries[ds[0]], n = -1;
+  ds.forEach(d => {
+    const c = workRowsHTML(p, p.entries[d]).length;
+    if (c > n) { n = c; best = p.entries[d]; }
+  });
+  return best;
 }
 
 // Bỏ hết chỗ ngắt → cả ngày gói trong 1 trang (không rơi về mặc định của mẫu)
