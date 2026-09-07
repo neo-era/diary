@@ -2796,7 +2796,7 @@ function entryBlocks(p, e) {
 
   B.push({ k: 'title', html:
     `<h1 class="title">Nhật ký thi công hàng ngày</h1>
-     <div class="date-line"${at('title')}>Ngày ${e.day} tháng ${e.month} năm ${e.year}${e.restDay ? ' <em>(ngày nghỉ)</em>' : ''}</div>` });
+     <div class="date-line"${at('title')}>Ngày ${viDay(e.day)} tháng ${viMonth(e.month)} năm ${e.year}${e.restDay ? ' <em>(ngày nghỉ)</em>' : ''}</div>` });
 
   B.push({ k: 's1', html:
     `<div class="section-num">1. Tình hình thời tiết:</div>
@@ -2851,12 +2851,12 @@ function entryBlocks(p, e) {
         <td style="width:50%; text-align:center; border:none; vertical-align:top;">
           <div class="daysign-role">Đại diện bên A</div>
           <div style="height:56px;"></div>
-          <div class="daysign-name">${escapeHtml(e.rep_a || '')}</div>
+          <div class="daysign-name">${escapeHtml(bareName(e.rep_a))}</div>
         </td>
         <td style="width:50%; text-align:center; border:none; vertical-align:top;">
           <div class="daysign-role">Đại diện bên B</div>
           <div style="height:56px;"></div>
-          <div class="daysign-name">${escapeHtml(e.rep_b || '')}</div>
+          <div class="daysign-name">${escapeHtml(bareName(e.rep_b))}</div>
         </td>
       </tr>
     </table>` });
@@ -2889,10 +2889,16 @@ function buildEntryHTML(p, e) {
 }
 
 // ====== CÁC TRANG ĐẦU QUYỂN (bìa tổng, bìa quyển, Tr1, Tr2) ======
+// Cách ghi ngày tháng của văn bản hành chính (Nghị định 30/2020/NĐ-CP):
+// ngày nhỏ hơn 10 và THÁNG 1, THÁNG 2 thì thêm số 0 phía trước; từ tháng 3
+// trở đi ghi số trần. Riêng TÊN FILE vẫn đệm 0 cho mọi tháng để sắp xếp đúng.
+function viDay(d)   { const n = Number(d); return isNaN(n) ? String(d) : String(n).padStart(2, '0'); }
+function viMonth(m) { const n = Number(m); return isNaN(n) ? String(m) : (n < 3 ? String(n).padStart(2, '0') : String(n)); }
+
 function bookMonthYear(p) {
   const iso = p.startDate || todayISO();
   const { y, m } = isoToParts(iso);
-  return { mm: String(m).padStart(2, '0'), yyyy: String(y) };
+  return { mm: viMonth(m), yyyy: String(y) };
 }
 function bookCongTac(p) {
   const b = p.book || {};
@@ -2906,7 +2912,7 @@ function lastEntryDate(p) {
 }
 function viDate(iso) {
   const { y, m, d } = isoToParts(iso);
-  return `ngày ${String(d).padStart(2, '0')} tháng ${String(m).padStart(2, '0')} năm ${y}`;
+  return `ngày ${viDay(d)} tháng ${viMonth(m)} năm ${y}`;
 }
 
 // "Sổ này gồm … trang, đánh số thứ tự từ … đến …" — tự tính theo số ngày đã ghi
@@ -2989,9 +2995,9 @@ function buildCoverTongHTML(p) {
       </tr>
       <tr><td class="sign-gap" colspan="3"></td></tr>
       <tr>
-        <td class="left sign-name">${escapeHtml(b.nguoiKyB)}</td>
+        <td class="left sign-name">${escapeHtml(bareName(b.nguoiKyB))}</td>
         <td class="gap"></td>
-        <td class="right sign-name">${escapeHtml(b.nguoiKyA)}</td>
+        <td class="right sign-name">${escapeHtml(bareName(b.nguoiKyA))}</td>
       </tr>
     </table>
   </div>`;
@@ -3035,12 +3041,17 @@ function buildCoverQuyenHTML(p) {
 function signOrg(b) {
   return (b.daiDienLienDanh || '').trim() || b.benB || '';
 }
+// MỌI khối ký chỉ ghi họ tên trần, bỏ "Ông/Bà" đứng đầu — đúng như quyển mẫu:
+// cuối trang ngày, cuối Tr1/Tr2, và khối ký của bìa tổng.
+// Chỗ LIỆT KÊ thì VẪN giữ "Ông ...": bảng đại diện trên bìa quyển và bảng cán bộ Tr2.
+function bareName(s) { return String(s || '').replace(/^\s*(ông|bà)\s+/i, '').trim(); }
+
 function sheetSignHTML(b, signer, topLine) {
   return `<div class="sheet-foot">
       ${topLine ? `<div class="range">${topLine}</div>` : ''}
       <div class="rep">Đại diện bên B<br>${orgLines(signOrg(b))}</div>
       <div class="rep-gap"></div>
-      <div class="rep-name">${escapeHtml(signer || '')}</div>
+      <div class="rep-name">${escapeHtml(bareName(signer))}</div>
     </div>`;
 }
 
@@ -3239,16 +3250,19 @@ function exportCss(p, plain) {
   /* Mục 4-5: in đủ 3 lựa chọn, ô vuông vẽ bằng border nên không phụ thuộc font */
   .opts { padding-left: 6mm; margin: 2mm 0; }
   .opts .opt { display: inline-block; margin-right: 14mm; white-space: nowrap; }
+  /* Ô tích: nét phải ĐỦ DÀY. Chrome ép mọi border khác 0 lên tối thiểu 1px, mà
+     1px ↔ 0,75pt khi in — 0,7pt và 0,8pt trước đây đều ra đúng nét mảnh nhất
+     nên nhìn mờ. 1,6pt cho 2px, dấu tích rõ hẳn. */
   .opts .box {
     display: inline-block; position: relative;
-    width: 3.4mm; height: 3.4mm;
-    border: 0.8pt solid #000;
-    margin-right: 2mm; vertical-align: -0.3mm;
+    width: 3.6mm; height: 3.6mm;
+    border: 1.5pt solid #000;
+    margin-right: 2mm; vertical-align: -0.4mm;
   }
   .opts .box.on::after {
     content: ''; position: absolute;
-    left: 1.1mm; top: 0.1mm; width: 0.9mm; height: 2.1mm;
-    border: solid #000; border-width: 0 0.7pt 0.7pt 0;
+    left: 1.15mm; top: 0.05mm; width: 1mm; height: 2.3mm;
+    border: solid #000; border-width: 0 1.6pt 1.6pt 0;
     transform: rotate(45deg);
   }
 
@@ -3277,7 +3291,7 @@ function exportCss(p, plain) {
   .sheet-foot .range { font-size: ${fv(14)}; font-style: italic; margin: 7mm 0 3mm; }  /* Tr1: C16 = ${f(14)} */
   .sheet-foot .rep { font-weight: bold; text-transform: uppercase; line-height: 1.35; }
   .sheet-foot .rep-gap { height: ${hv(22)}; }
-  .sheet-foot .rep-name { font-weight: bold; font-style: italic; }
+  .sheet-foot .rep-name { font-weight: bold; font-style: normal; }
 `;
 }
 
@@ -3312,7 +3326,7 @@ function exportBookAsWord(p, scope, filename) {
 
 // Phiên bản hiển thị cho người dùng. ĐỔI CÙNG LÚC với VERSION trong sw.js —
 // hai chuỗi phải khớp, sw.js dùng nó làm khoá cache còn chỗ này để hiển thị.
-const APP_VERSION = '2026.09.06';
+const APP_VERSION = '2026.09.10';
 
 const PDF_SCALE = 2;              // html2canvas scale — dùng chung với phép tính chiều cao trang
 const PX_PER_MM = 96 / 25.4;      // 1mm CSS = 3.7795px
