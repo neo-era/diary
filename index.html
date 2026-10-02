@@ -3255,14 +3255,22 @@ function exportCss(p, plain) {
      nên nhìn mờ. 1,6pt cho 2px, dấu tích rõ hẳn. */
   .opts .box {
     display: inline-block; position: relative;
-    width: 3.6mm; height: 3.6mm;
+    width: 4mm; height: 4mm;
     border: 1.5pt solid #000;
-    margin-right: 2mm; vertical-align: -0.4mm;
+    margin-right: 2mm; vertical-align: -0.6mm;
   }
+  /* Dau tich = hinh L (vien phai + vien duoi) xoay 45do quanh TAM PHAN TU.
+     Hai cho de sai, doi be day net hay doi co o la phai do lai ca hai:
+       1. .box an theo box-sizing:border-box cua app => LONG o chi con
+          4mm - 2x2px = 11,11px, KHONG phai 4mm. Dau tich to hon chung ay la
+          tran ra ngoai va bi don xuong goc duoi-phai.
+       2. Sau khi xoay, hop bao cua MUC khong trung tam phan tu — no nam thap hon.
+     Cac so duoi day la do THAT qua html2canvas (scale 4) chu khong tinh tay:
+     muc 7,5 x 6,25px trong long o 11,11px, le toi thieu 1,75px, lech 0,00 x 0,00px. */
   .opts .box.on::after {
     content: ''; position: absolute;
-    left: 1.15mm; top: 0.05mm; width: 1mm; height: 2.3mm;
-    border: solid #000; border-width: 0 1.6pt 1.6pt 0;
+    left: 0.965mm; top: 0.367mm; width: 0.48mm; height: 1.296mm;
+    border: solid #000; border-width: 0 1.5pt 1.5pt 0;
     transform: rotate(45deg);
   }
 
@@ -3326,7 +3334,7 @@ function exportBookAsWord(p, scope, filename) {
 
 // Phiên bản hiển thị cho người dùng. ĐỔI CÙNG LÚC với VERSION trong sw.js —
 // hai chuỗi phải khớp, sw.js dùng nó làm khoá cache còn chỗ này để hiển thị.
-const APP_VERSION = '2026.09.10';
+const APP_VERSION = '2026.09.11';
 
 const PDF_SCALE = 2;              // html2canvas scale — dùng chung với phép tính chiều cao trang
 const PX_PER_MM = 96 / 25.4;      // 1mm CSS = 3.7795px
