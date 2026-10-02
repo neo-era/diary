@@ -474,7 +474,7 @@
   /* ==== CHECKBOX MỤC 4-5 ==== */
   .checks { margin: 4px 0 4px 0; padding-left: 6mm; display: flex; gap: 28px; flex-wrap: wrap; }
   .checks label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
-  .checks input[type="radio"] { width: 14px; height: 14px; margin: 0; }
+  .checks input[type="checkbox"] { width: 15px; height: 15px; margin: 0; }
 
   /* ==== KÝ TÊN ==== */
   .signatures {
@@ -1230,16 +1230,16 @@
 
   <div class="section-num">4. Công tác vệ sinh môi trường:</div>
   <div class="checks">
-    <label><input type="radio" name="env" value="Tốt"> Tốt</label>
-    <label><input type="radio" name="env" value="Bình thường" checked> Bình thường</label>
-    <label><input type="radio" name="env" value="Kém"> Kém</label>
+    <label><input type="checkbox" data-rate="env" value="Tốt"> Tốt</label>
+    <label><input type="checkbox" data-rate="env" value="Bình thường" checked> Bình thường</label>
+    <label><input type="checkbox" data-rate="env" value="Kém"> Kém</label>
   </div>
 
   <div class="section-num">5. Công tác an toàn lao động, an toàn giao thông:</div>
   <div class="checks">
-    <label><input type="radio" name="safe" value="Tốt"> Tốt</label>
-    <label><input type="radio" name="safe" value="Bình thường" checked> Bình thường</label>
-    <label><input type="radio" name="safe" value="Kém"> Kém</label>
+    <label><input type="checkbox" data-rate="safe" value="Tốt"> Tốt</label>
+    <label><input type="checkbox" data-rate="safe" value="Bình thường" checked> Bình thường</label>
+    <label><input type="checkbox" data-rate="safe" value="Kém"> Kém</label>
   </div>
 
   <div class="section-num">6. Nhận xét và yêu cầu của giám sát bên A:</div>
@@ -1764,8 +1764,8 @@ function ensureEntry(dateISO) {
       workers: prev?.workers ?? '07',
       workers_other: prev?.workers_other ?? '',
       equipment: prev?.equipment ?? '',
-      env: prev?.env ?? 'Bình thường',
-      safe: prev?.safe ?? 'Bình thường',
+      env: copyRate(prev?.env) ?? ['Bình thường'],
+      safe: copyRate(prev?.safe) ?? ['Bình thường'],
       note_a: '',
       note_b: '',
       pagenum: '7',
@@ -1841,7 +1841,7 @@ function migrateFromV1() {
     appState.currentDate = dateISO;
     const e = ensureEntry(dateISO);
     ['w_morning','w_afternoon','t_morning','t_afternoon','workers','workers_other','equipment','env','safe','note_a','note_b','pagenum','rep_a','rep_b'].forEach(k => {
-      if (v1[k] !== undefined) e[k] = v1[k];
+      if (v1[k] !== undefined) e[k] = copyRate(v1[k]);
     });
     if (Array.isArray(v1.items)) e.items = JSON.parse(JSON.stringify(v1.items));
     delete e._isNew;
@@ -1914,10 +1914,11 @@ function renderForm() {
   document.getElementById('workers').value = e.workers;
   document.getElementById('workers_other').value = e.workers_other;
   document.getElementById('equipment').value = e.equipment;
-  const envR = document.querySelector(`input[name="env"][value="${e.env}"]`);
-  if (envR) envR.checked = true;
-  const safeR = document.querySelector(`input[name="safe"][value="${e.safe}"]`);
-  if (safeR) safeR.checked = true;
+  ['env', 'safe'].forEach(f => {
+    const on = rateList(e[f]);
+    document.querySelectorAll(`input[data-rate="${f}"]`)
+      .forEach(el => { el.checked = on.indexOf(el.value) >= 0; });
+  });
   document.getElementById('note_a').value = e.note_a;
   document.getElementById('note_b').value = e.note_b;
   document.getElementById('rep_a').value = e.rep_a;
@@ -1944,8 +1945,9 @@ function collectForm() {
   e.workers = document.getElementById('workers').value;
   e.workers_other = document.getElementById('workers_other').value;
   e.equipment = document.getElementById('equipment').value;
-  e.env = document.querySelector('input[name="env"]:checked')?.value;
-  e.safe = document.querySelector('input[name="safe"]:checked')?.value;
+  ['env', 'safe'].forEach(f => {
+    e[f] = [...document.querySelectorAll(`input[data-rate="${f}"]:checked`)].map(el => el.value);
+  });
   e.note_a = document.getElementById('note_a').value;
   e.note_b = document.getElementById('note_b').value;
   e.rep_a = document.getElementById('rep_a').value;
@@ -2208,7 +2210,7 @@ function importData(e) {
         appState.currentDate = dateISO;
         const ent = ensureEntry(dateISO);
         ['w_morning','w_afternoon','t_morning','t_afternoon','workers','workers_other','equipment','env','safe','note_a','note_b','pagenum','rep_a','rep_b'].forEach(k => {
-          if (data[k] !== undefined) ent[k] = data[k];
+          if (data[k] !== undefined) ent[k] = copyRate(data[k]);
         });
         if (Array.isArray(data.items)) ent.items = JSON.parse(JSON.stringify(data.items));
         delete ent._isNew;
@@ -2440,7 +2442,7 @@ function submitNewBook() {
   const srcLast = sourceId ? lastWorkEntryOf(appState.projects[sourceId]) : null;
   if (e && srcLast) {
     ['workers', 'workers_other', 'equipment', 'env', 'safe'].forEach(k => {
-      if (srcLast[k] !== undefined) e[k] = srcLast[k];
+      if (srcLast[k] !== undefined) e[k] = copyRate(srcLast[k]);
     });
   }
 
@@ -2781,9 +2783,20 @@ function buildWorkTableHTML(p, rows) {
 // Mục 4 và 5: in ra ĐỦ 3 lựa chọn, đánh dấu ô đang chọn (ô vuông vẽ bằng CSS
 // nên không phụ thuộc font có ký tự ☑ hay không)
 const RATE_OPTIONS = ['Tốt', 'Bình thường', 'Kém'];
+// Mục 4/5 tick RIÊNG LẺ: tick mấy ô cũng được, bỏ trống hết cũng được.
+// e.env / e.safe giờ là MẢNG, nhưng dữ liệu cũ trong localStorage là CHUỖI
+// ('Bình thường') nên mọi chỗ đọc phải đi qua rateList() — đừng đọc thẳng.
+function rateList(v) {
+  const arr = Array.isArray(v) ? v : (v ? [v] : []);
+  return RATE_OPTIONS.filter(o => arr.indexOf(o) >= 0);   // lọc rác + giữ đúng thứ tự
+}
+// Mảng phải CHÉP khi gán sang entry khác, không thì 2 ngày dùng chung 1 mảng
+// và tick ngày này là đổi luôn ngày kia.
+function copyRate(v) { return Array.isArray(v) ? v.slice() : v; }
 function rateOptionsHTML(value, blk) {
+  const on = rateList(value);
   return `<div class="opts"${blk ? ` data-blk="${blk}"` : ''}>` + RATE_OPTIONS.map(o =>
-    `<span class="opt"><i class="box${o === value ? ' on' : ''}"></i>${escapeHtml(o)}</span>`
+    `<span class="opt"><i class="box${on.indexOf(o) >= 0 ? ' on' : ''}"></i>${escapeHtml(o)}</span>`
   ).join('') + '</div>';
 }
 
@@ -3334,7 +3347,7 @@ function exportBookAsWord(p, scope, filename) {
 
 // Phiên bản hiển thị cho người dùng. ĐỔI CÙNG LÚC với VERSION trong sw.js —
 // hai chuỗi phải khớp, sw.js dùng nó làm khoá cache còn chỗ này để hiển thị.
-const APP_VERSION = '2026.09.11';
+const APP_VERSION = '2026.09.12';
 
 const PDF_SCALE = 2;              // html2canvas scale — dùng chung với phép tính chiều cao trang
 const PX_PER_MM = 96 / 25.4;      // 1mm CSS = 3.7795px
